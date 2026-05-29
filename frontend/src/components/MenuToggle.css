@@ -1,0 +1,36 @@
+.menu-toggle-premium {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  width: 40px;
+  height: 40px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--primary);
+  border-radius: 12px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 110;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow);
+}
+
+.menu-toggle-premium:hover {
+  background-color: var(--bg-hover);
+  transform: translateY(-1px);
+}
+
+.menu-toggle-premium.active {
+  left: 210px; /* Alinhado com o fim da sidebar mobile */
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+@media (max-width: 768px) {
+  .menu-toggle-premium {
+    display: flex;
+  }
+}

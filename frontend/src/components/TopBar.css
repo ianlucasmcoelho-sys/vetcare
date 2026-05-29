@@ -1,0 +1,216 @@
+.topbar {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  height: var(--topbar-height);
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 99;
+  transition: all var(--transition-normal);
+}
+
+.topbar-left {
+  flex: 1;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Botões de Ícone */
+.topbar-icon-btn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background-color: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.topbar-icon-btn:hover {
+  background-color: var(--bg-card);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle-btn {
+  color: var(--primary);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: var(--danger);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 20px;
+  min-width: 18px;
+  border: 2px solid var(--bg-card);
+}
+
+/* Menu do Usuário */
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background-color: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-menu-btn:hover {
+  border-color: var(--primary);
+  background-color: var(--bg-card);
+}
+
+.user-avatar-circle {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 8px rgba(20, 184, 166, 0.2);
+}
+
+.user-info-text {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.user-display-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.user-display-role {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.menu-chevron {
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.menu-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background-color: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  z-index: 100;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-user-header {
+  padding: 16px;
+  background-color: var(--bg-hover);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: var(--bg-card);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  border: 1px solid var(--border-color);
+}
+
+.header-name { display: block; font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.header-email { display: block; font-size: 11px; color: var(--text-secondary); }
+
+.dropdown-links {
+  padding: 8px;
+}
+
+.dropdown-link-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: left;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-link-item:hover {
+  background-color: var(--bg-hover);
+  color: var(--primary);
+}
+
+.dropdown-link-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 8px 0;
+}
+
+.logout-link {
+  color: var(--danger) !important;
+}
+
+.logout-link:hover {
+  background-color: #fef2f2 !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .topbar { left: 0; padding: 0 16px; }
+  .user-info-text { display: none; }
+}

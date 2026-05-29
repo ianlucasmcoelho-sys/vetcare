@@ -1,0 +1,143 @@
+.resetar-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  padding: 20px;
+}
+
+.resetar-card {
+  background: var(--bg-card);
+  border-radius: 24px;
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.1);
+  max-width: 450px;
+  width: 100%;
+  padding: 40px;
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.resetar-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.resetar-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 16px 0 8px;
+}
+
+.resetar-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.resetar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper .input-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-secondary);
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.password-wrapper button {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.error-message, .success-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.success-message {
+  background: #ecfdf5;
+  border: 1px solid #10b981;
+  color: #10b981;
+}
+
+.submit-btn, .btn-secondary {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  border: none;
+  color: white;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
+}
+
+.btn-secondary {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+@media (max-width: 480px) {
+  .resetar-card { padding: 24px; }
+}

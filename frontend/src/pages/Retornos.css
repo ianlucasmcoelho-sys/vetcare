@@ -1,0 +1,285 @@
+/* Retornos.css - Versão harmonizada com Global.css */
+
+.retornos-container {
+  padding: 0;
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+.retornos-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin: 0 32px 32px 32px;
+}
+
+.filters-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  background: var(--bg-hover);
+}
+
+.tabs-container {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-primary);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.tab-btn {
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-btn.active {
+  background: var(--bg-card);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.05);
+}
+
+.tab-count {
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tab-count.danger {
+  background: rgba(var(--danger-rgb), 0.1);
+  color: var(--danger);
+}
+
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 1rem;
+  background: var(--bg-card);
+  min-width: 280px;
+  flex: 1;
+  transition: all var(--transition-fast);
+}
+
+.search-wrapper:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+}
+
+.search-icon {
+  color: var(--text-muted);
+}
+
+.retornos-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 24px;
+}
+
+.retorno-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+}
+
+.retorno-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.retorno-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.retorno-avatar {
+  width: 48px;
+  height: 48px;
+  background: rgba(var(--primary-rgb), 0.1);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  transition: all var(--transition-normal);
+}
+
+.retorno-card:hover .retorno-avatar {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.1) rotate(5deg);
+}
+
+.retorno-info {
+  flex: 1;
+}
+
+.retorno-nome {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.retorno-tutor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-pendentes { background: var(--bg-hover); color: var(--warning); }
+.status-atrasados { background: rgba(var(--danger-rgb), 0.1); color: var(--danger); }
+.status-concluídos { background: rgba(var(--success-rgb), 0.1); color: var(--success); }
+.status-cancelados { background: var(--bg-hover); color: var(--text-muted); }
+
+.retorno-card-body {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.875rem;
+}
+
+.info-icon {
+  color: var(--text-muted);
+  width: 16px;
+}
+
+.info-label {
+  color: var(--text-muted);
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.info-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.info-value.atrasado {
+  color: var(--danger);
+}
+
+.retorno-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-hover);
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.success-btn {
+  background: rgba(var(--success-rgb), 0.1);
+  color: var(--success);
+}
+
+.success-btn:hover {
+  background: var(--success);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.danger-btn {
+  background: rgba(var(--danger-rgb), 0.1);
+  color: var(--danger);
+}
+
+.danger-btn:hover {
+  background: var(--danger);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.edit-btn {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+.edit-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 1024px) {
+  .retornos-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  .retornos-card { margin: 16px; }
+  .filters-section { flex-direction: column; align-items: stretch; }
+  .tabs-container { overflow-x: auto; }
+}

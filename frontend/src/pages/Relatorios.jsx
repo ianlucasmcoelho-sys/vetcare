@@ -1,0 +1,238 @@
+import React, { useState, useEffect } from "react";
+import { 
+  FiDollarSign, FiActivity, FiTrendingUp, FiTrendingDown, 
+  FiPrinter, FiDownload, FiRefreshCw, FiCalendar, FiPieChart,
+  FiBarChart2, FiList, FiArrowRight, FiCheckCircle, FiClock
+} from "react-icons/fi";
+import { MdOutlineVaccines } from "react-icons/md";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { apiGet } from "../services/api";
+import "./Relatorios.css";
+
+export default function Relatorios() {
+  const [activeTab, setActiveTab] = useState("financeiro");
+  const [loading, setLoading] = useState(false);
+  const [dataInicio, setDataInicio] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
+  const [dataFim, setDataFim] = useState(new Date().toISOString().split('T')[0]);
+  
+  const [financeiro, setFinanceiro] = useState([]);
+  const [vacinas, setVacinas] = useState([]);
+  const [retornos, setRetornos] = useState([]);
+  const [producao, setProducao] = useState([]);
+  const [resumoFinanceiro, setResumoFinanceiro] = useState({ entradas: 0, saidas: 0, saldo: 0 });
+
+  const carregarDados = async () => {
+    setLoading(true);
+    try {
+      const [finRes, vacRes, retRes, prodRes] = await Promise.all([
+        apiGet(`/relatorios/financeiro?dataInicio=${dataInicio}&dataFim=${dataFim}`),
+        apiGet("/relatorios/vacinas"),
+        apiGet("/relatorios/retornos"),
+        apiGet(`/relatorios/producao?dataInicio=${dataInicio}&dataFim=${dataFim}`)
+      ]);
+
+      if (finRes.ok) {
+        const finData = await finRes.json();
+        setFinanceiro(finData.transacoes || []);
+        setResumoFinanceiro(finData.resumo || { entradas: 0, saidas: 0, saldo: 0 });
+      }
+      if (vacRes.ok) setVacinas((await vacRes.json()).vacinas || []);
+      if (retRes.ok) setRetornos((await retRes.json()).retornos || []);
+      if (prodRes.ok) setProducao((await prodRes.json()).agendamentos || []);
+      
+    } catch (error) {
+      console.error("❌ Erro CRM:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { carregarDados(); }, [dataInicio, dataFim]);
+
+  const setPreset = (dias) => {
+    const fim = new Date();
+    const inicio = new Date();
+    if (dias === 'mes') {
+      inicio.setDate(1);
+    } else {
+      inicio.setDate(fim.getDate() - dias);
+    }
+    setDataInicio(inicio.toISOString().split('T')[0]);
+    setDataFim(fim.toISOString().split('T')[0]);
+  };
+
+  const exportarPDF = () => {
+    const doc = new jsPDF();
+    // Reutilizando a lógica de geração de PDF premium que já padronizamos
+    doc.setFillColor(30, 41, 59);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.text("VETCARE - RELATÓRIO EXECUTIVO", 20, 25);
+    
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(14);
+    doc.text(`${activeTab.toUpperCase()} | PERÍODO: ${dataInicio} a ${dataFim}`, 20, 55);
+
+    const columns = activeTab === "financeiro" 
+      ? ["Data", "Descrição", "Categoria", "Valor", "Tipo"]
+      : ["Pet", "Serviço/Vacina", "Data", "Status"];
+
+    const body = activeTab === "financeiro"
+      ? financeiro.map(t => [t.data, t.descricao, t.categoria, `R$ ${t.valor}`, t.tipo])
+      : producao.map(p => [p.animal_nome, p.tipo_servico, p.data, p.status]);
+
+    autoTable(doc, {
+      startY: 65,
+      head: [columns],
+      body: body,
+      theme: 'striped',
+      headStyles: { fillColor: [20, 184, 166] }
+    });
+
+    doc.save(`relatorio_vetcare_${activeTab}.pdf`);
+  };
+
+  return (
+    <div className="relatorios-container fade-in">
+      <div className="page-header">
+        <div className="header-info">
+          <h1 className="page-title">Business Intelligence</h1>
+          <p className="page-subtitle">Análise estratégica e desempenho da clínica</p>
+        </div>
+        <div className="header-actions">
+          <button className="btn-primary" onClick={exportarPDF}>
+            <FiPrinter /> Exportar PDF
+          </button>
+        </div>
+      </div>
+
+      <div className="bi-controls-card">
+        <div className="filter-header">
+          <div className="period-inputs">
+            <div className="input-group">
+              <label>DATA INICIAL</label>
+              <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
+            </div>
+            <div className="input-group">
+              <label>DATA FINAL</label>
+              <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
+            </div>
+          </div>
+          <div className="filter-presets">
+            <button onClick={() => setPreset(7)}>7 Dias</button>
+            <button onClick={() => setPreset(30)}>30 Dias</button>
+            <button onClick={() => setPreset('mes')}>Este Mês</button>
+            <button className="btn-refresh" onClick={carregarDados}><FiRefreshCw /></button>
+          </div>
+        </div>
+      </div>
+
+      <div className="bi-metrics-grid">
+        <div className="bi-metric-card revenue">
+          <div className="m-icon"><FiTrendingUp /></div>
+          <div className="m-data">
+            <span className="label">Receita Total</span>
+            <span className="value">R$ {resumoFinanceiro.entradas.toFixed(2)}</span>
+          </div>
+        </div>
+        <div className="bi-metric-card expense">
+          <div className="m-icon"><FiTrendingDown /></div>
+          <div className="m-data">
+            <span className="label">Despesas</span>
+            <span className="value">R$ {resumoFinanceiro.saidas.toFixed(2)}</span>
+          </div>
+        </div>
+        <div className="bi-metric-card profit">
+          <div className="m-icon"><FiDollarSign /></div>
+          <div className="m-data">
+            <span className="label">Lucro Líquido</span>
+            <span className="value">R$ {resumoFinanceiro.saldo.toFixed(2)}</span>
+          </div>
+        </div>
+        <div className="bi-metric-card production">
+          <div className="m-icon"><FiActivity /></div>
+          <div className="m-data">
+            <span className="label">Produtividade</span>
+            <span className="value">{producao.length} Atend.</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="bi-main-card">
+        <div className="bi-tabs-nav">
+          <button className={`bi-tab ${activeTab === 'financeiro' ? 'active' : ''}`} onClick={() => setActiveTab('financeiro')}>
+            <FiBarChart2 /> Fluxo Financeiro
+          </button>
+          <button className={`bi-tab ${activeTab === 'producao' ? 'active' : ''}`} onClick={() => setActiveTab('producao')}>
+            <FiPieChart /> Desempenho Clínico
+          </button>
+          <button className={`bi-tab ${activeTab === 'vacinas' ? 'active' : ''}`} onClick={() => setActiveTab('vacinas')}>
+            <FiCheckCircle /> Cobertura Vacinal
+          </button>
+        </div>
+
+        <div className="bi-content">
+          {loading ? (
+            <div className="bi-loading-skeleton">
+              <div className="skeleton-line" />
+              <div className="skeleton-line" />
+              <div className="skeleton-line" />
+            </div>
+          ) : (
+            <div className="bi-table-wrapper">
+              <table className="modern-bi-table">
+                <thead>
+                  {activeTab === "financeiro" ? (
+                    <tr>
+                      <th>Data</th>
+                      <th>Descrição</th>
+                      <th>Categoria</th>
+                      <th>Valor</th>
+                      <th>Status</th>
+                    </tr>
+                  ) : (
+                    <tr>
+                      <th>Paciente</th>
+                      <th>Procedimento</th>
+                      <th>Data</th>
+                      <th>Tutor</th>
+                      <th>Status</th>
+                    </tr>
+                  )}
+                </thead>
+                <tbody>
+                  {activeTab === "financeiro" ? (
+                    financeiro.map(t => (
+                      <tr key={t.id}>
+                        <td>{t.data}</td>
+                        <td><strong>{t.descricao}</strong></td>
+                        <td><span className="cat-badge">{t.categoria}</span></td>
+                        <td className={t.tipo === 'entrada' ? 'text-success' : 'text-danger'}>
+                          {t.tipo === 'entrada' ? '+' : '-'} R$ {t.valor}
+                        </td>
+                        <td><span className={`badge-status ${t.tipo}`}>{t.tipo.toUpperCase()}</span></td>
+                      </tr>
+                    ))
+                  ) : (
+                    producao.map(p => (
+                      <tr key={p.id}>
+                        <td><strong>{p.animal_nome}</strong></td>
+                        <td>{p.tipo_servico}</td>
+                        <td>{p.data}</td>
+                        <td>{p.tutor_nome}</td>
+                        <td><span className="status-pill active">{p.status}</span></td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

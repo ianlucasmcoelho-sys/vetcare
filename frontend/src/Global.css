@@ -1,0 +1,229 @@
+/* Global.css - Design System Elite com Dark Mode Nativo */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* TOKENS DE COR - TEMA CLARO */
+  --primary: #14b8a6;
+  --primary-rgb: 20, 184, 166;
+  --primary-dark: #0d9488;
+  --primary-light: #ccfbf1;
+  
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-rgb: 255, 255, 255;
+  --bg-hover: #f1f5f9;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  
+  --border-color: #e2e8f0;
+  --border-light: #f1f5f9;
+  
+  --success: #10b981;
+  --success-rgb: 16, 185, 129;
+  --warning: #f59e0b;
+  --warning-rgb: 245, 158, 11;
+  --danger: #ef4444;
+  --danger-rgb: 239, 68, 68;
+
+  /* SISTEMA DE SOMBRAS (Layered Shadows) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* BORDAS */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* LAYOUT */
+  --sidebar-width: 260px;
+  --topbar-height: 64px;
+
+  /* TRANSIÇÕES */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] {
+  /* TOKENS DE COR - TEMA ESCURO */
+  --bg-primary: #020617;
+  --bg-secondary: #0f172a;
+  --bg-card: #0f172a;
+  --bg-card-rgb: 15, 23, 42;
+  --bg-hover: #1e293b;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --border-color: #1e293b;
+  --border-light: #0f172a;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* Tipografia */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.page-title {
+  font-size: 1.875rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 0.25rem;
+}
+
+/* Page Header Standard - Sticky Support */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  
+  position: sticky;
+  top: var(--topbar-height);
+  z-index: 90;
+  background-color: var(--bg-primary);
+  padding: 1rem 0;
+  margin-top: -1rem; /* Absorb container padding */
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+/* Glass effect when stuck (simulated via transition if possible, but keep simple) */
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border-color);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+[data-theme='dark'] .page-header {
+  background-color: var(--bg-primary);
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.header-info {
+  flex: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Scrollbar Customizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+  border: 2px solid var(--bg-primary);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Inputs e Forms */
+input, select, textarea {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+}
+
+/* Botões Modernos */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.35);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Utilitários */
+.glass-effect {
+  background: rgba(var(--bg-card-rgb), 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

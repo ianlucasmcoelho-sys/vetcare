@@ -1,0 +1,18 @@
+.top-message {
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  color: #fff;
+  padding: 15px 25px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.top-message h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.top-message p {
+  margin: 5px 0 0;
+  font-size: 14px;
+}

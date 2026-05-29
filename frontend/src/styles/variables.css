@@ -1,0 +1,58 @@
+/* frontend/src/styles/variables.css */
+
+/* ========== TEMA CLARO (padrão) ========== */
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --bg-sidebar: #ffffff;
+  --bg-topbar: #ffffff;
+  --bg-input: #f8fafc;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --border-color: var(--border-color);
+  --border-light: #f1f5f9;
+  --icon-color: var(--text-secondary);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  --primary: #14b8a6;
+  --primary-dark: #0d9488;
+  --primary-light: #99f6e4;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+/* ========== TEMA ESCURO ========== */
+[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #1e293b;
+  --bg-hover: #334155;
+  --bg-sidebar: #1e293b;
+  --bg-topbar: #1e293b;
+  --bg-input: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-light: #64748b;
+  --border-color: #334155;
+  --border-light: #334155;
+  --icon-color: var(--text-secondary);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+  --primary: #14b8a6;
+  --primary-dark: #0d9488;
+  --primary-light: #134e4a;
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+}
+
+/* Transições suaves */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}

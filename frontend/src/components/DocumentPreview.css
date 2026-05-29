@@ -1,0 +1,141 @@
+.doc-preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.doc-preview-container {
+  background: #f8fafc;
+  width: 100%;
+  max-width: 900px;
+  height: 95vh;
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+}
+
+.doc-preview-header {
+  padding: 1rem 2rem;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.doc-preview-header h3 {
+  font-size: 1.125rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-print {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-print:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.btn-close-preview {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.doc-content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: 3rem;
+  display: flex;
+  justify-content: center;
+  background: #e2e8f0;
+}
+
+.printable-document {
+  background: white;
+  width: 210mm; /* A4 width */
+  min-height: 297mm; /* A4 height */
+  padding: 20mm;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+/* CSS para Impressão */
+@media print {
+  .no-print, 
+  .doc-preview-header,
+  .sidebar, 
+  .topbar, 
+  .menu-toggle,
+  .btn-print,
+  .btn-close-preview {
+    display: none !important;
+  }
+
+  body, html {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .doc-preview-overlay {
+    position: static !important;
+    background: white !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  .doc-preview-container {
+    width: 100% !important;
+    height: auto !important;
+    position: static !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .doc-content-wrapper {
+    padding: 0 !important;
+    background: white !important;
+    overflow: visible !important;
+  }
+
+  .printable-document {
+    width: 100% !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

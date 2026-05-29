@@ -1,0 +1,194 @@
+/* Dashboard.css - Versão harmonizada com Global.css */
+
+.dashboard-container {
+  padding: 0;
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+/* Stats Grid Harmonizado */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  padding: 0 32px 32px 32px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: var(--bg-hover);
+  color: var(--primary);
+  transition: all var(--transition-normal);
+}
+
+.stat-card:hover .stat-icon {
+  transform: scale(1.1) rotate(5deg);
+  background: var(--primary);
+  color: white;
+}
+
+.stat-label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* Alert States for Stat Cards */
+.stat-card.warning .stat-icon {
+  background: rgba(var(--warning-rgb), 0.1);
+  color: var(--warning);
+}
+
+.stat-card.danger .stat-icon {
+  background: rgba(var(--danger-rgb), 0.1);
+  color: var(--danger);
+}
+
+.stat-card.highlight {
+  border-left: 4px solid var(--primary);
+}
+
+/* Conteúdo e Gráficos */
+.charts-grid-main {
+  padding: 0 32px 32px 32px;
+}
+
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  padding: 0 32px 32px 32px;
+}
+
+.dashboard-card, .chart-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+}
+
+.dashboard-card:hover, .chart-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.count-badge {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+/* Itens de Lista */
+.consulta-item, .atividade-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: var(--bg-hover);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.consulta-item:hover, .atividade-item:hover {
+  transform: translateX(8px);
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.consulta-hora {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.1);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  min-width: 65px;
+  text-align: center;
+}
+
+.pet-nome { font-size: 0.9375rem; font-weight: 700; color: var(--text-primary); }
+.tutor-nome { font-size: 0.8125rem; color: var(--text-muted); }
+
+.status-badge-mini {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-concluido { background: rgba(var(--success-rgb), 0.1); color: var(--success); }
+.status-agendado { background: rgba(var(--warning-rgb), 0.1); color: var(--warning); }
+
+@media (max-width: 1024px) {
+  .dashboard-main-grid { grid-template-columns: 1fr; }
+  .stats-grid { gap: 16px; }
+}
+
+@media (max-width: 768px) {
+  .stats-grid, .dashboard-main-grid, .charts-grid-main { padding: 16px; gap: 16px; }
+  .stat-card, .dashboard-card, .chart-card { padding: 20px; }
+}

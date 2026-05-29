@@ -1,0 +1,50 @@
+@import '../styles/variables.css';
+/* Sidebar.css */
+.sidebar {
+  width: 220px;
+  background: #f8f9fa; /* cor suave */
+  color: #333;
+  padding: 20px;
+  min-height: 100vh; /* ocupa toda a altura */
+  border-right: 1px solid #ddd;
+}
+
+.sidebar h2 {
+  margin: 0 0 20px;
+  font-size: 18px;
+  text-align: center;
+  font-weight: 600;
+  color: #555;
+}
+
+.sidebar nav a {
+  color: #444;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  transition: background 0.3s;
+}
+
+.sidebar nav a:hover {
+  background-color: #e9ecef;
+}
+
+/* global.css */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+  padding: 30px;
+  background: #fdfdfd;
+}
+
+.container {
+  background-color: var(--bg-card);
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}

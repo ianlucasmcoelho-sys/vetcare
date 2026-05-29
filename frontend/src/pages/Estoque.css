@@ -1,0 +1,322 @@
+/* Estoque.css - Versão Padronizada "Clean & Tech" */
+
+.estoque-container {
+  padding: 28px 32px;
+  background: var(--bg-primary);
+  min-height: 100vh;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: var(--bg-hover);
+  color: var(--primary);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-card.warning .stat-icon { background: #fffbeb; color: #d97706; }
+.stat-card.danger .stat-icon { background: #fef2f2; color: #dc2626; }
+.stat-card.success .stat-icon { background: #f0fdf4; color: #16a34a; }
+
+/* Main Card */
+.estoque-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.tabs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: var(--bg-hover);
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.tabs-container {
+  display: flex;
+  gap: 8px;
+  background: var(--bg-primary);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: var(--bg-card);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--text-primary);
+}
+
+/* Search Wrapper in Tabs */
+.tabs-header .search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 8px 14px;
+  background: var(--bg-card);
+  min-width: 280px;
+  transition: all 0.3s;
+}
+
+.tabs-header .search-wrapper:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  width: 100%;
+}
+
+.search-icon {
+  color: var(--text-secondary);
+}
+
+/* Products Grid */
+.produtos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 24px;
+}
+
+.estoque-card-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.estoque-card-item:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.estoque-card-item .card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.product-avatar {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: 18px;
+}
+
+.product-info h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: var(--text-primary);
+}
+
+.badge-categoria {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.estoque-card-item .card-body {
+  padding: 18px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.data-row .label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.data-row .value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.value.text-danger { color: #dc2626; }
+.value.text-success { color: #16a34a; }
+
+/* Table Style for History */
+.history-list {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.modern-table th {
+  background: var(--bg-hover);
+  padding: 14px 20px;
+  text-align: left;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.modern-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.move-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.move-badge.entrada { background: #f0fdf4; color: #16a34a; }
+.move-badge.saida { background: #fff1f2; color: #dc2626; }
+
+/* Movimentação Modal specific */
+.move-summary {
+  background: var(--bg-hover);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px dashed var(--border-color);
+}
+
+.product-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.current-stock {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+@media (max-width: 768px) {
+  .estoque-container { padding: 16px; }
+  .tabs-header { flex-direction: column; align-items: stretch; }
+  .tabs-header .search-wrapper { min-width: 100%; }
+  .produtos-grid { grid-template-columns: 1fr; padding: 16px; }
+  .stats-grid { grid-template-columns: 1fr; }
+}

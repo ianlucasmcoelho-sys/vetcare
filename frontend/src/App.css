@@ -1,0 +1,91 @@
+/* App.css - SaaS Layout Resiliente e Mobile-First */
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+.content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  margin-top: var(--topbar-height);
+  padding: 32px;
+  background-color: var(--bg-primary);
+  min-height: calc(100vh - var(--topbar-height));
+  transition: all 0.3s ease;
+}
+
+/* Sidebar Fixa Desktop */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  z-index: 100;
+  overflow-y: auto;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Overlay para sidebar mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 98;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Animação Fade In Global */
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.content {
+  animation: pageFadeIn 0.5s ease-out;
+}
+
+/* ========== RESPONSIVIDADE MOBILE ========== */
+
+@media (max-width: 1024px) {
+  .content { padding: 24px; }
+}
+
+@media (max-width: 768px) {
+  .sidebar { 
+    transform: translateX(-100%); 
+    box-shadow: none;
+  }
+  
+  .sidebar.mobile-open { 
+    transform: translateX(0); 
+    box-shadow: 20px 0 50px -10px rgba(0, 0, 0, 0.3); 
+  }
+  
+  .content { 
+    margin-left: 0; 
+    padding: 20px; 
+    padding-top: 80px; /* Espaço para a TopBar mobile */
+    width: 100%;
+  }
+
+  .topbar { 
+    left: 0 !important; 
+    padding-left: 70px !important; /* Espaço para o botão hambúrguer */
+  }
+}

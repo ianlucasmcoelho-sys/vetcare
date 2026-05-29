@@ -1,0 +1,66 @@
+/* Sidebar.css - Estilização Unificada e Dark Mode */
+
+.sidebar {
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: var(--topbar-height);
+  font-size: 1.3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar nav {
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.sidebar nav a svg {
+  font-size: 20px;
+  color: var(--text-light);
+}
+
+.sidebar nav a:hover {
+  background-color: var(--bg-hover);
+  color: var(--primary);
+  transform: translateX(4px);
+}
+
+.sidebar nav a.active {
+  background-color: var(--bg-hover);
+  color: var(--primary);
+  box-shadow: inset 4px 0 0 var(--primary);
+}
+
+.sidebar nav a.active svg {
+  color: var(--primary);
+}
+
+/* Scrollbar Sidebar */
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: var(--bg-sidebar); }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }

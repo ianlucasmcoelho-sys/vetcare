@@ -1,0 +1,242 @@
+/* HistoricoMedico.css - Versão Padronizada "Clean & Tech" */
+
+.prontuario-container {
+  padding: 28px 32px;
+  background: var(--bg-primary);
+  min-height: 100vh;
+  animation: fadeIn 0.4s ease;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Back Link Button */
+.back-link-btn {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s;
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.back-link-btn span {
+  color: var(--text-primary);
+}
+
+.back-link-btn svg {
+  background: var(--bg-hover);
+  padding: 8px;
+  border-radius: 50%;
+  font-size: 32px;
+}
+
+.back-link-btn:hover {
+  transform: translateX(-4px);
+}
+
+/* Main Content Card */
+.prontuario-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.search-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-hover);
+}
+
+/* Animals Grid (Selection View) */
+.animais-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 24px;
+}
+
+/* Record Count Badge */
+.record-count-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.1);
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+/* Records List (History View) */
+.records-list {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.prontuario-card-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.prontuario-card-item:hover {
+  border-color: var(--primary);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.prontuario-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-hover);
+}
+
+.prontuario-nome {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.prontuario-tags {
+  margin-top: 4px;
+  display: flex;
+  gap: 8px;
+}
+
+.tag-tutor {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Action Icons (Standard) */
+.prontuario-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-icon:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.delete-btn:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* Medical Info Grid (Inside Record Card) */
+.prontuario-card-body {
+  padding: 20px;
+}
+
+.medical-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.medical-info-box {
+  background: var(--bg-hover);
+  padding: 16px;
+  border-radius: 12px;
+  border-left: 4px solid var(--border-color);
+}
+
+.medical-info-box label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.medical-info-box p {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.medical-info-box.warning { border-left-color: var(--warning); background: rgba(var(--warning-rgb), 0.05); }
+.medical-info-box.info { border-left-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+.medical-info-box.success { border-left-color: var(--success); background: rgba(var(--primary-rgb), 0.05); }
+
+/* Modal Styling Alignment */
+.modal-header {
+  padding: 20px 24px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-icon {
+  font-size: 20px;
+  color: var(--primary);
+  background: var(--bg-hover);
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.form-scroll-area {
+  padding: 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Standard Animations */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .prontuario-container { padding: 16px; }
+  .animais-grid { grid-template-columns: 1fr; padding: 16px; }
+  .medical-grid { grid-template-columns: 1fr; }
+  .prontuario-card-header { flex-direction: column; align-items: stretch; gap: 12px; }
+}

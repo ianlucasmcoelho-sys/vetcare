@@ -37,6 +37,8 @@ export const usePermission = () => {
         editarRelatorios: false,
         verConfiguracoes: true,        // ✅ Veterinário pode VER configurações
         editarConfiguracoes: false,    // ❌ NÃO pode editar
+        verOrcamentos: true,
+        editarOrcamentos: true,
       },
       
       recepcionista: {
@@ -65,6 +67,8 @@ export const usePermission = () => {
         editarRelatorios: false,
         verConfiguracoes: true,        // ✅ Pode VER configurações
         editarConfiguracoes: false,    // ❌ NÃO pode editar
+        verOrcamentos: true,
+        editarOrcamentos: true,
       }
     };
 

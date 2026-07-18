@@ -121,21 +121,21 @@ export default function Internacao() {
   );
 
   return (
-    <div className="internacao-container fade-in">
+    <div className="internacao-container reveal-fade">
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Mapa de Internação</h1>
           <p className="page-subtitle">Monitoramento hospitalar e cuidados contínuos</p>
         </div>
         <div className="header-actions">
-           <button className="btn-primary" onClick={() => setShowModal(true)}>
+           <button className="v-btn-primary-glow" onClick={() => setShowModal(true)}>
             <FiPlus /> <span>Registrar Internação</span>
           </button>
         </div>
       </div>
 
-      <div className="internacao-card-main">
-        <div className="search-section">
+      <div className="internacao-card-main reveal-up" style={{animationDelay: '0.1s'}}>
+        <div className="search-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
           <div className="search-wrapper">
             <FiSearch className="search-icon" />
             <input
@@ -163,7 +163,7 @@ export default function Internacao() {
         ) : (
           <div className="pacientes-grid">
             {internacoesFiltradas.map(i => (
-              <div key={i.id} className="paciente-card-item" onClick={() => handleOpenDetails(i)}>
+              <div key={i.id} className="paciente-card-item v-glass-panel" onClick={() => handleOpenDetails(i)} style={{animationDelay: `${0.1 + (0.05 * (i.id % 10))}s`}}>
                 <div className="paciente-card-badge">Internado</div>
                 
                 <div className="paciente-card-header">
@@ -400,7 +400,7 @@ export default function Internacao() {
 
                <div className="modal-footer">
                   <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
-                  <button type="submit" className="btn-primary">
+                  <button type="submit" className="v-btn-primary-glow">
                     <FiCheck /> Confirmar Internação
                   </button>
                </div>

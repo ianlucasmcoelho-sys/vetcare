@@ -15,8 +15,10 @@ export const getConfiguracoes = async (req, res) => {
       `, [clinica_id]);
       config = await db.get('SELECT * FROM configuracoes WHERE clinica_id = ?', [clinica_id]);
     }
+
+    const clinica = await db.get('SELECT plano_id, status_assinatura, data_expiracao FROM clinicas WHERE id = ?', [clinica_id]);
     
-    res.json(config);
+    res.json({ ...config, assinatura: clinica });
   } catch (error) {
     console.error('Erro ao buscar configurações:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });

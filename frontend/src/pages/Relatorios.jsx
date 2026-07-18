@@ -96,20 +96,20 @@ export default function Relatorios() {
   };
 
   return (
-    <div className="relatorios-container fade-in">
+    <div className="relatorios-container reveal-fade">
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Business Intelligence</h1>
           <p className="page-subtitle">Análise estratégica e desempenho da clínica</p>
         </div>
         <div className="header-actions">
-          <button className="btn-primary" onClick={exportarPDF}>
+          <button className="v-btn-primary-glow" onClick={exportarPDF}>
             <FiPrinter /> Exportar PDF
           </button>
         </div>
       </div>
 
-      <div className="bi-controls-card">
+      <div className="bi-controls-card v-glass-panel reveal-up" style={{animationDelay: '0.1s'}}>
         <div className="filter-header">
           <div className="period-inputs">
             <div className="input-group">
@@ -131,28 +131,28 @@ export default function Relatorios() {
       </div>
 
       <div className="bi-metrics-grid">
-        <div className="bi-metric-card revenue">
+        <div className="bi-metric-card v-glass-panel reveal-up revenue" style={{animationDelay: '0.15s'}}>
           <div className="m-icon"><FiTrendingUp /></div>
           <div className="m-data">
             <span className="label">Receita Total</span>
             <span className="value">R$ {resumoFinanceiro.entradas.toFixed(2)}</span>
           </div>
         </div>
-        <div className="bi-metric-card expense">
+        <div className="bi-metric-card v-glass-panel reveal-up expense" style={{animationDelay: '0.2s'}}>
           <div className="m-icon"><FiTrendingDown /></div>
           <div className="m-data">
             <span className="label">Despesas</span>
             <span className="value">R$ {resumoFinanceiro.saidas.toFixed(2)}</span>
           </div>
         </div>
-        <div className="bi-metric-card profit">
+        <div className="bi-metric-card v-glass-panel reveal-up profit" style={{animationDelay: '0.25s'}}>
           <div className="m-icon"><FiDollarSign /></div>
           <div className="m-data">
             <span className="label">Lucro Líquido</span>
             <span className="value">R$ {resumoFinanceiro.saldo.toFixed(2)}</span>
           </div>
         </div>
-        <div className="bi-metric-card production">
+        <div className="bi-metric-card v-glass-panel reveal-up production" style={{animationDelay: '0.3s'}}>
           <div className="m-icon"><FiActivity /></div>
           <div className="m-data">
             <span className="label">Produtividade</span>
@@ -161,7 +161,7 @@ export default function Relatorios() {
         </div>
       </div>
 
-      <div className="bi-main-card">
+      <div className="bi-main-card reveal-up" style={{animationDelay: '0.35s'}}>
         <div className="bi-tabs-nav">
           <button className={`bi-tab ${activeTab === 'financeiro' ? 'active' : ''}`} onClick={() => setActiveTab('financeiro')}>
             <FiBarChart2 /> Fluxo Financeiro

@@ -9,20 +9,20 @@ async function seed() {
     // 1. Criar Clínica se não existir
     await db.run(`
       INSERT OR IGNORE INTO clinicas (id, nome, email, telefone, cnpj, endereco)
-      VALUES (1, 'Ouro Pet Centro Veterinário', 'contato@ouropet.com', '(11) 99999-9999', '12.345.678/0001-90', 'Rua das Flores, 123 - Centro')
+      VALUES (1, 'Vet Care Centro Veterinário', 'contato@vetcare.com', '(11) 99999-9999', '12.345.678/0001-90', 'Rua das Flores, 123 - Centro')
     `);
 
     // 2. Criar Usuário Admin
     const senhaHash = await bcrypt.hash('admin123', 10);
     await db.run(`
       INSERT OR IGNORE INTO usuarios (id, clinica_id, nome, email, senha, perfil)
-      VALUES (1, 1, 'Dr. Mateus Estudos', 'admin@ouropet.com', ?, 'admin')
+      VALUES (1, 1, 'Dr. Mateus Estudos', 'admin@vetcare.com', ?, 'admin')
     `, [senhaHash]);
 
     // 3. Criar Configurações Iniciais
     await db.run(`
       INSERT OR IGNORE INTO configuracoes (clinica_id, nome_clinica, crmv, endereco, telefone, email)
-      VALUES (1, 'Ouro Pet Centro Veterinário', '12345-SP', 'Rua das Flores, 123', '(11) 99999-9999', 'contato@ouropet.com')
+      VALUES (1, 'Vet Care Centro Veterinário', '12345-SP', 'Rua das Flores, 123', '(11) 99999-9999', 'contato@vetcare.com')
     `);
 
     // 4. Responsáveis (Tutores)

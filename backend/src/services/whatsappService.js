@@ -1,83 +1,72 @@
-// backend/src/services/whatsappService.js
-import axios from 'axios';
+import { openDb } from '../db.js';
+import { getClient } from './whatsappManager.js';
 
-// Configuração
-const WHATSAPP_API_URL = process.env.WHATSAPP_API_URL || "https://api.z-api.io/instances/SUA_INSTANCIA/token/SEU_TOKEN";
-
-// Enviar mensagem via WhatsApp
-export const enviarWhatsApp = async (telefone, mensagem) => {
+// Enviar mensagem via WhatsApp nativo
+export const enviarWhatsApp = async (telefone, mensagem, clinica_id) => {
   try {
+    const db = await openDb();
+    const config = await db.get(`SELECT * FROM configuracoes_whatsapp WHERE clinica_id = ?`, [clinica_id || 1]);
+
+    if (!config || !config.ativo) {
+      console.log('⚠️ WhatsApp desativado na configuração da clínica.');
+      return null;
+    }
+
+    const client = getClient(clinica_id || 1);
+    if (!client) {
+      console.log('⚠️ Cliente WhatsApp não está conectado.');
+      return null;
+    }
+
     const numeroLimpo = telefone.replace(/\D/g, '');
-    const numeroCompleto = `55${numeroLimpo}`;
+    const numeroFormatado = `55${numeroLimpo}@c.us`; // Formato exigido pelo whatsapp-web.js
     
-    const response = await axios.post(`${WHATSAPP_API_URL}/send-text`, {
-      phone: numeroCompleto,
-      message: mensagem
-    });
+    await client.sendMessage(numeroFormatado, mensagem);
     
-    console.log(`📱 WhatsApp enviado para ${numeroCompleto}`);
-    return response.data;
+    console.log(`📱 WhatsApp enviado para ${numeroFormatado}`);
+    return true;
   } catch (error) {
-    console.error('❌ Erro ao enviar WhatsApp:', error);
+    console.error('❌ Erro ao enviar WhatsApp:', error.message);
     return null;
   }
 };
 
 // Enviar lembrete de consulta
-export const enviarLembreteConsulta = async (telefone, petNome, data, horario) => {
-  const mensagem = `
-🐾 *VetCare - Lembrete de Consulta* 🐾
-
-Olá! Este é um lembrete da sua consulta agendada:
-
-📅 *Data:* ${data}
-🕐 *Horário:* ${horario}
-🐕 *Pet:* ${petNome}
-
-✅ Por favor, confirme sua presença com antecedência.
-
-❤️ *VetCare - Cuidando do seu melhor amigo* ❤️
-  `;
+export const enviarLembreteConsulta = async (telefone, petNome, data, horario, clinica_id) => {
+  const db = await openDb();
+  const config = await db.get(`SELECT * FROM configuracoes_whatsapp WHERE clinica_id = ?`, [clinica_id || 1]);
   
-  return enviarWhatsApp(telefone, mensagem);
+  if (!config || !config.ativo || !config.lembrete_consulta) return null;
+
+  let mensagem = config.mensagem_consulta || `Olá! Este é um lembrete da sua consulta.`;
+  mensagem = `${mensagem}\n\n📅 Data: ${data}\n🕐 Horário: ${horario}\n🐕 Pet: ${petNome}`;
+  
+  return enviarWhatsApp(telefone, mensagem, clinica_id);
 };
 
 // Enviar lembrete de vacina
-export const enviarLembreteVacina = async (telefone, petNome, vacina, dataVencimento) => {
-  const mensagem = `
-💉 *VetCare - Lembrete de Vacina* 💉
-
-Olá! A vacina do seu pet está perto do vencimento:
-
-🐕 *Pet:* ${petNome}
-💊 *Vacina:* ${vacina}
-📅 *Vence em:* ${dataVencimento}
-
-⚠️ Agende a aplicação o quanto antes!
-
-❤️ *VetCare - Cuidando do seu melhor amigo* ❤️
-  `;
+export const enviarLembreteVacina = async (telefone, petNome, vacina, dataVencimento, clinica_id) => {
+  const db = await openDb();
+  const config = await db.get(`SELECT * FROM configuracoes_whatsapp WHERE clinica_id = ?`, [clinica_id || 1]);
   
-  return enviarWhatsApp(telefone, mensagem);
+  if (!config || !config.ativo || !config.lembrete_vacina) return null;
+
+  let mensagem = config.mensagem_vacina || `Olá! A vacina do seu pet está perto do vencimento.`;
+  mensagem = `${mensagem}\n\n🐕 Pet: ${petNome}\n💊 Vacina: ${vacina}\n📅 Vence em: ${dataVencimento}`;
+  
+  return enviarWhatsApp(telefone, mensagem, clinica_id);
 };
 
 // Enviar lembrete de retorno
-export const enviarLembreteRetorno = async (telefone, petNome, dataRetorno, motivo) => {
-  const mensagem = `
-📅 *VetCare - Lembrete de Retorno* 📅
-
-Olá! Seu pet tem um retorno agendado:
-
-🐕 *Pet:* ${petNome}
-📅 *Data:* ${dataRetorno}
-🏥 *Motivo:* ${motivo}
-
-📍 Sua presença é muito importante!
-
-❤️ *VetCare - Cuidando do seu melhor amigo* ❤️
-  `;
+export const enviarLembreteRetorno = async (telefone, petNome, dataRetorno, motivo, clinica_id) => {
+  const db = await openDb();
+  const config = await db.get(`SELECT * FROM configuracoes_whatsapp WHERE clinica_id = ?`, [clinica_id || 1]);
   
-  return enviarWhatsApp(telefone, mensagem);
+  if (!config || !config.ativo || !config.lembrete_consulta) return null;
+
+  let mensagem = `📅 Olá! Seu pet tem um retorno agendado:\n\n🐕 Pet: ${petNome}\n📅 Data: ${dataRetorno}\n🏥 Motivo: ${motivo}`;
+  
+  return enviarWhatsApp(telefone, mensagem, clinica_id);
 };
 
 // Enviar lembrete de aniversário do pet

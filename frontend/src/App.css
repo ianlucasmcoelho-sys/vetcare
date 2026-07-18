@@ -3,7 +3,7 @@
 .layout {
   display: flex;
   min-height: 100vh;
-  background-color: var(--bg-primary);
+  background-color: transparent;
 }
 
 .content {
@@ -11,7 +11,7 @@
   margin-left: var(--sidebar-width);
   margin-top: var(--topbar-height);
   padding: 32px;
-  background-color: var(--bg-primary);
+  background-color: transparent;
   min-height: calc(100vh - var(--topbar-height));
   transition: all 0.3s ease;
 }

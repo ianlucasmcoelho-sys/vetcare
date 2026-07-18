@@ -1,16 +1,18 @@
 /* Responsaveis.css - Versão Elite Harmonizada */
 
 .responsaveis-container {
-  padding: 0;
-  background: var(--bg-primary);
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+
+  
+  
   min-height: 100vh;
 }
 
 .responsaveis-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  /* Estilos base agora geridos por .v-glass-panel */
   overflow: hidden;
   margin: 0 32px 32px 32px;
 }
@@ -18,7 +20,7 @@
 .search-section {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-hover);
+  background: transparent;
 }
 
 .search-wrapper {
@@ -28,7 +30,7 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 0.6rem 1rem;
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.5);
   transition: all var(--transition-fast);
 }
 
@@ -58,9 +60,8 @@
 }
 
 .tutor-card-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  /* Base agora em .v-glass-panel, apenas override */
+  padding: 0;
   overflow: hidden;
   position: relative;
   transition: all var(--transition-normal);
@@ -143,7 +144,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  background: var(--bg-hover);
+  background: rgba(0, 0, 0, 0.03);
   padding: 12px;
   border-radius: var(--radius-md);
 }
@@ -183,7 +184,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  background: var(--bg-hover);
+  background: rgba(0, 0, 0, 0.03);
   border-top: 1px solid var(--border-light);
 }
 
@@ -203,7 +204,7 @@
   height: 32px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   display: flex;
   align-items: center;

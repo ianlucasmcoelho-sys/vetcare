@@ -30,7 +30,8 @@ export const enviarLembretesConsultas = async () => {
         consulta.tutor_celular,
         consulta.pet_nome,
         consulta.data,
-        consulta.horario
+        consulta.horario,
+        consulta.clinica_id
       );
       enviados++;
     }
@@ -65,7 +66,8 @@ export const enviarLembretesVacinas = async () => {
         vacina.tutor_celular,
         vacina.pet_nome,
         vacina.nome_vacina,
-        vacina.proxima_dose
+        vacina.proxima_dose,
+        vacina.clinica_id
       );
       enviados++;
     }
@@ -84,20 +86,22 @@ export const enviarLembretesRetornos = async () => {
   const dataAmanha = amanha.toISOString().split('T')[0];
   
   const retornos = await db.all(`
-    SELECT r.*
+    SELECT r.*, a.nome as pet_nome, res.celular as tutor_celular, res.nome as tutor_nome, a.clinica_id
     FROM retornos r
+    LEFT JOIN animais a ON r.pet_nome = a.nome -- Ideal seria animal_id
+    LEFT JOIN responsaveis res ON r.tutor_nome = res.nome
     WHERE r.data_retorno = ? AND r.status = 'Pendentes'
   `, [dataAmanha]);
   
   let enviados = 0;
   for (const retorno of retornos) {
-    const tutor = await db.get('SELECT celular FROM responsaveis WHERE nome = ?', [retorno.tutor_nome]);
-    if (tutor && tutor.celular) {
+    if (retorno.tutor_celular) {
       await enviarLembreteRetorno(
-        tutor.celular,
+        retorno.tutor_celular,
         retorno.pet_nome,
         retorno.data_retorno,
-        retorno.motivo || "Retorno agendado"
+        retorno.motivo || "Retorno agendado",
+        retorno.clinica_id
       );
       enviados++;
     }

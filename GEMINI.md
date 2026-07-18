@@ -1,4 +1,4 @@
-# Projeto Sistema Ouro Pet - Diretrizes de Desenvolvimento
+# Projeto Vet Care - Diretrizes de Desenvolvimento
 
 ## Padrões de UI/UX e Estilização
 - **Consistência Global:** Todas as novas telas e componentes devem seguir rigorosamente o padrão visual e de usabilidade já estabelecido no projeto (veja `Global.css` e páginas existentes como `Responsaveis.jsx`).

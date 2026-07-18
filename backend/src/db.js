@@ -379,7 +379,81 @@ export async function initDb() {
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (clinica_id) REFERENCES clinicas(id)
     );
+    CREATE TABLE IF NOT EXISTS orcamentos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clinica_id INTEGER NOT NULL,
+      animal_id INTEGER,
+      tutor_nome TEXT NOT NULL,
+      pet_nome TEXT NOT NULL,
+      data_emissao TEXT NOT NULL,
+      validade TEXT,
+      status TEXT DEFAULT 'Pendente',
+      observacoes TEXT,
+      itens TEXT NOT NULL,
+      total REAL NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (clinica_id) REFERENCES clinicas(id),
+      FOREIGN KEY (animal_id) REFERENCES animais(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS comissoes_regras (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clinica_id INTEGER NOT NULL,
+      usuario_id INTEGER NOT NULL,
+      tipo_comissao TEXT NOT NULL CHECK(tipo_comissao IN ('percentual', 'fixo')),
+      valor REAL NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (clinica_id) REFERENCES clinicas(id),
+      FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS comissoes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clinica_id INTEGER NOT NULL,
+      financeiro_id INTEGER NOT NULL,
+      usuario_id INTEGER NOT NULL,
+      valor_comissao REAL NOT NULL,
+      status TEXT DEFAULT 'pendente' CHECK(status IN ('pendente', 'pago')),
+      data_pagamento TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (clinica_id) REFERENCES clinicas(id),
+      FOREIGN KEY (financeiro_id) REFERENCES financeiro(id) ON DELETE CASCADE,
+      FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    );
   `);
+
+  // Migrações de segurança
+  try {
+    await db.exec(`ALTER TABLE clinicas ADD COLUMN status_assinatura TEXT DEFAULT 'trial'`);
+  } catch (e) {}
+
+  try {
+    await db.exec(`ALTER TABLE clinicas ADD COLUMN onboarding_concluido INTEGER DEFAULT 0`);
+  } catch (e) {}
+
+  try {
+    await db.exec(`ALTER TABLE clinicas ADD COLUMN data_expiracao TEXT`);
+  } catch (e) {}
+
+  try {
+    await db.exec(`ALTER TABLE clinicas ADD COLUMN plano_id TEXT DEFAULT 'free'`);
+  } catch (e) {}
+
+  try {
+    await db.exec('ALTER TABLE animais ADD COLUMN obito INTEGER DEFAULT 0');
+    await db.exec('ALTER TABLE animais ADD COLUMN data_obito TEXT');
+  } catch (e) {}
+
+  try {
+    await db.exec('ALTER TABLE servicos ADD COLUMN codigoBarras TEXT');
+  } catch (e) {}
+
+  try {
+    await db.exec('ALTER TABLE financeiro ADD COLUMN veterinario_id INTEGER REFERENCES usuarios(id)');
+  } catch (e) {}
 
   console.log("✅ Banco de dados SQLite sincronizado!");
 }

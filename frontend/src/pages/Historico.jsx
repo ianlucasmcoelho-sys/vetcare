@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { 
   FiPlus, FiSearch, FiPrinter, FiEdit2, FiTrash2, 
   FiX, FiCalendar, FiUser, FiActivity, FiFileText, 
-  FiInfo, FiThermometer, FiBarChart 
+  FiInfo, FiThermometer, FiBarChart, FiMic, FiMicOff 
 } from "react-icons/fi";
 import { MdOutlinePets } from "react-icons/md";
 import { apiGet, apiPost, apiPut, apiDelete } from "../services/api";
@@ -22,6 +22,11 @@ export default function Prontuarios() {
   const [busca, setBusca] = useState("");
   const [editId, setEditId] = useState(null);
   const [animalSelecionado, setAnimalSelecionado] = useState(null);
+  
+  // Estados de IA e Áudio
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessingAI, setIsProcessingAI] = useState(false);
+  const recognitionRef = React.useRef(null);
   
   // Estados de Paginação
   const [currentPage, setCurrentPage] = useState(1);
@@ -162,6 +167,86 @@ export default function Prontuarios() {
     setShowModal(false);
   };
 
+  // Funções de Inteligência Artificial e Reconhecimento de Voz
+  const iniciarDitado = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert("Seu navegador não suporta reconhecimento de voz. Tente usar o Google Chrome.");
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.lang = 'pt-BR';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.continuous = true; // Continua escutando mesmo se houver pausas
+
+    let textoFinal = "";
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+    };
+
+    recognition.onresult = (event) => {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          textoFinal += event.results[i][0].transcript + " ";
+        }
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Erro no reconhecimento de voz: ", event.error);
+      setIsRecording(false);
+      alert("Erro ao capturar voz: " + event.error);
+    };
+
+    recognition.onend = async () => {
+      setIsRecording(false);
+      if (textoFinal.trim() !== "") {
+        setIsProcessingAI(true);
+        try {
+          // Enviar o texto para o backend estruturar via Gemini
+          const response = await apiPost('/ai/prontuario', { textoBruto: textoFinal });
+          if (response.ok) {
+            const data = await response.json();
+            
+            // Atualizar o formulário com os dados retornados pela IA, 
+            // sem apagar o que já foi preenchido manualmente
+            setForm(prev => ({
+              ...prev,
+              sintomas: prev.sintomas ? prev.sintomas + "\n" + (data.sintomas || "") : (data.sintomas || ""),
+              diagnostico: prev.diagnostico ? prev.diagnostico + "\n" + (data.diagnostico || "") : (data.diagnostico || ""),
+              tratamento: prev.tratamento ? prev.tratamento + "\n" + (data.tratamento || "") : (data.tratamento || ""),
+              prescricoes: prev.prescricoes ? prev.prescricoes + "\n" + (data.prescricoes || "") : (data.prescricoes || ""),
+              observacoes: prev.observacoes ? prev.observacoes + "\n" + (data.observacoes || "") : (data.observacoes || ""),
+            }));
+            
+            alert("✅ O Prontuário foi preenchido pela Inteligência Artificial!");
+          } else {
+            console.error("Erro na API de IA");
+            alert("Houve um problema ao processar a Inteligência Artificial. O texto capturado foi:\n\n" + textoFinal);
+          }
+        } catch (error) {
+          console.error("Falha na comunicação com a IA", error);
+          alert("Falha na conexão com o servidor de Inteligência Artificial.");
+        } finally {
+          setIsProcessingAI(false);
+        }
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const pararDitado = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+  };
+
   const abrirEdicao = (pront) => {
     setForm({ ...pront });
     setEditId(pront.id);
@@ -234,16 +319,16 @@ export default function Prontuarios() {
   // Agrupar animais que possuem prontuário
   const animaisComProntuario = animais.filter(a => 
     prontuarios.some(p => p.animal_id === a.id) || 
-    prontuarios.some(p => p.pet_nome.toLowerCase() === a.nome.toLowerCase())
+    prontuarios.some(p => p.pet_nome?.toLowerCase() === a.nome?.toLowerCase())
   );
 
   const listaAnimaisFiltrada = animaisComProntuario.filter(a =>
-    a.nome.toLowerCase().includes(busca.toLowerCase())
+    a.nome?.toLowerCase().includes(busca.toLowerCase())
   );
 
   // Lógica de Paginação (Geral ou por Animal)
   const dadosParaExibir = animalSelecionado 
-    ? prontuariosFiltrados.filter(p => p.animal_id === animalSelecionado.id || p.pet_nome.toLowerCase() === animalSelecionado.nome.toLowerCase())
+    ? prontuariosFiltrados.filter(p => p.animal_id === animalSelecionado.id || p.pet_nome?.toLowerCase() === animalSelecionado.nome?.toLowerCase())
     : listaAnimaisFiltrada;
 
   const totalPages = Math.ceil(dadosParaExibir.length / itemsPerPage);
@@ -276,7 +361,7 @@ export default function Prontuarios() {
 
       <div className="prontuario-card">
         {!animalSelecionado && (
-          <div className="search-section">
+          <div className="search-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
             <div className="search-wrapper">
               <FiSearch className="search-icon" />
               <input 
@@ -319,13 +404,13 @@ export default function Prontuarios() {
                   <div className="info-row">
                     <FiActivity size={14} />
                     <span className="info-label">Atendimentos:</span>
-                    <span className="info-value">{prontuarios.filter(p => p.animal_id === animal.id || p.pet_nome.toLowerCase() === animal.nome.toLowerCase()).length} registros</span>
+                    <span className="info-value">{prontuarios.filter(p => p.animal_id === animal.id || p.pet_nome?.toLowerCase() === animal.nome?.toLowerCase()).length} registros</span>
                   </div>
                   <div className="info-row">
                     <FiCalendar size={14} />
                     <span className="info-label">Última Visita:</span>
                     <span className="info-value">
-                      {prontuarios.filter(p => p.animal_id === animal.id || p.pet_nome.toLowerCase() === animal.nome.toLowerCase()).sort((a,b) => new Date(b.data_visita) - new Date(a.data_visita))[0]?.data_visita || "N/A"}
+                      {prontuarios.filter(p => p.animal_id === animal.id || p.pet_nome?.toLowerCase() === animal.nome?.toLowerCase()).sort((a,b) => new Date(b.data_visita) - new Date(a.data_visita))[0]?.data_visita || "N/A"}
                     </span>
                   </div>
                 </div>
@@ -494,7 +579,32 @@ export default function Prontuarios() {
                 </div>
 
                 <div className="form-section">
-                  <h3 className="section-title">Evolução Clínica</h3>
+                  <div className="section-header-ai">
+                    <h3 className="section-title" style={{ margin: 0 }}>Evolução Clínica</h3>
+                    
+                    <button 
+                      type="button" 
+                      className={`btn-ai-dictation ${isRecording ? 'recording' : ''}`}
+                      onClick={isRecording ? pararDitado : iniciarDitado}
+                      disabled={isProcessingAI}
+                    >
+                      {isProcessingAI ? (
+                        <><div className="ai-spinner"></div> Processando IA...</>
+                      ) : isRecording ? (
+                        <><FiMicOff /> Parar Ditado</>
+                      ) : (
+                        <><FiMic /> Ditar com IA</>
+                      )}
+                    </button>
+                  </div>
+                  
+                  {isRecording && (
+                    <div className="recording-indicator">
+                      <div className="pulse-dot"></div> 
+                      Escutando o microfone... Pressione "Parar Ditado" quando concluir.
+                    </div>
+                  )}
+
                   <div className="form-grid full">
                     <div className="input-group">
                       <label>SINTOMAS / QUEIXA PRINCIPAL</label>

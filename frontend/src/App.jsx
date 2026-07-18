@@ -30,6 +30,14 @@ import Exames from "./pages/Exames.jsx";
 import TemplateManager from "./pages/TemplateManager.jsx";
 import TabelaPrecos from "./pages/TabelaPrecos.jsx";
 import Landing from "./pages/Landing.jsx";
+import Orcamentos from "./pages/Orcamentos.jsx";
+import Planos from "./pages/Planos.jsx";
+import Checkout from "./pages/Checkout.jsx";
+import PagamentoSucesso from "./pages/PagamentoSucesso.jsx";
+import Onboarding from "./pages/Onboarding.jsx";
+import Automacoes from "./pages/Automacoes.jsx";
+import Comissoes from "./pages/Comissoes.jsx";
+import BanhoTosa from "./pages/BanhoTosa.jsx";
 import "./App.css";
 import "./Global.css";
 
@@ -37,6 +45,13 @@ function AppLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const token = localStorage.getItem("token");
+  const [mousePos, setMouseX] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    setMouseX({ x, y });
+  };
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -45,6 +60,12 @@ function AppLayout() {
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
   };
+
+  const usuarioStr = localStorage.getItem("usuario");
+  const usuario = usuarioStr ? JSON.parse(usuarioStr) : null;
+  const plano = usuario?.clinica?.plano_id || 'free';
+  const status = usuario?.clinica?.status_assinatura || 'trial';
+  const isApenasClinica = plano === 'clinica' && status !== 'trial';
 
   // Rotas Públicas (Quando NÃO está logado)
   if (!token) {
@@ -68,8 +89,36 @@ function AppLayout() {
     return <Navigate to="/" replace />;
   }
 
+  // Verifica onboarding apenas se não for plano/checkout/pagamento e não estiver já na rota /onboarding
+  const needsOnboarding = usuario?.clinica?.onboarding_concluido === 0;
+  const isOnboardingPage = location.pathname === "/onboarding";
+
+  const isPlanosPage = location.pathname === "/planos" || location.pathname === "/checkout" || location.pathname === "/pagamento-sucesso";
+  const isFullScreenPage = isPlanosPage || isOnboardingPage;
+
+  if (needsOnboarding && !isOnboardingPage && !isPlanosPage) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  if (isFullScreenPage) {
+    return (
+      <Routes>
+        <Route path="/planos" element={<Planos />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/pagamento-sucesso" element={<PagamentoSucesso />} />
+        <Route path="/onboarding" element={<Onboarding usuario={usuario} />} />
+      </Routes>
+    );
+  }
+
   return (
-    <div className="layout">
+    <div className="layout v-global-mesh-layout" onMouseMove={handleMouseMove}>
+      {/* Global Background Ambience */}
+      <div className="v-dash-mesh">
+        <div className="v-orb-dash v-orb-primary" style={{ transform: `translate(${mousePos.x * 2}px, ${mousePos.y * 2}px)` }}></div>
+        <div className="v-orb-dash v-orb-secondary" style={{ transform: `translate(${-mousePos.x * 2}px, ${-mousePos.y * 2}px)` }}></div>
+      </div>
+
       <MenuToggle isOpen={mobileMenuOpen} onClick={toggleMobileMenu} />
       <div 
         className={`sidebar-overlay ${mobileMenuOpen ? "active" : ""}`} 
@@ -90,20 +139,27 @@ function AppLayout() {
           <Route path="/retornos" element={<Retornos />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/vacinas" element={<Vacinas />} />
-          <Route path="/servicos" element={<Estoque />} />
           <Route path="/tabela-precos" element={<TabelaPrecos />} />
           <Route path="/receituario" element={<Receituario />} />
           <Route path="/financeiro" element={<Financeiro />} />
           <Route path="/documentos" element={<Documentos />} />
-          <Route path="/crm" element={<Retencao />} />
           <Route path="/arquivos" element={<CentralArquivos />} />
-          <Route path="/relatorios" element={<Relatorios />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/perfil" element={<MeuPerfil />} />
           <Route path="/usuarios" element={<Usuarios />} />
+          <Route path="/templates" element={<TemplateManager />} />
+          <Route path="/orcamentos" element={<Orcamentos />} />
+
+          {/* Premium / Blocked Features for Vet Clínica */}
           <Route path="/internacao" element={<Internacao />} />
           <Route path="/exames" element={<Exames />} />
-          <Route path="/templates" element={<TemplateManager />} />
+          <Route path="/servicos" element={<Estoque />} />
+          <Route path="/comissoes" element={isApenasClinica ? <Navigate to="/planos" /> : <Comissoes />} />
+          <Route path="/crm" element={isApenasClinica ? <Navigate to="/planos" /> : <Retencao />} />
+          <Route path="/automacoes" element={isApenasClinica ? <Navigate to="/planos" /> : <Automacoes />} />
+          <Route path="/relatorios" element={isApenasClinica ? <Navigate to="/planos" /> : <Relatorios />} />
+          <Route path="/banhotosa" element={isApenasClinica ? <Navigate to="/planos" /> : <BanhoTosa />} />
+          
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

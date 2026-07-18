@@ -11,8 +11,22 @@ import {
   enviarLembretesVacinas, 
   enviarLembretesRetornos 
 } from '../jobs/lembreteJobs.js';
+import { getConfiguracao, updateConfiguracao, getStatusQr, desconectarWhatsApp } from '../controllers/whatsappController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { requirePremiumFeature } from '../middlewares/subscriptionMiddleware.js';
 
 const router = express.Router();
+
+router.use(authMiddleware);
+router.use(requirePremiumFeature);
+
+// Configuração do WhatsApp
+router.get('/configuracao', getConfiguracao);
+router.put('/configuracao', updateConfiguracao);
+
+// Conexão Nativa (QR Code)
+router.get('/status', getStatusQr);
+router.post('/desconectar', desconectarWhatsApp);
 
 // Testar envio de WhatsApp
 router.post('/teste', async (req, res) => {

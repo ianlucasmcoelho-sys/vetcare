@@ -110,6 +110,7 @@ export const createServico = async (req, res) => {
       estoqueMinimo,
       fornecedor,
       dataExpiracao,
+      codigoBarras,
       observacoes
     } = req.body;
     const clinica_id = req.usuario.clinica_id;
@@ -126,8 +127,8 @@ export const createServico = async (req, res) => {
       `INSERT INTO servicos (
         clinica_id, nome, categoria, quantidade, unidade, 
         precoVenda, precoCusto, margemLucro, lote, fabricante, 
-        estoqueMinimo, fornecedor, dataExpiracao, observacoes
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        estoqueMinimo, fornecedor, dataExpiracao, codigoBarras, observacoes
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         clinica_id,
         nome,
@@ -142,6 +143,7 @@ export const createServico = async (req, res) => {
         parseInt(estoqueMinimo) || 5,
         fornecedor || null,
         dataExpiracao || null,
+        codigoBarras || null,
         observacoes || null
       ]
     );
@@ -173,6 +175,7 @@ export const updateServico = async (req, res) => {
       estoqueMinimo,
       fornecedor,
       dataExpiracao,
+      codigoBarras,
       observacoes
     } = req.body;
 
@@ -198,6 +201,7 @@ export const updateServico = async (req, res) => {
         estoqueMinimo = COALESCE(?, estoqueMinimo),
         fornecedor = ?,
         dataExpiracao = ?,
+        codigoBarras = ?,
         observacoes = ?,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ? AND clinica_id = ?`,
@@ -214,6 +218,7 @@ export const updateServico = async (req, res) => {
         estoqueMinimo !== undefined ? parseInt(estoqueMinimo) : null,
         fornecedor || null,
         dataExpiracao || null,
+        codigoBarras || null,
         observacoes || null,
         id,
         clinica_id

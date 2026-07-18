@@ -1,5 +1,10 @@
 .template-container {
-  padding: 0;
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+
+  
 }
 
 .template-header {
@@ -260,12 +265,12 @@
   border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 14px;
-  font-family: inherit;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .form-group textarea {
   resize: vertical;
-  font-family: monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .modal-footer {

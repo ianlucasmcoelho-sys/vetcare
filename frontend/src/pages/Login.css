@@ -20,7 +20,7 @@
   --mesh-blue: rgba(59, 130, 246, 0.1);
 }
 
-.v-harmonized-login {
+.v-auth-page {
   min-height: 100vh;
   background-color: var(--bg-primary);
   color: var(--text-main);
@@ -31,29 +31,24 @@
   flex-direction: column;
 }
 
-/* 3D Mesh Background (Harmonized) */
-.v-login-mesh {
+.v-auth-page::before {
+  content: "";
   position: fixed;
   inset: 0;
-  z-index: 0;
-  background: var(--bg-primary);
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
   pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
 }
 
-.v-login-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  animation: orbit 20s infinite ease-in-out alternate;
-  opacity: 0.6;
-}
-
-.v-orb-teal { width: 800px; height: 800px; background: var(--mesh-teal); top: -20%; right: -10%; }
-.v-orb-blue { width: 600px; height: 600px; background: var(--mesh-blue); bottom: -10%; left: -10%; animation-delay: -5s; }
-
-@keyframes orbit {
-  from { transform: translate(0, 0) scale(1); }
-  to { transform: translate(100px, 50px) scale(1.1); }
+[data-theme='dark'] .v-auth-page::before {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
 /* Floating Navigation */
@@ -190,11 +185,23 @@
   border-radius: 100px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(20, 184, 166, 0.3);
-  transition: all 0.3s;
+  box-shadow: 0 4px 0 var(--primary-dark), 0 10px 20px rgba(20, 184, 166, 0.3);
+  transition: all 0.2s ease;
+  position: relative;
+  top: 0;
 }
 
-.v-btn-pill-primary-3d:hover { transform: translateY(-3px); filter: brightness(1.1); }
+.v-btn-pill-primary-3d:hover { 
+  transform: translateY(-2px); 
+  filter: brightness(1.1); 
+  box-shadow: 0 6px 0 var(--primary-dark), 0 15px 25px rgba(20, 184, 166, 0.4);
+}
+
+.v-btn-pill-primary-3d:active {
+  top: 4px;
+  transform: translateY(0);
+  box-shadow: 0 0 0 var(--primary-dark), 0 4px 5px rgba(20, 184, 166, 0.4);
+}
 
 .v-btn-pill-secondary {
   flex: 1;
@@ -205,6 +212,12 @@
   border-radius: 100px;
   font-weight: 800;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.v-btn-pill-secondary:hover {
+  background: var(--text-main);
+  color: var(--bg-primary);
 }
 
 .v-divider-text { color: var(--text-muted); font-weight: 700; font-size: 0.85rem; opacity: 0.5; }

@@ -141,6 +141,7 @@ export default function PerfilAnimal() {
             </div>
             <p className="species-race">{animal.especie} • {animal.raca || "SRD"}</p>
             <div className="tags-row">
+              {animal.obito === 1 && <span className="tag" style={{ background: '#fee2e2', color: '#ef4444', borderColor: '#fca5a5' }}>Óbito</span>}
               {animal.castrado === 1 && <span className="tag">Castrado</span>}
               {animal.porte && <span className="tag">{animal.porte}</span>}
               {animal.microchip && <span className="tag-microchip"><FiPackage /> {animal.microchip}</span>}
@@ -182,6 +183,17 @@ export default function PerfilAnimal() {
             <strong className="text-danger">{animal.alergias || "Nenhuma registrada"}</strong>
           </div>
         </div>
+        {animal.obito === 1 && (
+          <div className="stat-card" style={{ borderColor: '#fca5a5', background: '#fef2f2' }}>
+            <div className="stat-icon" style={{ background: '#fee2e2', color: '#ef4444' }}><FiAlertCircle /></div>
+            <div className="stat-data">
+              <label style={{ color: '#ef4444' }}>Data do Óbito</label>
+              <strong style={{ color: '#ef4444' }}>
+                {animal.data_obito ? new Date(animal.data_obito + "T00:00:00").toLocaleDateString() : "Não informada"}
+              </strong>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="perfil-tabs">

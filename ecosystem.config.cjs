@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'ouropet-backend',
+      name: 'vetcare-backend',
       script: 'src/index.js',
       cwd: './backend',
       instances: 'max',
@@ -14,17 +14,17 @@ module.exports = {
       }
     },
     {
-      name: 'ouropet-frontend',
+      name: 'vetcare-frontend',
       script: 'serve',
       env: {
         PM2_SERVE_PATH: './frontend/dist',
-        PM2_SERVE_PORT: 80,
+        PM2_SERVE_PORT: 3000,
         PM2_SERVE_SPA: 'true',
         PM2_SERVE_HOMEPAGE: '/index.html'
       }
     },
     {
-      name: 'ouropet-backup',
+      name: 'vetcare-backup',
       script: 'backup_db.js',
       cron_restart: '0 0 * * *', // Todo dia à meia-noite
       autorestart: false

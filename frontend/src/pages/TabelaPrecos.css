@@ -1,5 +1,10 @@
 .precos-container {
-  padding: 2rem;
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+
+  
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -20,7 +25,7 @@
   border-bottom: 1px solid var(--border-color);
   gap: 1.5rem;
   flex-wrap: wrap;
-  background: var(--bg-hover);
+  background: transparent;
 }
 
 .search-wrapper {
@@ -141,7 +146,7 @@
 }
 
 .price-cell {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
   color: var(--primary-dark);
   font-size: 1.1rem;
@@ -149,6 +154,39 @@
 
 .text-right {
   text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.actions-cell {
+  white-space: nowrap;
+  width: 100px;
+}
+
+.action-icon {
+  background: none;
+  border: none;
+  padding: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-icon:hover {
+  background: var(--bg-primary);
+  color: var(--primary);
+}
+
+.action-icon.delete-btn:hover {
+  background: #fef2f2;
+  color: #dc2626;
 }
 
 .table-responsive {

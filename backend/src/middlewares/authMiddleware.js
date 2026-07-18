@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken';
 const JWT_SECRET = 'vetcare_secret_key_2024';
 
-export const authMiddleware = (req, res, next) => {
+import { openDb } from '../db.js';
+
+export const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return res.status(401).json({ error: 'Token não fornecido' });
@@ -17,9 +19,53 @@ export const authMiddleware = (req, res, next) => {
     }
 
     req.usuario = decoded;
+
+    // --- SaaS Subscription Check ---
+    // Bypass for payment/billing routes so they can actually pay
+    if (req.originalUrl.includes('/pagamento') || req.originalUrl.includes('/planos')) {
+      return next();
+    }
+
+    const db = await openDb();
+    const clinica = await db.get('SELECT status_assinatura, data_expiracao FROM clinicas WHERE id = ?', [decoded.clinica_id]);
+
+    if (!clinica) {
+      return res.status(404).json({ error: 'Clínica não encontrada.' });
+    }
+
+    const { status_assinatura, data_expiracao } = clinica;
+
+    if (status_assinatura === 'vitalicio') {
+      return next();
+    }
+
+    if (data_expiracao) {
+      const expirationDate = new Date(data_expiracao);
+      const now = new Date();
+
+      if (now > expirationDate) {
+        if (status_assinatura !== 'vencido') {
+          await db.run('UPDATE clinicas SET status_assinatura = "vencido" WHERE id = ?', [decoded.clinica_id]);
+        }
+        return res.status(402).json({ 
+          error: 'Assinatura vencida', 
+          code: 'SUBSCRIPTION_EXPIRED',
+          message: 'Seu período de acesso terminou. Por favor, assine um plano para continuar.' 
+        });
+      }
+    }
+
+    if (status_assinatura === 'vencido') {
+      return res.status(402).json({ 
+        error: 'Assinatura vencida', 
+        code: 'SUBSCRIPTION_EXPIRED',
+        message: 'Seu período de acesso terminou. Por favor, assine um plano para continuar.' 
+      });
+    }
+
     next();
   } catch (err) {
-    console.error('❌ Erro na validação do token:', err.message);
+    console.error('❌ Erro na validação do token/assinatura:', err.message);
     return res.status(401).json({ error: 'Token inválido ou expirado' });
   }
 };

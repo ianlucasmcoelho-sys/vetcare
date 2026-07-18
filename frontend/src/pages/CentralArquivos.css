@@ -1,7 +1,12 @@
 /* CentralArquivos.css - Design System Elite */
 
 .central-arquivos-container {
-  padding: 0;
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+
+  
   animation: fadeIn 0.4s ease;
 }
 

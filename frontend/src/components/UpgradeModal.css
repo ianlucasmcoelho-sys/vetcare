@@ -1,0 +1,130 @@
+/* UpgradeModal.css */
+.v-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.v-upgrade-modal {
+  background: var(--bg-card);
+  border-radius: 24px;
+  padding: 3rem;
+  width: 90%;
+  max-width: 450px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-color);
+  animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.v-modal-close {
+  position: absolute;
+  top: 1.5rem; right: 1.5rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.v-modal-close:hover {
+  color: var(--text-main);
+}
+
+.v-upgrade-icon {
+  width: 70px; height: 70px;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(59, 130, 246, 0.1));
+  color: var(--primary);
+  font-size: 2rem;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 20px;
+  margin: 0 auto 1.5rem auto;
+}
+
+.v-upgrade-modal h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
+}
+
+.v-upgrade-modal p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.v-upgrade-features {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.v-upgrade-badge {
+  display: flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--primary), #3b82f6);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.v-upgrade-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.v-btn-cancelar {
+  flex: 1;
+  background: transparent;
+  border: 2px solid var(--border-color);
+  color: var(--text-main);
+  padding: 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.v-btn-cancelar:hover {
+  border-color: var(--text-muted);
+}
+
+.v-btn-upgrade {
+  flex: 1;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+  transition: all 0.2s;
+}
+
+.v-btn-upgrade:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.4);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

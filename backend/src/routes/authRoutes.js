@@ -6,12 +6,15 @@ import {
   criarUsuario,
   listarUsuarios,
   atualizarUsuario,
+  atualizarMeuPerfil,
   deletarUsuario,
   alterarSenha,
   cadastroClinica,
   recuperarSenha,
   resetarSenha,
-  logout
+  logout,
+  googleLogin,
+  concluirOnboarding
 } from '../controllers/authController.js';
 import { authMiddleware, adminMiddleware } from '../middlewares/authMiddleware.js';
 import { validate, loginSchema } from '../middlewares/validationMiddleware.js';
@@ -20,6 +23,7 @@ const router = express.Router();
 
 // Rotas públicas
 router.post('/login', validate(loginSchema), login);
+router.post('/google', googleLogin);
 router.post('/verificar', verificarToken);
 router.post('/cadastro-clinica', cadastroClinica);
 router.post('/recuperar-senha', recuperarSenha);
@@ -27,7 +31,9 @@ router.post('/resetar-senha', resetarSenha);
 
 // Rotas protegidas (requerem autenticação)
 router.post('/logout', authMiddleware, logout);
+router.post('/onboarding', authMiddleware, concluirOnboarding);
 router.put('/usuarios/:id/senha', authMiddleware, alterarSenha);
+router.put('/meu-perfil', authMiddleware, atualizarMeuPerfil);
 
 // Rotas de admin
 router.get('/usuarios', authMiddleware, adminMiddleware, listarUsuarios);

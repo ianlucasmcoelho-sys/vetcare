@@ -80,20 +80,20 @@ export default function Exames() {
   );
 
   return (
-    <div className="exames-container fade-in">
+    <div className="exames-container reveal-fade">
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Exames Laboratoriais</h1>
           <p className="page-subtitle">Gerencie solicitações e resultados de exames</p>
         </div>
         <div className="header-actions">
-          <button className="btn-primary" onClick={() => setShowModal(true)}>
+          <button className="v-btn-primary-glow" onClick={() => setShowModal(true)}>
             <FiPlus /> Novo Exame
           </button>
         </div>
       </div>
 
-      <div className="search-bar">
+      <div className="search-bar v-glass-panel">
         <FiSearch />
         <input 
           type="text" 
@@ -108,7 +108,7 @@ export default function Exames() {
       ) : (
         <div className="exames-grid">
           {examesFiltrados.map(exame => (
-            <div key={exame.id} className={`exame-card ${exame.status}`}>
+            <div key={exame.id} className={`exame-card v-glass-panel reveal-up ${exame.status}`} style={{animationDelay: `${0.1 + (0.05 * (exame.id % 10))}s`}}>
               <div className="exame-status-icon">
                 {exame.status === 'concluido' ? <FiCheckCircle color="#10b981" /> : <FiClock color="#f59e0b" />}
               </div>
@@ -197,7 +197,7 @@ export default function Exames() {
 
               <div className="modal-footer">
                 <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
-                <button type="submit" className="btn-primary">Salvar</button>
+                <button type="submit" className="v-btn-primary-glow">Salvar</button>
               </div>
             </form>
           </div>

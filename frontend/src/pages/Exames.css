@@ -1,10 +1,15 @@
 /* Exames.css - Standardized Clean & Tech */
 
 .exames-container {
-  padding: 28px 32px;
-  background: var(--bg-primary);
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
-  font-family: 'Inter', system-ui, sans-serif;
+
+  
+  
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .page-header {
@@ -56,7 +61,7 @@
 .search-bar {
   display: flex;
   align-items: center;
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.5);
   padding: 12px 20px;
   border-radius: 12px;
   border: 1px solid var(--border-color);
@@ -92,10 +97,8 @@
 }
 
 .exame-card {
-  background: var(--bg-card);
+  /* Herda de .v-glass-panel */
   padding: 20px;
-  border-radius: 16px;
-  border: 1px solid var(--border-color);
   display: flex;
   gap: 16px;
   transition: all 0.2s ease;
@@ -125,7 +128,7 @@
 .exame-status-icon {
   width: 40px;
   height: 40px;
-  background: var(--bg-primary);
+  background: rgba(0, 0, 0, 0.02);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -165,7 +168,7 @@
 }
 
 .exame-actions button {
-  background: var(--bg-primary);
+  background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
   cursor: pointer;
@@ -178,7 +181,7 @@
 }
 
 .exame-actions button:hover {
-  background: var(--bg-hover);
+  background: rgba(0, 0, 0, 0.02);
   color: #14b8a6;
   border-color: #14b8a6;
 }

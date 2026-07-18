@@ -1,24 +1,24 @@
 /* Receituario.css - Versão Padronizada "Clean & Tech" */
 
 .receituario-container {
-  padding: 28px 32px;
-  background: var(--bg-primary);
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+
+  
+  
   min-height: 100vh;
   animation: fadeIn 0.4s ease;
 }
 
-.receituario-card {
-  background: var(--bg-card);
-  border-radius: 16px;
-  border: 1px solid var(--border-color);
+  /* Herda de .v-glass-panel */
   overflow: hidden;
-  animation: fadeInUp 0.5s ease;
-}
 
 .filters-section {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-hover);
+  background: transparent;
 }
 
 .receitas-grid {
@@ -28,15 +28,11 @@
   padding: 24px;
 }
 
-.receita-card-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
+  /* Herda de .v-glass-panel */
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-}
 
 .receita-card-item:hover {
   transform: translateY(-4px);
@@ -87,7 +83,7 @@
   font-size: 11px;
   font-weight: 700;
   color: var(--text-muted);
-  background: var(--bg-hover);
+  background: rgba(0, 0, 0, 0.02);
   padding: 4px 10px;
   border-radius: 8px;
 }
@@ -98,7 +94,7 @@
 }
 
 .prescricao-preview {
-  background: var(--bg-hover);
+  background: rgba(0, 0, 0, 0.02);
   padding: 14px;
   border-radius: 12px;
   border: 1px solid var(--border-color);
@@ -141,7 +137,7 @@
   justify-content: space-between;
   padding: 14px 20px;
   border-top: 1px solid var(--border-color);
-  background: var(--bg-hover);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .action-btn-print {
@@ -177,7 +173,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-card);
+  background: transparent;
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
   cursor: pointer;

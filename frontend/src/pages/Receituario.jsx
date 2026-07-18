@@ -207,21 +207,21 @@ export default function Receituario() {
   const receitasExibidas = receitasFiltradas.slice(startIndex, endIndex);
 
   return (
-    <div className="receituario-container fade-in">
+    <div className="receituario-container reveal-fade">
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Receituário</h1>
           <p className="page-subtitle">Gestão de prescrições e orientações médicas</p>
         </div>
         <div className="header-actions">
-          <button className="btn-primary" onClick={abrirNovo}>
+          <button className="v-btn-primary-glow" onClick={abrirNovo}>
             <FiPlus size={18} /> Nova Receita
           </button>
         </div>
       </div>
 
-      <div className="receituario-card">
-        <div className="filters-section">
+      <div className="receituario-card reveal-up" style={{animationDelay: '0.1s'}}>
+        <div className="filters-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
           <div className="search-wrapper">
             <FiSearch className="search-icon" />
             <input 
@@ -254,7 +254,7 @@ export default function Receituario() {
                   const tutor = tutores.find(t => t.id === r.tutor_id);
 
                   return (
-                    <div key={r.id} className="receita-card-item fade-in">
+                    <div key={r.id} className="receita-card-item v-glass-panel fade-in" style={{animationDelay: `${0.1 + (0.05 * (r.id % 10))}s`}}>
                       <div className="receita-card-header">
                         <div className="receita-avatar">
                           <FiFileText size={24} />
@@ -462,7 +462,7 @@ export default function Receituario() {
                 <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>
                   Cancelar
                 </button>
-                <button type="submit" className="btn-primary">
+                <button type="submit" className="v-btn-primary-glow">
                   <FiSave /> {editando ? "Atualizar" : "Salvar Receita"}
                 </button>
               </div>

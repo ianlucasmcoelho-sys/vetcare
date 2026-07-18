@@ -1,5 +1,16 @@
 // frontend/src/services/api.js
-export const API_URL = import.meta.env.VITE_API_URL || 'http://192.168.1.163:3001/api';
+const getApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && !envUrl.includes('192.168.1.163')) {
+    return envUrl;
+  }
+  if (typeof window !== 'undefined' && window.location) {
+    return `http://${window.location.hostname}:3001/api`;
+  }
+  return 'http://localhost:3001/api';
+};
+
+export const API_URL = getApiUrl();
 export const BASE_URL = API_URL.replace('/api', '');
 
 export const api = async (endpoint, options = {}) => {
@@ -24,11 +35,17 @@ export const api = async (endpoint, options = {}) => {
     if (response.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('usuario');
-      // Evitar loop infinito se já estiver no login
-      if (window.location.pathname !== '/login') {
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/cadastro') {
         window.location.href = '/login';
       }
       return null;
+    }
+
+    if (response.status === 402) {
+      if (window.location.pathname !== '/planos') {
+        window.location.href = '/planos';
+      }
+      return response;
     }
 
     return response;

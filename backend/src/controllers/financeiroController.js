@@ -44,7 +44,8 @@ export const createFinanceiro = async (req, res) => {
       tipo,
       data,
       metodo_pagamento,
-      observacoes
+      observacoes,
+      veterinario_id
     } = req.body;
     const clinica_id = req.usuario.clinica_id;
 
@@ -59,24 +60,56 @@ export const createFinanceiro = async (req, res) => {
       return res.status(400).json({ error: 'O valor deve ser um número válido' });
     }
 
-    const db = await openDb();
-    const result = await db.run(
-      `INSERT INTO financeiro (
-        clinica_id, descricao, categoria, valor, tipo, data, metodo_pagamento, observacoes
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        clinica_id,
-        descricao,
-        categoria,
-        valorNumerico,
-        tipo,
-        data,
-        metodo_pagamento || null,
-        observacoes || null
-      ]
-    );
+    const result = await runTransaction(async (db) => {
+      const financeiroRes = await db.run(
+        `INSERT INTO financeiro (
+          clinica_id, descricao, categoria, valor, tipo, data, metodo_pagamento, observacoes, veterinario_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          clinica_id,
+          descricao,
+          categoria,
+          valorNumerico,
+          tipo,
+          data,
+          metodo_pagamento || null,
+          observacoes || null,
+          veterinario_id || null
+        ]
+      );
+      
+      const novoFinanceiroId = financeiroRes.lastID;
 
-    const novaTransacao = await db.get('SELECT * FROM financeiro WHERE id = ?', [result.lastID]);
+      // Se for entrada e tiver veterinário, verificar regras de comissão
+      if (tipo === 'entrada' && veterinario_id) {
+        const regra = await db.get(
+          'SELECT tipo_comissao, valor FROM comissoes_regras WHERE clinica_id = ? AND usuario_id = ?',
+          [clinica_id, veterinario_id]
+        );
+
+        if (regra) {
+          let valor_comissao = 0;
+          if (regra.tipo_comissao === 'percentual') {
+            valor_comissao = (valorNumerico * regra.valor) / 100;
+          } else if (regra.tipo_comissao === 'fixo') {
+            valor_comissao = regra.valor;
+          }
+
+          if (valor_comissao > 0) {
+            await db.run(
+              `INSERT INTO comissoes (clinica_id, financeiro_id, usuario_id, valor_comissao, status) 
+               VALUES (?, ?, ?, ?, 'pendente')`,
+              [clinica_id, novoFinanceiroId, veterinario_id, valor_comissao]
+            );
+          }
+        }
+      }
+
+      return novoFinanceiroId;
+    });
+
+    const db = await openDb();
+    const novaTransacao = await db.get('SELECT * FROM financeiro WHERE id = ?', [result]);
     res.status(201).json({ success: true, ...novaTransacao });
   } catch (error) {
     console.error('Erro ao criar transação:', error);

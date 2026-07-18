@@ -1,6 +1,11 @@
 .meuperfil-container {
-  padding: 28px 32px;
-  background: var(--bg-primary);
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+
+  
+  
   min-height: 100vh;
 }
 

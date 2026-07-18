@@ -16,6 +16,7 @@ export default function Financeiro() {
   const [filtroCategoria, setFiltroCategoria] = useState("todas");
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
+  const [usuarios, setUsuarios] = useState([]);
 
   const [form, setForm] = useState({
     descricao: "",
@@ -24,7 +25,8 @@ export default function Financeiro() {
     tipo: "entrada",
     data: new Date().toISOString().split('T')[0],
     metodo_pagamento: "Dinheiro",
-    observacoes: ""
+    observacoes: "",
+    veterinario_id: ""
   });
 
   const categorias = ["Serviços", "Produtos", "Estoque", "Aluguel/Contas", "Salários", "Impostos", "Outros"];
@@ -45,7 +47,22 @@ export default function Financeiro() {
     }
   };
 
-  useEffect(() => { carregarDados(); }, []);
+  const carregarUsuarios = async () => {
+    try {
+      const response = await apiGet("/auth/usuarios");
+      if (response && response.ok) {
+        const dados = await response.json();
+        setUsuarios(dados.filter(u => u.perfil === 'veterinario' && u.ativo));
+      }
+    } catch (error) {
+      console.error("Erro ao carregar usuários:", error);
+    }
+  };
+
+  useEffect(() => { 
+    carregarDados(); 
+    carregarUsuarios(); 
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,7 +104,7 @@ export default function Financeiro() {
   const resetForm = () => {
     setForm({
       descricao: "", categoria: "Serviços", valor: "", tipo: "entrada",
-      data: new Date().toISOString().split('T')[0], metodo_pagamento: "Dinheiro", observacoes: ""
+      data: new Date().toISOString().split('T')[0], metodo_pagamento: "Dinheiro", observacoes: "", veterinario_id: ""
     });
     setEditId(null);
   };
@@ -100,7 +117,8 @@ export default function Financeiro() {
       tipo: transacao.tipo,
       data: transacao.data,
       metodo_pagamento: transacao.metodo_pagamento || "Dinheiro",
-      observacoes: transacao.observacoes || ""
+      observacoes: transacao.observacoes || "",
+      veterinario_id: transacao.veterinario_id || ""
     });
     setEditId(transacao.id);
     setShowModal(true);
@@ -132,14 +150,14 @@ export default function Financeiro() {
   const transacoesOrdenadas = [...transacoesFiltradas].sort((a, b) => b.data.localeCompare(a.data));
 
   return (
-    <div className="financeiro-container fade-in">
+    <div className="financeiro-container reveal-fade">
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Fluxo de Caixa</h1>
           <p className="page-subtitle">Gestão financeira, receitas e despesas da clínica</p>
         </div>
         <div className="header-actions">
-          <button className="btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
+          <button className="v-btn-primary-glow" onClick={() => { resetForm(); setShowModal(true); }}>
             <FiPlus size={18} />
             <span>Nova Transação</span>
           </button>
@@ -147,21 +165,21 @@ export default function Financeiro() {
       </div>
 
       <div className="stats-grid">
-        <div className="stat-card entrada">
+        <div className="stat-card v-glass-panel reveal-up entrada" style={{animationDelay: '0.1s'}}>
           <div className="stat-icon"><FiTrendingUp size={24} /></div>
           <div className="stat-info">
             <span className="stat-label">Entradas</span>
             <span className="stat-value">R$ {formatarValor(totalEntradas)}</span>
           </div>
         </div>
-        <div className="stat-card saida">
+        <div className="stat-card v-glass-panel reveal-up saida" style={{animationDelay: '0.2s'}}>
           <div className="stat-icon"><FiTrendingDown size={24} /></div>
           <div className="stat-info">
             <span className="stat-label">Saídas</span>
             <span className="stat-value">R$ {formatarValor(totalSaidas)}</span>
           </div>
         </div>
-        <div className="stat-card saldo">
+        <div className="stat-card v-glass-panel reveal-up saldo" style={{animationDelay: '0.3s'}}>
           <div className="stat-icon"><FiDollarSign size={24} /></div>
           <div className="stat-info">
             <span className="stat-label">Saldo</span>
@@ -170,8 +188,8 @@ export default function Financeiro() {
         </div>
       </div>
 
-      <div className="financeiro-card">
-        <div className="filters-section">
+      <div className="financeiro-card v-glass-panel reveal-up" style={{animationDelay: '0.4s'}}>
+        <div className="filters-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
           <div className="search-wrapper">
             <FiSearch className="search-icon" />
             <input
@@ -214,7 +232,7 @@ export default function Financeiro() {
         ) : (
           <div className="transacoes-list">
             {transacoesOrdenadas.map((t) => (
-              <div key={t.id} className="transacao-card-item">
+              <div key={t.id} className="transacao-card-item v-glass-panel" style={{ animationDelay: `${0.1 + (0.05 * (t.id % 10))}s` }}>
                 <div className="transacao-card-header">
                   <div className={`transacao-avatar ${t.tipo}`}>
                     {t.tipo === "entrada" ? <FiTrendingUp size={20} /> : <FiTrendingDown size={20} />}
@@ -278,6 +296,15 @@ export default function Financeiro() {
                       <option value="saida">Saída</option>
                     </select>
                   </div>
+                  {form.tipo === 'entrada' && (
+                    <div className="input-group">
+                      <label className="input-label">VETERINÁRIO (COMISSÃO)</label>
+                      <select name="veterinario_id" className="form-input" value={form.veterinario_id} onChange={handleChange}>
+                        <option value="">Nenhum</option>
+                        {usuarios.map(u => <option key={u.id} value={u.id}>{u.nome}</option>)}
+                      </select>
+                    </div>
+                  )}
                   <div className="input-group">
                     <label className="input-label">VALOR *</label>
                     <input type="number" step="0.01" name="valor" className="form-input" value={form.valor} onChange={handleChange} required />
@@ -300,7 +327,7 @@ export default function Financeiro() {
               </div>
               <div className="modal-footer">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancelar</button>
-                <button type="submit" className="btn-primary" disabled={loading}>{loading ? "Salvando..." : "Salvar"}</button>
+                <button type="submit" className="v-btn-primary-glow" disabled={loading}>{loading ? "Salvando..." : "Salvar"}</button>
               </div>
             </form>
           </div>

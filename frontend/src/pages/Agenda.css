@@ -1,10 +1,13 @@
 /* Agenda.css - Versão Padronizada "Clean & Tech" */
 
 .agenda-container {
-  padding: 28px 32px;
-  background: var(--bg-primary);
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
-  animation: fadeIn 0.4s ease;
+
+  
+  
 }
 
 .agenda-card {
@@ -42,13 +45,8 @@
   box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
 }
 
-.agenda-card {
-  background: var(--bg-card);
-  border-radius: 16px;
-  border: 1px solid var(--border-color);
+  /* Herda de .v-glass-panel */
   overflow: hidden;
-  animation: fadeInUp 0.5s ease;
-}
 
 .filters-section {
   display: flex;
@@ -58,7 +56,7 @@
   border-bottom: 1px solid var(--border-color);
   gap: 20px;
   flex-wrap: wrap;
-  background: var(--bg-hover);
+  background: transparent;
 }
 
 .search-wrapper {
@@ -68,7 +66,7 @@
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 8px 14px;
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.5);
   min-width: 260px;
   flex: 1;
   transition: all 0.3s;
@@ -100,7 +98,7 @@
   padding: 6px 14px;
   border-radius: 20px;
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.5);
   font-size: 12px;
   color: var(--text-secondary);
   cursor: pointer;
@@ -121,10 +119,7 @@
 }
 
 .agendamento-card-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  overflow: hidden;
+  /* Herda de .v-glass-panel */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -139,7 +134,7 @@
   align-items: center;
   gap: 16px;
   padding: 18px 20px;
-  background: var(--bg-card);
+  background: transparent;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -182,9 +177,9 @@
 }
 
 .status-agendado { background-color: var(--bg-hover); color: #d97706; }
-.status-confirmado { background: #eff6ff; color: #3b82f6; }
-.status-concluido { background: #ecfdf5; color: #10b981; }
-.status-cancelado { background: #fef2f2; color: #dc2626; }
+.status-confirmado { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.status-concluido { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.status-cancelado { background: rgba(220, 38, 38, 0.1); color: #dc2626; }
 
 .agendamento-card-body {
   padding: 16px 20px;
@@ -211,7 +206,7 @@
   justify-content: space-between;
   padding: 16px 20px;
   border-top: 1px solid var(--border-color);
-  background: var(--bg-hover);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .whatsapp-btn {
@@ -246,10 +241,10 @@
   transition: all 0.2s;
 }
 
-.confirm-btn { background: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; }
+.confirm-btn { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2); }
 .confirm-btn:hover { background: #3b82f6; color: white; transform: translateY(-1px); }
 
-.success-btn { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
+.success-btn { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
 .success-btn:hover { background: #10b981; color: white; transform: translateY(-1px); }
 
 .action-icons {
@@ -267,7 +262,7 @@
   cursor: pointer;
   transition: all 0.2s;
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.5);
   color: var(--text-secondary);
 }
 

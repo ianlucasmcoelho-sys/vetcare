@@ -153,7 +153,7 @@ export default function Servicos() {
       </div>
 
       <div className="servicos-card">
-        <div className="filters-section">
+        <div className="filters-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
           <div className="search-wrapper">
             <FiSearch className="search-icon" />
             <input

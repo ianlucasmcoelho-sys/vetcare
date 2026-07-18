@@ -15,7 +15,7 @@ export const getDashboardStats = async (req, res) => {
       db.get('SELECT SUM(valor) as total FROM financeiro WHERE clinica_id = ? AND tipo = "entrada" AND data LIKE ?', [clinica_id, `${mesAtual}%`]),
       db.get('SELECT COUNT(*) as total FROM internacoes WHERE clinica_id = ? AND status = "ativo"', [clinica_id]),
       db.get('SELECT COUNT(*) as total FROM exames WHERE clinica_id = ? AND status = "pendente"', [clinica_id]),
-      db.get('SELECT COUNT(*) as total FROM servicos WHERE clinica_id = ? AND quantidade <= 5', [clinica_id])
+      db.get('SELECT COUNT(*) as total FROM servicos WHERE clinica_id = ? AND quantidade <= estoqueMinimo', [clinica_id])
     ]);
 
     // 2. Consultas de Hoje

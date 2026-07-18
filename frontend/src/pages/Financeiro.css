@@ -1,8 +1,13 @@
 /* Financeiro.css - Versão harmonizada com Global.css */
 
 .financeiro-container {
-  padding: 0;
-  background: var(--bg-primary);
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+
+  
+  
   min-height: 100vh;
 }
 
@@ -14,9 +19,7 @@
 }
 
 .stat-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
+  /* Herda de .v-glass-panel */
   padding: 24px;
   display: flex;
   align-items: center;
@@ -52,10 +55,7 @@
 .stat-value.negative { color: var(--danger); }
 
 .financeiro-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  /* Herda de .v-glass-panel */
   overflow: hidden;
   margin: 0 32px 32px 32px;
 }
@@ -68,7 +68,7 @@
   border-bottom: 1px solid var(--border-color);
   gap: 1.5rem;
   flex-wrap: wrap;
-  background: var(--bg-hover);
+  background: transparent;
 }
 
 .search-wrapper {
@@ -78,7 +78,7 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 0.6rem 1rem;
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.5);
   min-width: 280px;
   flex: 1;
   transition: all var(--transition-fast);
@@ -102,7 +102,7 @@
   padding: 6px 16px;
   border-radius: 20px;
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.5);
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -123,7 +123,7 @@
   gap: 20px;
   align-items: center;
   flex-wrap: wrap;
-  background: var(--bg-card);
+  background: transparent;
 }
 
 .categoria-filter, .date-input {
@@ -131,7 +131,7 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   font-size: 0.8125rem;
-  background: var(--bg-primary);
+  background: rgba(255, 255, 255, 0.5);
   color: var(--text-primary);
 }
 
@@ -143,10 +143,7 @@
 }
 
 .transacao-card-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  overflow: hidden;
+  /* Herda de .v-glass-panel */
   transition: all var(--transition-fast);
 }
 
@@ -190,7 +187,7 @@
   gap: 12px;
   padding: 10px 20px;
   border-top: 1px solid var(--border-light);
-  background: var(--bg-hover);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .action-btn {
@@ -204,7 +201,7 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.5);
   color: var(--text-secondary);
 }
 

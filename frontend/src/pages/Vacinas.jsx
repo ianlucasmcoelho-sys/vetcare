@@ -132,14 +132,14 @@ export default function Vacinas() {
   });
 
   return (
-    <div className="vacinas-container fade-in">
+    <div className="vacinas-container reveal-fade">
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Cartão de Vacina</h1>
           <p className="page-subtitle">Controle de imunização e prevenção para os pacientes</p>
         </div>
         <div className="header-actions">
-          <button className="btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
+          <button className="v-btn-primary-glow" onClick={() => { resetForm(); setShowModal(true); }}>
             <FiPlus size={18} />
             <span>Registrar Vacina</span>
           </button>
@@ -147,7 +147,7 @@ export default function Vacinas() {
       </div>
 
       <div className="vacinas-card">
-        <div className="filters-section">
+        <div className="filters-section v-glass-panel reveal-up" style={{animationDelay: '0.1s'}}>
           <div className="search-wrapper">
             <FiSearch className="search-icon" />
             <input
@@ -181,7 +181,7 @@ export default function Vacinas() {
               const vencida = isVencida(v.proxima_dose);
               const proxima = isProxima(v.proxima_dose);
               return (
-                <div key={v.id} className="vacina-card-item">
+                <div key={v.id} className="vacina-card-item v-glass-panel reveal-fade" style={{animationDelay: `${0.1 + (0.05 * (v.id % 10))}s`}}>
                   <div className="vacina-card-header">
                     <div className="vacina-avatar"><MdOutlineVaccines size={28} /></div>
                     <div className="vacina-info">
@@ -271,7 +271,7 @@ export default function Vacinas() {
               </div>
               <div className="modal-footer">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancelar</button>
-                <button type="submit" className="btn-primary" disabled={loading}>{loading ? "Salvando..." : "Salvar"}</button>
+                <button type="submit" className="v-btn-primary-glow" disabled={loading}>{loading ? "Salvando..." : "Salvar"}</button>
               </div>
             </form>
           </div>

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiAlertCircle, 
-  FiArrowRight, FiPhone, FiSun, FiMoon, FiCheckCircle, FiArrowLeft, FiZap, FiShield
+  FiPhone, FiSun, FiMoon, FiCheckCircle, FiZap, FiShield, FiStar
 } from "react-icons/fi";
-import { FaPaw, FaBuilding, FaShieldAlt, FaRocket, FaUserTie } from "react-icons/fa";
+import { FaBuilding } from "react-icons/fa";
 import { MdOutlinePets } from "react-icons/md";
 import { API_URL } from "../services/api";
-import "./Login.css"; // Reuse login styles
+import "./Login.css";
 import "./CadastroClinica.css";
 
 export default function CadastroClinica() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const planoSelected = searchParams.get('plano') || 'free';
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
@@ -70,11 +72,24 @@ export default function CadastroClinica() {
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         setSucesso("Clínica cadastrada com sucesso!");
+        
+        // Logar o usuário automaticamente
+        localStorage.setItem("token", data.token);
+        const userData = { ...data.usuario, clinica: data.clinica };
+        localStorage.setItem("usuario", JSON.stringify(userData));
+
         setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+          const params = new URLSearchParams(window.location.search);
+          const plano = params.get('plano') || 'free';
+          
+          if (plano === 'clinica' || plano === 'complete') {
+            window.location.href = `/checkout?plano=${plano}`;
+          } else {
+            window.location.href = "/";
+          }
+        }, 1500);
       } else {
         setErro(data.error || "Erro ao cadastrar clínica");
       }
@@ -86,18 +101,11 @@ export default function CadastroClinica() {
   };
 
   return (
-    <div className="v-harmonized-signup" onMouseMove={handleMouseMove}>
-      {/* Reuse Mesh Background */}
-      <div className="v-login-mesh">
-        <div className="v-login-orb v-orb-teal"></div>
-        <div className="v-login-orb v-orb-blue"></div>
-      </div>
-
-      {/* Floating Navbar */}
+    <div className="v-auth-page v-harmonized-signup-override" onMouseMove={handleMouseMove}>
       <nav className="v-login-nav reveal-top">
-        <div className="v-nav-brand" onClick={() => navigate("/")}>
-          <div className="v-nav-logo-box">
-            <MdOutlinePets />
+        <div className="v-nav-brand" onClick={() => navigate("/")} style={{ gap: '10px' }}>
+          <div className="v-nav-logo-box" style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}>
+            <img src="/logo.png" alt="Vet Care Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
           </div>
           <span>Vet Care</span>
         </div>
@@ -109,135 +117,117 @@ export default function CadastroClinica() {
         </div>
       </nav>
 
-      <div className="v-signup-content-split">
-        {/* Signup Form Panel */}
-        <div className="v-panel-signup-form reveal-left">
-          <div className="v-signup-header">
+      <div className="v-login-content-split v-signup-split-override">
+        {/* Left Side: Auth Panel (Form) */}
+        <div className="v-panel-auth v-panel-signup reveal-left">
+          <div className="v-auth-header v-signup-header-compact">
+            <div className="v-user-avatar-3d v-avatar-small">
+              <FaBuilding />
+            </div>
             <h2>Criar Conta</h2>
-            <p>Junte-se à elite da gestão veterinária</p>
+            <p>Cadastre sua clínica e revolucione sua gestão</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="v-form-pill">
+          <form onSubmit={handleSubmit} className="v-form-pill v-form-signup-pill">
             {erro && <div className="v-pill-error"><FiAlertCircle /> {erro}</div>}
             {sucesso && <div className="v-pill-success"><FiCheckCircle /> {sucesso}</div>}
 
-            <div className="v-section-pill">
-              <h3 className="v-section-title"><FaBuilding /> Dados da Clínica</h3>
-              <div className="v-signup-grid">
-                <div className="v-input-pill-group v-full-width">
-                  <label className="v-input-pill-label">Nome da Clínica / Razão Social</label>
-                  <div className="v-input-wrapper">
-                    <FiZap className="v-pill-icon" />
-                    <input 
-                      type="text" 
-                      name="clinica_nome"
-                      placeholder="Ex: Clínica Veterinária Ouro Pet" 
-                      value={form.clinica_nome}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+            <div className="v-signup-pill-section">
+              <h3 className="v-signup-pill-title">Dados da Clínica</h3>
+              <div className="v-signup-pill-grid">
+                <div className="v-input-pill-group v-col-full">
+                  <FiZap className="v-pill-icon" />
+                  <input 
+                    type="text" 
+                    name="clinica_nome"
+                    placeholder="Nome da Clínica / Razão Social" 
+                    value={form.clinica_nome}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="v-input-pill-group">
-                  <label className="v-input-pill-label">Telefone</label>
-                  <div className="v-input-wrapper">
-                    <FiPhone className="v-pill-icon" />
-                    <input 
-                      type="tel" 
-                      name="clinica_telefone"
-                      placeholder="(00) 00000-0000" 
-                      value={form.clinica_telefone}
-                      onChange={handleChange}
-                    />
-                  </div>
+                  <FiPhone className="v-pill-icon" />
+                  <input 
+                    type="tel" 
+                    name="clinica_telefone"
+                    placeholder="Telefone" 
+                    value={form.clinica_telefone}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div className="v-input-pill-group">
-                  <label className="v-input-pill-label">E-mail Corporativo</label>
-                  <div className="v-input-wrapper">
-                    <FiMail className="v-pill-icon" />
-                    <input 
-                      type="email" 
-                      name="clinica_email"
-                      placeholder="contato@clinica.com" 
-                      value={form.clinica_email}
-                      onChange={handleChange}
-                    />
-                  </div>
+                  <FiMail className="v-pill-icon" />
+                  <input 
+                    type="email" 
+                    name="clinica_email"
+                    placeholder="E-mail Comercial" 
+                    value={form.clinica_email}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="v-section-pill">
-              <h3 className="v-section-title">Administrador</h3>
-              <div className="v-signup-grid">
-                <div className="v-input-pill-group v-full-width">
-                  <label className="v-input-pill-label">Nome Completo</label>
-                  <div className="v-input-wrapper">
-                    <FiUser className="v-pill-icon" />
-                    <input 
-                      type="text" 
-                      name="admin_nome"
-                      placeholder="Nome do responsável" 
-                      value={form.admin_nome}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+            <div className="v-signup-pill-section">
+              <h3 className="v-signup-pill-title">Administrador</h3>
+              <div className="v-signup-pill-grid">
+                <div className="v-input-pill-group v-col-full">
+                  <FiUser className="v-pill-icon" />
+                  <input 
+                    type="text" 
+                    name="admin_nome"
+                    placeholder="Nome Completo" 
+                    value={form.admin_nome}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
-                <div className="v-input-pill-group v-full-width">
-                  <label className="v-input-pill-label">E-mail de Acesso</label>
-                  <div className="v-input-wrapper">
-                    <FiMail className="v-pill-icon" />
-                    <input 
-                      type="email" 
-                      name="admin_email"
-                      placeholder="seu@email.com" 
-                      value={form.admin_email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+                <div className="v-input-pill-group v-col-full">
+                  <FiMail className="v-pill-icon" />
+                  <input 
+                    type="email" 
+                    name="admin_email"
+                    placeholder="E-mail de Acesso" 
+                    value={form.admin_email}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="v-input-pill-group">
-                  <label className="v-input-pill-label">Senha</label>
-                  <div className="v-input-wrapper">
-                    <FiLock className="v-pill-icon" />
-                    <input 
-                      type={showSenha ? "text" : "password"} 
-                      name="admin_senha"
-                      placeholder="Mín. 6 caracteres" 
-                      value={form.admin_senha}
-                      onChange={handleChange}
-                      required
-                    />
-                    <button type="button" className="v-pill-eye" onClick={() => setShowSenha(!showSenha)}>
-                      {showSenha ? <FiEyeOff /> : <FiEye />}
-                    </button>
-                  </div>
+                  <FiLock className="v-pill-icon" />
+                  <input 
+                    type={showSenha ? "text" : "password"} 
+                    name="admin_senha"
+                    placeholder="Senha" 
+                    value={form.admin_senha}
+                    onChange={handleChange}
+                    required
+                  />
+                  <button type="button" className="v-pill-eye" onClick={() => setShowSenha(!showSenha)}>
+                    {showSenha ? <FiEyeOff /> : <FiEye />}
+                  </button>
                 </div>
                 <div className="v-input-pill-group">
-                  <label className="v-input-pill-label">Confirmar Senha</label>
-                  <div className="v-input-wrapper">
-                    <FiLock className="v-pill-icon" />
-                    <input 
-                      type={showConfirmSenha ? "text" : "password"} 
-                      name="admin_confirm_senha"
-                      placeholder="Repita a senha" 
-                      value={form.admin_confirm_senha}
-                      onChange={handleChange}
-                      required
-                    />
-                    <button type="button" className="v-pill-eye" onClick={() => setShowConfirmSenha(!showConfirmSenha)}>
-                      {showConfirmSenha ? <FiEyeOff /> : <FiEye />}
-                    </button>
-                  </div>
+                  <FiLock className="v-pill-icon" />
+                  <input 
+                    type={showConfirmSenha ? "text" : "password"} 
+                    name="admin_confirm_senha"
+                    placeholder="Confirmar Senha" 
+                    value={form.admin_confirm_senha}
+                    onChange={handleChange}
+                    required
+                  />
+                  <button type="button" className="v-pill-eye" onClick={() => setShowConfirmSenha(!showConfirmSenha)}>
+                    {showConfirmSenha ? <FiEyeOff /> : <FiEye />}
+                  </button>
                 </div>
               </div>
             </div>
 
             <div className="v-auth-footer-actions">
-               <button type="submit" className="v-btn-pill-primary-3d" disabled={loading}>
-                 {loading ? "..." : "CRIAR CONTA"}
+               <button type="submit" className="v-btn-pill-primary-3d" disabled={loading || sucesso !== ""}>
+                 {loading ? "..." : (sucesso !== "" ? "REDIRECIONANDO..." : "CRIAR CONTA")}
                </button>
                <span className="v-divider-text">ou</span>
                <button type="button" className="v-btn-pill-secondary" onClick={() => navigate("/login")}>
@@ -248,40 +238,67 @@ export default function CadastroClinica() {
         </div>
 
         {/* Visual Divider */}
-        <div className="v-split-divider"></div>
+        <div className="v-split-divider v-divider-tall"></div>
 
-        {/* Intro Panel */}
+        {/* Right Side: Intro Panel */}
         <div className="v-panel-intro reveal-right">
           <div className="v-intro-3d-scene" style={{ 
             transform: `perspective(1000px) rotateY(${mousePos.x * 0.4}deg) rotateX(${-mousePos.y * 0.4}deg)` 
           }}>
-            <h1 className="v-intro-title-3d">Vet <br/> Care</h1>
-            <p className="v-intro-tagline">
-              Sua jornada para o próximo nível começa aqui. Tecnologia de ponta para quem não aceita o comum.
-            </p>
+            {planoSelected === 'complete' && (
+              <>
+                <div className="v-mini-badge" style={{background: 'var(--accent-color)', color: '#000', marginBottom: '1rem'}}>
+                  Plano Vet Complete
+                </div>
+                <h1 className="v-intro-title-3d">Gestão 360º<br/>para Clínicas</h1>
+                <p className="v-intro-tagline">
+                  Você está a um passo de revolucionar sua clínica e petshop com gestão completa.
+                </p>
+                <div className="v-intro-features" style={{ justifyContent: 'center' }}>
+                  <div className="v-mini-badge"><FiStar /> Ilimitado</div>
+                  <div className="v-mini-badge"><FiShield /> Comissões e CRM</div>
+                </div>
+              </>
+            )}
             
-            <div className="v-signup-features">
-              <div className="v-feature-card">
-                <div className="v-feature-icon-box"><FaRocket /></div>
-                <div className="v-feature-text">
-                  <h4>Setup Instantâneo</h4>
-                  <p>Inicie sua operação em segundos.</p>
+            {planoSelected === 'clinica' && (
+              <>
+                <div className="v-mini-badge" style={{background: 'var(--primary)', color: '#fff', marginBottom: '1rem'}}>
+                  Plano Vet Clínica
                 </div>
-              </div>
-              <div className="v-feature-card">
-                <div className="v-feature-icon-box"><FiShield /></div>
-                <div className="v-feature-text">
-                  <h4>Privacidade Total</h4>
-                  <p>Dados criptografados e seguros.</p>
+                <h1 className="v-intro-title-3d">Foco na<br/>Medicina</h1>
+                <p className="v-intro-tagline">
+                  O fundamental para manter seu consultório operando com excelência.
+                </p>
+                <div className="v-intro-features" style={{ justifyContent: 'center' }}>
+                  <div className="v-mini-badge"><FiZap /> Prontuário VIP</div>
+                  <div className="v-mini-badge"><FiShield /> Estoque e Agenda</div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
 
-            <button className="v-btn-pill-white" onClick={() => navigate("/")}>
+            {planoSelected === 'free' && (
+              <>
+                <div className="v-mini-badge" style={{background: 'var(--bg-tertiary)', color: 'var(--text-main)', marginBottom: '1rem'}}>
+                  Trial (7 Dias)
+                </div>
+                <h1 className="v-intro-title-3d">Sem<br/>Compromisso</h1>
+                <p className="v-intro-tagline">
+                  Experimente o Vet Care gratuitamente. Sem cartão de crédito.
+                </p>
+                <div className="v-intro-features" style={{ justifyContent: 'center' }}>
+                  <div className="v-mini-badge"><FiMoon /> Recursos Básicos</div>
+                  <div className="v-mini-badge"><FiCheckCircle /> Pets Ilimitados</div>
+                </div>
+              </>
+            )}
+            
+            <button className="v-btn-pill-white" onClick={() => navigate("/")} style={{ marginTop: '2rem' }}>
               CONHEÇA O SISTEMA
             </button>
           </div>
         </div>
+
       </div>
 
       <div className="v-login-bottom-bar">

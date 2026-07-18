@@ -161,7 +161,7 @@ export default function Responsaveis() {
   const tutoresExibidos = tutoresFiltrados.slice(startIndex, endIndex);
 
   return (
-    <div className="responsaveis-container fade-in">
+    <div className="responsaveis-container reveal-fade">
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Gestão de Tutores</h1>
@@ -172,15 +172,15 @@ export default function Responsaveis() {
             <FiDownload size={16} />
             <span>Exportar</span>
           </button>
-          <button className="btn-primary" onClick={() => setShowModal(true)}>
+          <button className="v-btn-primary-glow" onClick={() => setShowModal(true)}>
             <FiPlus size={18} />
             <span>Novo Tutor</span>
           </button>
         </div>
       </div>
 
-      <div className="responsaveis-card">
-        <div className="search-section">
+      <div className="responsaveis-card reveal-up" style={{animationDelay: '0.1s'}}>
+        <div className="search-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
           <div className="search-wrapper">
             <FiSearch className="search-icon" />
             <input
@@ -207,7 +207,7 @@ export default function Responsaveis() {
           <div className="empty-state">
             <FiUser size={48} />
             <p>Nenhum tutor encontrado</p>
-            <button className="btn-primary" onClick={() => setShowModal(true)}>
+            <button className="v-btn-primary-glow" onClick={() => setShowModal(true)}>
               <FiPlus size={16} />
               Cadastrar primeiro tutor
             </button>
@@ -218,8 +218,9 @@ export default function Responsaveis() {
               {tutoresExibidos.map((tutor) => (
                 <div 
                   key={tutor.id} 
-                  className="tutor-card-item"
+                  className="tutor-card-item v-glass-panel"
                   onClick={() => abrirPerfil(tutor.id)}
+                  style={{animationDelay: `${0.1 + (0.05 * (tutor.id % 10))}s`}}
                 >
                   <div className="tutor-card-badge">Tutor Ativo</div>
                   <div className="tutor-card-header">
@@ -312,7 +313,7 @@ export default function Responsaveis() {
             </div>
             <div className="modal-footer">
               <button onClick={() => setShowExportModal(false)} className="btn-secondary">Cancelar</button>
-              <button onClick={exportarCSV} className="btn-primary">Exportar Agora</button>
+              <button onClick={exportarCSV} className="v-btn-primary-glow">Exportar Agora</button>
             </div>
           </div>
         </div>
@@ -460,7 +461,7 @@ export default function Responsaveis() {
                 <button type="button" onClick={fecharModal} className="btn-secondary">
                   Cancelar
                 </button>
-                <button type="submit" className="btn-primary" disabled={loading}>
+                <button type="submit" className="v-btn-primary-glow" disabled={loading}>
                   {loading ? "Salvando..." : (editId ? "Atualizar Tutor" : "Salvar Tutor")}
                 </button>
               </div>

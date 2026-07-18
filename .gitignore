@@ -2,3 +2,40 @@
 .env*.local
 .aider*
 node_modules
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Database and secrets
+*.db
+*.sqlite
+*.sqlite3
+.env
+backend/.env
+frontend/.env
+backups/
+
+# auth tokens
+backend/.wwebjs_auth/

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from '@react-oauth/google';
 import { 
   FiMail, FiLock, FiEye, FiEyeOff, FiAlertCircle, 
   FiArrowRight, FiSun, FiMoon, FiArrowLeft, FiUser, FiZap, FiShield
@@ -50,8 +51,17 @@ export default function Login() {
 
       if (response.ok && data.success) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("usuario", JSON.stringify(data.usuario));
-        window.location.href = "/"; 
+        const userData = { ...data.usuario, clinica: data.clinica };
+        localStorage.setItem("usuario", JSON.stringify(userData));
+        
+        const params = new URLSearchParams(window.location.search);
+        const plano = params.get('plano');
+        
+        if (plano === 'pro' || plano === 'premium') {
+          window.location.href = `/checkout?plano=${plano}`;
+        } else {
+          window.location.href = "/"; 
+        }
       } else {
         setErro(data.error || "E-mail ou senha inválidos");
       }
@@ -62,19 +72,38 @@ export default function Login() {
     }
   };
 
-  return (
-    <div className="v-harmonized-login" onMouseMove={handleMouseMove}>
-      {/* Mesh Background using System Palette */}
-      <div className="v-login-mesh">
-        <div className="v-login-orb v-orb-teal"></div>
-        <div className="v-login-orb v-orb-blue"></div>
-      </div>
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    setErro("");
+    try {
+      const response = await fetch(`${API_URL}/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: credentialResponse.credential }),
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        localStorage.setItem("token", data.token);
+        const userData = { ...data.usuario, clinica: data.clinica };
+        localStorage.setItem("usuario", JSON.stringify(userData));
+        window.location.href = "/"; 
+      } else {
+        setErro(data.error || "Falha ao entrar com Google");
+      }
+    } catch (error) {
+      setErro("Erro ao conectar com o servidor");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  return (
+    <div className="v-auth-page" onMouseMove={handleMouseMove}>
       {/* Floating Navbar */}
       <nav className="v-login-nav reveal-top">
-        <div className="v-nav-brand" onClick={() => navigate("/")}>
-          <div className="v-nav-logo-box">
-            <MdOutlinePets />
+        <div className="v-nav-brand" onClick={() => navigate("/")} style={{ gap: '10px' }}>
+          <div className="v-nav-logo-box" style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}>
+            <img src="/logo.png" alt="Vet Care Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
           </div>
           <span>Vet Care</span>
         </div>
@@ -129,11 +158,24 @@ export default function Login() {
                <button type="submit" className="v-btn-pill-primary-3d" disabled={loading}>
                  {loading ? "..." : "LOG IN"}
                </button>
-               <span className="v-divider-text">ou</span>
-               <button type="button" className="v-btn-pill-secondary" onClick={() => navigate("/cadastro")}>
-                 CRIAR CONTA
-               </button>
             </div>
+            
+            <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>OU</div>
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  setErro("Erro ao conectar com o Google");
+                }}
+                theme={theme === 'dark' ? 'filled_black' : 'outline'}
+                shape="pill"
+                width="400"
+              />
+            </div>
+            
+            <button type="button" className="v-btn-pill-secondary" onClick={() => navigate("/cadastro")}>
+                 CRIAR CONTA
+            </button>
 
             <button type="button" className="v-link-forgot" onClick={() => setShowRecuperar(true)}>
               Esqueceu sua senha?

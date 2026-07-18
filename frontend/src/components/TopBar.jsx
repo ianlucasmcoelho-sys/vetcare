@@ -27,8 +27,21 @@ export default function TopBar() {
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
   // Buscar usuário do localStorage
-  const usuarioStr = localStorage.getItem("usuario");
-  const usuario = usuarioStr ? JSON.parse(usuarioStr) : { nome: "Admin", perfil: "admin", email: "admin@vetcare.com" };
+  const [usuario, setUsuario] = useState(() => {
+    const usuarioStr = localStorage.getItem("usuario");
+    return usuarioStr ? JSON.parse(usuarioStr) : { nome: "Admin", perfil: "admin", email: "admin@vetcare.com" };
+  });
+
+  useEffect(() => {
+    const handleUsuarioUpdate = () => {
+      const usuarioStr = localStorage.getItem("usuario");
+      if (usuarioStr) {
+        setUsuario(JSON.parse(usuarioStr));
+      }
+    };
+    window.addEventListener('usuarioAtualizado', handleUsuarioUpdate);
+    return () => window.removeEventListener('usuarioAtualizado', handleUsuarioUpdate);
+  }, []);
 
   // Buscar contagem de notificações não lidas considerando o que já foi lido localmente
   const carregarContagem = async () => {

@@ -1,4 +1,5 @@
 // backend/src/index.js
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -26,6 +27,12 @@ import whatsappRoutes from './routes/whatsappRoutes.js';
 import crmRoutes from './routes/crmRoutes.js';
 import anexoRoutes from './routes/anexoRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import orcamentoRoutes from './routes/orcamentoRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
+import comissoesRoutes from './routes/comissoesRoutes.js';
+import banhoTosaRoutes from './routes/banhoTosaRoutes.js';
+import { handleStripeWebhook } from './controllers/stripeWebhook.js';
 
 // Importação dinâmica de rotas opcionais
 let backupRoutes, notificacaoRoutes, templateRoutes;
@@ -56,13 +63,16 @@ app.use(helmet({
 
 // Limitar tentativas de Brute Force no Login
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 25, // Limite de 25 tentativas por IP
+  windowMs: 15 * 60 * 1000,
+  max: 25,
   message: { error: 'Muitas tentativas de login. Tente novamente em 15 minutos.' }
 });
 app.use('/api/auth/login', loginLimiter);
 
-// --- Middlewares Padrão ---
+// --- Webhooks Externos (Devem vir ANTES do express.json() para preservar o body Raw) ---
+app.post('/api/pagamento/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
+
+// --- Middlewares Padrão (JSON Parsing) ---
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -93,6 +103,11 @@ app.use('/api/estoque', estoqueRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/crm', crmRoutes);
 app.use('/api/anexos', anexoRoutes);
+app.use('/api/orcamentos', orcamentoRoutes);
+app.use('/api/pagamento', paymentRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/comissoes', comissoesRoutes);
+app.use('/api/banhotosa', banhoTosaRoutes);
 
 // Servir arquivos estáticos (Uploads)
 app.use('/uploads', express.static('uploads'));

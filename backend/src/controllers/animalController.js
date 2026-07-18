@@ -9,7 +9,7 @@ export async function createAnimal(req, res) {
       idade, idade_unidade, temperamento, porte, pelagem,
       castrado, rga, plano_saude, carteirinha_numero,
       carteirinha_validade, alergias, doencas_cronicas,
-      responsavel_id
+      responsavel_id, obito, data_obito
     } = req.body;
     const clinica_id = req.usuario.clinica_id;
 
@@ -19,14 +19,14 @@ export async function createAnimal(req, res) {
         idade, idade_unidade, temperamento, porte, pelagem,
         castrado, rga, plano_saude, carteirinha_numero,
         carteirinha_validade, alergias, doencas_cronicas,
-        responsavel_id
-      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        responsavel_id, obito, data_obito
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         clinica_id, nome, microchip, especie, raca, sexo, nascimento,
         idade, idade_unidade, temperamento, porte, pelagem,
         castrado, rga, plano_saude, carteirinha_numero,
         carteirinha_validade, alergias, doencas_cronicas,
-        responsavel_id
+        responsavel_id, obito || 0, data_obito || null
       ]
     );
 
@@ -80,7 +80,7 @@ export async function updateAnimal(req, res) {
       idade, idade_unidade, temperamento, porte, pelagem,
       castrado, rga, plano_saude, carteirinha_numero,
       carteirinha_validade, alergias, doencas_cronicas,
-      responsavel_id
+      responsavel_id, obito, data_obito
     } = req.body;
 
     const result = await db.run(
@@ -89,14 +89,14 @@ export async function updateAnimal(req, res) {
         idade=?, idade_unidade=?, temperamento=?, porte=?, pelagem=?,
         castrado=?, rga=?, plano_saude=?, carteirinha_numero=?,
         carteirinha_validade=?, alergias=?, doencas_cronicas=?,
-        responsavel_id=?
+        responsavel_id=?, obito=?, data_obito=?
       WHERE id=? AND clinica_id=?`,
       [
         nome, microchip, especie, raca, sexo, nascimento,
         idade, idade_unidade, temperamento, porte, pelagem,
         castrado, rga, plano_saude, carteirinha_numero,
         carteirinha_validade, alergias, doencas_cronicas,
-        responsavel_id, id, clinica_id
+        responsavel_id, obito || 0, data_obito || null, id, clinica_id
       ]
     );
 

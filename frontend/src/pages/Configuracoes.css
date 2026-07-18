@@ -1,10 +1,15 @@
 /* Configuracoes.css - Standardized Clean & Tech */
 
 .configuracoes-container {
-  padding: 28px 32px;
-  background: var(--bg-primary);
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
-  font-family: 'Inter', system-ui, sans-serif;
+
+  
+  
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .configuracoes-header {
@@ -173,7 +178,7 @@
   font-size: 24px;
   font-weight: 600;
   margin: 16px 0;
-  font-family: 'Brush Script MT', cursive;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   color: var(--text-primary);
 }
 

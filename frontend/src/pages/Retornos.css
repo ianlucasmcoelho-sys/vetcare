@@ -1,8 +1,13 @@
 /* Retornos.css - Versão harmonizada com Global.css */
 
 .retornos-container {
-  padding: 0;
-  background: var(--bg-primary);
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+
+  
+  
   min-height: 100vh;
 }
 
@@ -23,7 +28,7 @@
   border-bottom: 1px solid var(--border-color);
   gap: 1.5rem;
   flex-wrap: wrap;
-  background: var(--bg-hover);
+  background: transparent;
 }
 
 .tabs-container {

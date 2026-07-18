@@ -92,12 +92,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .page-title {
-  font-size: 1.875rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  letter-spacing: -1px;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
 }
 
@@ -113,7 +111,9 @@ h1, h2, h3, h4, h5, h6 {
   position: sticky;
   top: var(--topbar-height);
   z-index: 90;
-  background-color: var(--bg-primary);
+  background-color: transparent;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: 1rem 0;
   margin-top: -1rem; /* Absorb container padding */
   border-bottom: 1px solid transparent;
@@ -134,12 +134,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 [data-theme='dark'] .page-header {
-  background-color: var(--bg-primary);
+  background-color: transparent;
 }
 
 .page-subtitle {
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: 1.1rem;
   font-weight: 500;
 }
 
@@ -227,3 +227,89 @@ input:focus, select:focus, textarea:focus {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==========================================================================
+   PREMIUM GLASSMORPHISM & UTILITIES (Global)
+   ========================================================================== */
+
+.v-glass-panel {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+[data-theme='dark'] .v-glass-panel {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.v-btn-primary-glow {
+  background: var(--primary);
+  color: white; 
+  border: none;
+  padding: 0.8rem 1.5rem; 
+  border-radius: var(--radius-md); 
+  font-weight: 700;
+  cursor: pointer; 
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.v-btn-primary-glow:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.5); 
+}
+
+/* Animações Globais */
+.reveal-fade { animation: revealFade 0.6s ease forwards; }
+.reveal-up { opacity: 0; animation: revealUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.reveal-left { opacity: 0; animation: revealLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@keyframes revealFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes revealUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes revealLeft { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+
+/* Fundo Animado Mesh (Aplicado no App.jsx) */
+.v-dash-mesh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: var(--bg-primary);
+}
+
+.v-dash-mesh::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at top left, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle at top left, black 30%, transparent 70%);
+}
+
+[data-theme='dark'] .v-dash-mesh::after {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.v-orb-dash {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.15;
+  transition: transform 0.2s ease-out;
+}
+
+.v-orb-primary { width: 500px; height: 500px; background: #14b8a6; top: -10%; left: -5%; }
+.v-orb-secondary { width: 400px; height: 400px; background: #3b82f6; bottom: -5%; right: -5%; }

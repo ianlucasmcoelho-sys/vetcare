@@ -1,10 +1,15 @@
 /* Usuarios.css - Standardized Clean & Tech */
 
 .usuarios-container {
-  padding: 28px 32px;
-  background: var(--bg-primary);
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
-  font-family: 'Inter', system-ui, sans-serif;
+
+  
+  
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .usuarios-header {

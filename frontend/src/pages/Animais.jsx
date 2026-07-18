@@ -35,9 +35,10 @@ export default function Animais() {
     porte: "",
     pelagem: "",
     castrado: false,
-    alergias: "",
     doencas_cronicas: "",
-    responsavel_id: ""
+    responsavel_id: "",
+    obito: false,
+    data_obito: ""
   };
 
   const [form, setForm] = useState(initialForm);
@@ -94,7 +95,8 @@ export default function Animais() {
       const payload = {
         ...form,
         responsavel_id: Number(form.responsavel_id),
-        castrado: form.castrado ? 1 : 0
+        castrado: form.castrado ? 1 : 0,
+        obito: form.obito ? 1 : 0
       };
 
       const res = editId 
@@ -138,7 +140,9 @@ export default function Animais() {
       castrado: animal.castrado === 1,
       alergias: animal.alergias || "",
       doencas_cronicas: animal.doencas_cronicas || "",
-      responsavel_id: animal.responsavel_id || ""
+      responsavel_id: animal.responsavel_id || "",
+      obito: animal.obito === 1,
+      data_obito: animal.data_obito || ""
     });
     setEditId(animal.id);
     setShowModal(true);
@@ -189,22 +193,22 @@ export default function Animais() {
   const animaisExibidos = animaisFiltrados.slice(startIndex, endIndex);
 
   return (
-    <div className="animais-container">
+    <div className="animais-container reveal-fade">
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Animais</h1>
           <p className="page-subtitle">Gerencie os pacientes da clínica</p>
         </div>
         <div className="header-actions">
-          <button className="btn-primary" onClick={() => setShowModal(true)}>
+          <button className="v-btn-primary-glow" onClick={() => setShowModal(true)}>
             <FiPlus size={18} />
             <span>Novo Animal</span>
           </button>
         </div>
       </div>
 
-      <div className="animais-card">
-        <div className="search-section">
+      <div className="animais-card reveal-up" style={{animationDelay: '0.1s'}}>
+        <div className="search-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
           <div className="search-wrapper">
             <FiSearch className="search-icon" />
             <input
@@ -231,7 +235,7 @@ export default function Animais() {
           <div className="empty-state">
             <MdOutlinePets size={48} />
             <p>Nenhum animal encontrado</p>
-            <button className="btn-primary" onClick={() => setShowModal(true)}>
+            <button className="v-btn-primary-glow" onClick={() => setShowModal(true)}>
               <FiPlus size={16} />
               Cadastrar primeiro animal
             </button>
@@ -244,7 +248,7 @@ export default function Animais() {
                 const tutorNome = getResponsavelNome(animal.responsavel_id);
                 
                 return (
-                  <div key={animal.id} className="animal-card-item" onClick={() => navigate(`/perfil-animal/${animal.id}`)} style={{ cursor: 'pointer' }}>
+                  <div key={animal.id} className="animal-card-item v-glass-panel" onClick={() => navigate(`/perfil-animal/${animal.id}`)} style={{ cursor: 'pointer', animationDelay: `${0.1 + (0.05 * (animal.id % 10))}s` }}>
                     <div className="animal-card-header">
                       <div className="animal-avatar">
                         <MdOutlinePets size={28} />
@@ -290,6 +294,9 @@ export default function Animais() {
                     </div>
 
                     <div className="animal-card-footer">
+                      {animal.obito === 1 && (
+                        <span className="badge-obito" style={{ marginRight: '8px', background: '#fee2e2', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: '600' }}>Óbito</span>
+                      )}
                       {animal.castrado === 1 && (
                         <span className="badge-castrado" style={{ marginRight: 'auto' }}>Castrado</span>
                       )}
@@ -476,6 +483,31 @@ export default function Animais() {
                     <label htmlFor="castrado" className="input-label" style={{ cursor: 'pointer', margin: 0 }}>Animal Castrado</label>
                   </div>
 
+                  <div className="input-group" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', marginTop: '20px' }}>
+                    <input
+                      type="checkbox"
+                      name="obito"
+                      id="obito"
+                      checked={form.obito}
+                      onChange={handleChange}
+                      style={{ width: '18px', height: '18px', accentColor: '#ef4444' }}
+                    />
+                    <label htmlFor="obito" className="input-label" style={{ cursor: 'pointer', margin: 0 }}>Óbito</label>
+                  </div>
+
+                  {form.obito && (
+                    <div className="input-group">
+                      <label className="input-label">DATA DO ÓBITO</label>
+                      <input
+                        type="date"
+                        name="data_obito"
+                        className="form-input"
+                        value={form.data_obito}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  )}
+
                   <div className="input-group full-width">
                     <label className="input-label">ALERGIAS / OBSERVAÇÕES</label>
                     <textarea
@@ -494,7 +526,7 @@ export default function Animais() {
                 <button type="button" onClick={fecharModal} className="btn-secondary">
                   Cancelar
                 </button>
-                <button type="submit" className="btn-primary" disabled={loading}>
+                <button type="submit" className="v-btn-primary-glow" disabled={loading}>
                   {loading ? "Salvando..." : (editId ? "Atualizar" : "Salvar Animal")}
                 </button>
               </div>

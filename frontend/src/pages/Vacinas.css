@@ -1,29 +1,27 @@
 /* Vacinas.css - Versão harmonizada com Global.css */
 
 .vacinas-container {
-  padding: 0;
-  background: var(--bg-primary);
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+
+  
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  
   min-height: 100vh;
 }
 
-.vacinas-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
   overflow: hidden;
-  margin: 0 32px 32px 32px;
-}
 
 .filters-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  background: var(--bg-hover);
+  background: transparent;
+  border-radius: var(--radius-xl);
+  margin-bottom: 24px;
 }
 
 .search-wrapper {
@@ -33,7 +31,7 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 0.6rem 1rem;
-  background: var(--bg-card);
+  background: transparent;
   min-width: 280px;
   flex: 1;
   transition: all var(--transition-fast);
@@ -76,18 +74,14 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
-  padding: 24px;
+  padding: 0;
 }
 
-.vacina-card-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  /* Herda de .v-glass-panel */
   overflow: hidden;
   transition: all var(--transition-normal);
   display: flex;
   flex-direction: column;
-}
 
 .vacina-card-item:hover {
   transform: translateY(-4px);
@@ -100,7 +94,7 @@
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: var(--bg-card);
+  background: transparent;
   border-bottom: 1px solid var(--border-light);
 }
 
@@ -187,7 +181,7 @@
   gap: 12px;
   padding: 12px 20px;
   border-top: 1px solid var(--border-light);
-  background: var(--bg-hover);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .action-btn {
@@ -201,7 +195,7 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  background: transparent;
   color: var(--text-secondary);
 }
 

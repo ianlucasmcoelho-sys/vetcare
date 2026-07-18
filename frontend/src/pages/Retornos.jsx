@@ -216,7 +216,7 @@ export default function Retornos() {
       </div>
 
       <div className="retornos-card">
-        <div className="filters-section">
+        <div className="filters-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
           <div className="tabs-container">
             {opcoesFiltro.map((opcao) => (
               <button

@@ -1,10 +1,15 @@
 .resetar-container {
+  padding: 2rem 3rem;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-primary);
-  padding: 20px;
+  
+  
 }
 
 .resetar-card {

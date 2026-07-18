@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { 
   FiPlus, FiCalendar, FiClock, FiX, FiSearch, FiEdit2, 
   FiTrash2, FiCheckCircle, FiXCircle, FiFilter, FiUser,
-  FiInfo, FiAlertCircle, FiRefreshCw, FiHome
+  FiInfo, FiAlertCircle, FiRefreshCw, FiHome, FiScissors
 } from "react-icons/fi";
 import { MdOutlinePets, MdOutlineMedicalServices, MdOutlineVaccines } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
@@ -19,7 +19,16 @@ export default function Agenda() {
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [editId, setEditId] = useState(null);
 
+  const usuarioStr = localStorage.getItem("usuario");
+  const usuario = usuarioStr ? JSON.parse(usuarioStr) : null;
+  const plano = usuario?.clinica?.plano_id || 'free';
+  const isApenasClinica = plano === 'clinica';
+
   const tiposServico = ["Consulta", "Vacina", "Retorno", "Cirurgia", "Exame", "Emergência"];
+  if (!isApenasClinica) {
+    tiposServico.push("Banho e Tosa");
+  }
+
   const statusOptions = ["Agendado", "Confirmado", "Concluído", "Cancelado"];
 
   const [form, setForm] = useState({
@@ -161,7 +170,8 @@ export default function Agenda() {
       "Retorno": <FiRefreshCw size={14} />,
       "Cirurgia": <FiInfo size={14} />,
       "Exame": <FiSearch size={14} />,
-      "Emergência": <FiAlertCircle size={14} />
+      "Emergência": <FiAlertCircle size={14} />,
+      "Banho e Tosa": <FiScissors size={14} />
     };
     return icons[tipo] || <MdOutlineMedicalServices size={14} />;
   };
@@ -185,22 +195,22 @@ export default function Agenda() {
   });
 
   return (
-    <div className="agenda-container">
+    <div className="agenda-container reveal-fade">
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Agenda Clínica</h1>
           <p className="page-subtitle">Gerencie os horários e atendimentos</p>
         </div>
         <div className="header-actions">
-          <button className="btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
+          <button className="v-btn-primary-glow" onClick={() => { resetForm(); setShowModal(true); }}>
             <FiPlus size={18} />
             <span>Novo Agendamento</span>
           </button>
         </div>
       </div>
 
-      <div className="agenda-card">
-        <div className="filters-section">
+      <div className="agenda-card v-glass-panel reveal-up" style={{animationDelay: '0.1s'}}>
+        <div className="filters-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
           <div className="search-wrapper">
             <FiSearch className="search-icon" />
             <input
@@ -233,7 +243,7 @@ export default function Agenda() {
         ) : (
           <div className="agendamentos-list">
             {agendamentosOrdenados.map((ag) => (
-              <div key={ag.id} className={`agendamento-card-item ${ag.domiciliar ? 'domiciliar' : ''}`}>
+              <div key={ag.id} className={`agendamento-card-item v-glass-panel ${ag.domiciliar ? 'domiciliar' : ''}`} style={{ animationDelay: `${0.1 + (0.05 * (ag.id % 10))}s` }}>
                 <div className="agendamento-card-header">
                   <div className="agendamento-avatar">
                     <MdOutlinePets size={28} />
@@ -344,7 +354,7 @@ export default function Agenda() {
               </div>
               <div className="modal-footer">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancelar</button>
-                <button type="submit" className="btn-primary" disabled={loading}>{loading ? "Salvando..." : (editId ? "Atualizar" : "Agendar")}</button>
+                <button type="submit" className="v-btn-primary-glow" disabled={loading}>{loading ? "Salvando..." : (editId ? "Atualizar" : "Agendar")}</button>
               </div>
             </form>
           </div>

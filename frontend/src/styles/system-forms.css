@@ -219,3 +219,277 @@
     justify-content: center;
   }
 }
+
+/* Padrão visual único dos cadastros em todas as rotas internas. A especificidade
+   mantém o mesmo acabamento mesmo quando uma página antiga tem CSS próprio. */
+#root .layout .content .modal-overlay {
+  z-index: 1200;
+  padding: 1.5rem;
+  background: rgba(31, 41, 55, 0.58);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+#root .layout .content .modal-content {
+  width: min(100%, 39rem);
+  max-width: 39rem;
+  max-height: min(88vh, 52rem);
+  max-height: min(88dvh, 52rem);
+  color: #172033;
+  background: #fff;
+  border: 1px solid #e5eaf1;
+  border-radius: 1.25rem;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.2);
+}
+
+#root .layout .content .modal-content.large,
+#root .layout .content .modal-content.large-modal,
+#root .layout .content .modal-content.modal-emissao,
+#root .layout .content .modal-content.modal-config,
+#root .layout .content .modal-content.modal-danfe,
+#root .layout .content .modal-content.hospital-modal-premium {
+  width: min(100%, 54rem);
+  max-width: 54rem;
+}
+
+#root .layout .content .modal-header {
+  min-height: 4.625rem;
+  padding: 0.875rem 1.25rem;
+  color: #172033;
+  background: #fff;
+  border-bottom: 1px solid #e8edf4;
+}
+
+#root .layout .content .modal-title,
+#root .layout .content .modal-header h2 {
+  color: #172033;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+#root .layout .content .modal-header h2 svg,
+#root .layout .content .modal-title svg {
+  flex: 0 0 auto;
+  color: #13b6a5;
+}
+
+#root .layout .content .modal-close {
+  width: 2.25rem;
+  height: 2.25rem;
+  color: #718096;
+  background: #f1f5f9;
+  border: 0;
+  border-radius: 0.75rem;
+}
+
+#root .layout .content .modal-close:hover {
+  color: #243247;
+  background: #e7edf4;
+}
+
+#root .layout .content .modal-content .form-scroll,
+#root .layout .content .modal-content .form-scroll-area,
+#root .layout .content .modal-content form.modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+  overscroll-behavior: contain;
+}
+
+#root .layout .content .modal-content .form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.125rem 1.25rem;
+}
+
+#root .layout .content .modal-content .form-grid > .full-width,
+#root .layout .content .modal-content .form-grid > .input-group.full-width,
+#root .layout .content .modal-content .form-grid > .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+#root .layout .content .modal-content .input-group,
+#root .layout .content .modal-content .form-group {
+  gap: 0.45rem;
+}
+
+#root .layout .content .modal-content .input-label,
+#root .layout .content .modal-content .form-group > label,
+#root .layout .content .modal-content .input-group > label,
+#root .layout .content .modal-content form label:not(.checkbox-label) {
+  margin: 0;
+  color: #52627a;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.055em;
+  line-height: 1.4;
+}
+
+#root .layout .content .modal-content .form-grid input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+#root .layout .content .modal-content .form-grid select,
+#root .layout .content .modal-content .form-grid textarea,
+#root .layout .content .modal-content form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+#root .layout .content .modal-content form select,
+#root .layout .content .modal-content form textarea,
+#root .layout .content .modal-content .form-input,
+#root .layout .content .modal-content .form-textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.875rem;
+  padding: 0.7rem 0.875rem;
+  color: #263348;
+  background: #f7f9fc;
+  border: 1px solid #dce4ef;
+  border-radius: 0.75rem;
+  box-shadow: none;
+  font: inherit;
+  font-size: 0.875rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+#root .layout .content .modal-content .form-grid textarea,
+#root .layout .content .modal-content .form-textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+#root .layout .content .modal-content .form-grid input:focus,
+#root .layout .content .modal-content .form-grid select:focus,
+#root .layout .content .modal-content .form-grid textarea:focus,
+#root .layout .content .modal-content .form-input:focus,
+#root .layout .content .modal-content .form-textarea:focus {
+  outline: none;
+  background: #fff;
+  border-color: #11ae9e;
+  box-shadow: 0 0 0 3px rgba(17, 174, 158, 0.13);
+}
+
+#root .layout .content .modal-footer {
+  min-height: 5.125rem;
+  padding: 0.875rem 1.5rem;
+  background: #fff;
+  border-top: 1px solid #e8edf4;
+}
+
+#root .layout .content .modal-footer > button {
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+  box-shadow: none;
+  transform: none;
+}
+
+#root .layout .content .modal-footer > button:first-child:not(:last-child) {
+  color: #34445d;
+  background: #f1f5f9;
+  border: 1px solid #e0e7f0;
+}
+
+#root .layout .content .modal-footer > button:first-child:not(:last-child):hover {
+  background: #e8eef5;
+}
+
+#root .layout .content .modal-footer > button:last-child {
+  color: #fff;
+  background: #12aa99;
+  border: 1px solid #12aa99;
+  box-shadow: 0 5px 12px rgba(18, 170, 153, 0.17);
+}
+
+#root .layout .content .modal-footer > button:last-child:hover:not(:disabled) {
+  background: #0d988a;
+  border-color: #0d988a;
+  box-shadow: 0 7px 16px rgba(18, 170, 153, 0.23);
+}
+
+#root .layout .content .modal-footer > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+[data-theme='dark'] #root .layout .content .modal-content,
+[data-theme='dark'] #root .layout .content .modal-header,
+[data-theme='dark'] #root .layout .content .modal-content .form-scroll,
+[data-theme='dark'] #root .layout .content .modal-content .form-scroll-area,
+[data-theme='dark'] #root .layout .content .modal-content form.modal-body,
+[data-theme='dark'] #root .layout .content .modal-footer {
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+[data-theme='dark'] #root .layout .content .modal-title,
+[data-theme='dark'] #root .layout .content .modal-header h2,
+[data-theme='dark'] #root .layout .content .modal-content .input-label,
+[data-theme='dark'] #root .layout .content .modal-content .form-group > label,
+[data-theme='dark'] #root .layout .content .modal-content .input-group > label,
+[data-theme='dark'] #root .layout .content .modal-content form label:not(.checkbox-label) {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] #root .layout .content .modal-content .form-grid input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+[data-theme='dark'] #root .layout .content .modal-content .form-grid select,
+[data-theme='dark'] #root .layout .content .modal-content .form-grid textarea,
+[data-theme='dark'] #root .layout .content .modal-content form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+[data-theme='dark'] #root .layout .content .modal-content form select,
+[data-theme='dark'] #root .layout .content .modal-content form textarea,
+[data-theme='dark'] #root .layout .content .modal-content .form-input,
+[data-theme='dark'] #root .layout .content .modal-content .form-textarea {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+@media (max-width: 640px) {
+  #root .layout .content .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  #root .layout .content .modal-content,
+  #root .layout .content .modal-content.large,
+  #root .layout .content .modal-content.large-modal,
+  #root .layout .content .modal-content.modal-emissao,
+  #root .layout .content .modal-content.modal-config,
+  #root .layout .content .modal-content.modal-danfe,
+  #root .layout .content .modal-content.hospital-modal-premium {
+    width: 100%;
+    max-width: none;
+    max-height: 92vh;
+    max-height: 92dvh;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 1.125rem 1.125rem 0 0;
+  }
+
+  #root .layout .content .modal-content .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+
+  #root .layout .content .modal-content .form-grid > .full-width,
+  #root .layout .content .modal-content .form-grid > .input-group.full-width,
+  #root .layout .content .modal-content .form-grid > .form-group.full-width {
+    grid-column: 1;
+  }
+
+  #root .layout .content .modal-content .form-scroll,
+  #root .layout .content .modal-content .form-scroll-area,
+  #root .layout .content .modal-content form.modal-body {
+    padding: 1rem;
+  }
+
+  #root .layout .content .modal-footer {
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  }
+
+  #root .layout .content .modal-footer > button {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+}

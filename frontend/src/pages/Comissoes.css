@@ -246,6 +246,9 @@
 
 @media (max-width: 768px) {
   .comissoes-container { padding: 16px; }
+  .regras-grid { grid-template-columns: minmax(0, 1fr); }
+  .comissoes-tabs { overflow-x: auto; padding-bottom: 4px; }
+  .comissoes-tabs .tab-btn { flex: 0 0 auto; white-space: nowrap; }
   .pagar-bar { flex-direction: column; gap: 16px; align-items: stretch; }
   .pagar-bar button { width: 100%; }
 }

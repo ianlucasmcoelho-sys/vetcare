@@ -92,6 +92,16 @@
   margin-bottom: 2rem;
 }
 
+.printable-document-frame {
+  display: block;
+  width: 210mm;
+  min-height: 297mm;
+  flex: 0 0 auto;
+  border: 0;
+  background: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
 /* CSS para Impressão */
 @media print {
   .no-print, 
@@ -137,5 +147,11 @@
     box-shadow: none !important;
     padding: 0 !important;
     margin: 0 !important;
+  }
+
+  .printable-document-frame {
+    width: 100% !important;
+    min-height: 100vh !important;
+    box-shadow: none !important;
   }
 }

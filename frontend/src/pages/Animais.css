@@ -5,15 +5,6 @@
   background: transparent;
   font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
-
-  
-  
-  min-height: 100vh;
-}
-
-.animais-card {
-  /* Herda de .v-glass-panel */
-  overflow: hidden;
 }
 
 .search-section {
@@ -223,4 +214,64 @@
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .animais-container {
+    min-height: auto;
+    padding: 1rem 0.75rem;
+  }
+
+  .animais-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+
+  .search-section {
+    padding: 1rem 0;
+  }
+
+  .animal-card-header,
+  .animal-card-body {
+    padding: 1rem;
+  }
+
+  .animal-card-footer {
+    padding: 0.75rem 1rem;
+  }
+
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-content {
+    max-height: 92vh;
+    max-height: 92dvh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .modal-header {
+    padding: 1rem 1.25rem;
+  }
+
+  .form-scroll {
+    padding: 1.25rem;
+    max-height: calc(92dvh - 72px);
+  }
+
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .form-section-title {
+    grid-column: 1;
+  }
+
+  .info-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
 }

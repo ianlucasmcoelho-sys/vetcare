@@ -29,6 +29,9 @@ export const upsertRegra = async (req, res) => {
     }
     
     const db = await openDb();
+
+    const usuario = await db.get('SELECT id FROM usuarios WHERE id = ? AND clinica_id = ? AND ativo = 1', [usuario_id, clinica_id]);
+    if (!usuario) return res.status(404).json({ error: 'Usuário não encontrado nesta clínica.' });
     
     const regraExistente = await db.get(
       'SELECT id FROM comissoes_regras WHERE clinica_id = ? AND usuario_id = ?',
@@ -37,8 +40,8 @@ export const upsertRegra = async (req, res) => {
     
     if (regraExistente) {
       await db.run(
-        'UPDATE comissoes_regras SET tipo_comissao = ?, valor = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-        [tipo_comissao, valor, regraExistente.id]
+        'UPDATE comissoes_regras SET tipo_comissao = ?, valor = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND clinica_id = ?',
+        [tipo_comissao, valor, regraExistente.id, clinica_id]
       );
     } else {
       await db.run(

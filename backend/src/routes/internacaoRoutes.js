@@ -11,10 +11,11 @@ import {
   registrarSinaisVitais
 } from '../controllers/internacaoController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { requirePremiumFeature } from '../middlewares/subscriptionMiddleware.js';
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(authMiddleware, requirePremiumFeature);
 
 router.get('/ativas', getInternacoesAtivas);
 router.get('/historico', getHistoricoInternacoes);

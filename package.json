@@ -1,9 +1,6 @@
 {
   "dependencies": {
-    "express": "^5.2.1",
-    "react-icons": "^5.6.0",
-    "sqlite3": "^6.0.1",
-    "xlsx": "^0.18.5"
+    "sqlite3": "^6.0.1"
   },
   "name": "sistemaouropet",
   "version": "1.0.0",
@@ -13,10 +10,18 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm --prefix backend start",
+    "build": "npm ci --prefix backend && npm ci --include=dev --prefix frontend && npm --prefix frontend run build",
+    "hostinger:build": "npm ci --prefix backend && npm ci --include=dev --prefix frontend && npm --prefix frontend run build",
+    "seed:demo": "npm --prefix backend run seed:demo",
+    "provision:lifetime-admin": "npm --prefix backend run provision:lifetime-admin",
+    "audit:production": "npm audit --omit=dev && npm audit --omit=dev --prefix backend && npm audit --omit=dev --prefix frontend"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "engines": {
+    "node": ">=22.12.0"
+  }
 }

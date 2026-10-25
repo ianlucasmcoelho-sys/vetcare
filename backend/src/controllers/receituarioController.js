@@ -145,7 +145,7 @@ export const createReceita = async (req, res) => {
 
     const db = await openDb();
     
-    const animal = await db.get('SELECT id FROM animais WHERE id = ? AND clinica_id = ?', [animal_id, clinica_id]);
+    const animal = await db.get('SELECT id FROM animais WHERE id = ? AND clinica_id = ? AND responsavel_id = ?', [animal_id, clinica_id, tutor_id]);
     if (!animal) {
       return res.status(404).json({ error: 'Animal não encontrado ou sem permissão' });
     }
@@ -174,7 +174,7 @@ export const createReceita = async (req, res) => {
       ]
     );
 
-    const novaReceita = await db.get('SELECT * FROM receituario WHERE id = ?', [result.lastID]);
+    const novaReceita = await db.get('SELECT * FROM receituario WHERE id = ? AND clinica_id = ?', [result.lastID, clinica_id]);
     
     res.status(201).json({ success: true, ...novaReceita });
   } catch (error) {
@@ -206,6 +206,11 @@ export const updateReceita = async (req, res) => {
       return res.status(404).json({ error: 'Receita não encontrada ou sem permissão' });
     }
 
+    const animal = await db.get('SELECT id FROM animais WHERE id = ? AND clinica_id = ? AND responsavel_id = ?', [animal_id, clinica_id, tutor_id]);
+    if (!animal) return res.status(404).json({ error: 'O animal e o tutor precisam pertencer à mesma clínica.' });
+    const tutor = await db.get('SELECT id FROM responsaveis WHERE id = ? AND clinica_id = ?', [tutor_id, clinica_id]);
+    if (!tutor) return res.status(404).json({ error: 'Tutor não encontrado nesta clínica.' });
+
     await db.run(
       `UPDATE receituario SET
         animal_id = ?,
@@ -234,7 +239,7 @@ export const updateReceita = async (req, res) => {
       ]
     );
 
-    const receitaAtualizada = await db.get('SELECT * FROM receituario WHERE id = ?', [id]);
+    const receitaAtualizada = await db.get('SELECT * FROM receituario WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
     res.json({ success: true, ...receitaAtualizada });
   } catch (error) {
     console.error('Erro ao atualizar receita:', error);

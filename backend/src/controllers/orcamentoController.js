@@ -72,6 +72,11 @@ export const createOrcamento = async (req, res) => {
     const itensString = typeof itens === 'string' ? itens : JSON.stringify(itens);
 
     const db = await openDb();
+
+    if (animal_id) {
+      const animal = await db.get('SELECT id FROM animais WHERE id = ? AND clinica_id = ?', [animal_id, clinica_id]);
+      if (!animal) return res.status(404).json({ error: 'Animal não encontrado nesta clínica.' });
+    }
     
     const result = await db.run(
       `INSERT INTO orcamentos (
@@ -92,7 +97,7 @@ export const createOrcamento = async (req, res) => {
       ]
     );
 
-    const novoOrcamento = await db.get('SELECT * FROM orcamentos WHERE id = ?', [result.lastID]);
+    const novoOrcamento = await db.get('SELECT * FROM orcamentos WHERE id = ? AND clinica_id = ?', [result.lastID, clinica_id]);
     
     res.status(201).json({ success: true, ...novoOrcamento });
   } catch (error) {
@@ -128,6 +133,11 @@ export const updateOrcamento = async (req, res) => {
       return res.status(404).json({ error: 'Orçamento não encontrado ou sem permissão' });
     }
 
+    if (animal_id) {
+      const animal = await db.get('SELECT id FROM animais WHERE id = ? AND clinica_id = ?', [animal_id, clinica_id]);
+      if (!animal) return res.status(404).json({ error: 'Animal não encontrado nesta clínica.' });
+    }
+
     const itensString = typeof itens === 'string' ? itens : JSON.stringify(itens);
 
     await db.run(
@@ -151,7 +161,7 @@ export const updateOrcamento = async (req, res) => {
       ]
     );
 
-    const orcamentoAtualizado = await db.get('SELECT * FROM orcamentos WHERE id = ?', [id]);
+    const orcamentoAtualizado = await db.get('SELECT * FROM orcamentos WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
     res.json({ success: true, ...orcamentoAtualizado });
   } catch (error) {
     console.error('Erro ao atualizar orçamento:', error);

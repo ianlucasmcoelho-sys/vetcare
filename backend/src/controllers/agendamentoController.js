@@ -202,8 +202,8 @@ export const createAgendamento = async (req, res) => {
       FROM agendamentos a
       LEFT JOIN animais an ON a.animal_id = an.id
       LEFT JOIN responsaveis r ON an.responsavel_id = r.id
-      WHERE a.id = ?
-    `, [result]);
+      WHERE a.id = ? AND a.clinica_id = ?
+    `, [result, clinica_id]);
 
     res.status(201).json({ success: true, ...novoAgendamento });
   } catch (error) {
@@ -252,7 +252,7 @@ export const updateAgendamento = async (req, res) => {
     });
 
     const db = await openDb();
-    const atualizado = await db.get('SELECT * FROM agendamentos WHERE id = ?', [id]);
+    const atualizado = await db.get('SELECT * FROM agendamentos WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
     res.json({ success: true, ...atualizado });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -280,7 +280,7 @@ export const updateAgendamentoStatus = async (req, res) => {
       [status, id, clinica_id]
     );
 
-    const agendamentoAtualizado = await db.get('SELECT * FROM agendamentos WHERE id = ?', [id]);
+    const agendamentoAtualizado = await db.get('SELECT * FROM agendamentos WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
     res.json({ success: true, ...agendamentoAtualizado });
   } catch (error) {
     console.error('Erro ao atualizar status do agendamento:', error);

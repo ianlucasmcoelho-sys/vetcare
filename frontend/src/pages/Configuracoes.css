@@ -198,5 +198,5 @@
 @media (max-width: 768px) {
   .configuracoes-container { padding: 16px; }
   .form-row { grid-template-columns: 1fr; }
-  .config-grid { grid-template-columns: 1fr; }
+  .config-grid { grid-template-columns: minmax(0, 1fr); }
 }

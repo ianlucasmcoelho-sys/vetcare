@@ -45,8 +45,6 @@
   box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
 }
 
-  /* Herda de .v-glass-panel */
-  overflow: hidden;
 
 .filters-section {
   display: flex;

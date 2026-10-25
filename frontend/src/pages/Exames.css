@@ -336,6 +336,7 @@
 /* Responsividade */
 @media (max-width: 768px) {
   .exames-container { padding: 16px; }
+  .exames-grid { grid-template-columns: minmax(0, 1fr); }
   .form-grid { grid-template-columns: 1fr; }
   .exame-card { flex-direction: column; }
   .exame-actions { flex-direction: row; }

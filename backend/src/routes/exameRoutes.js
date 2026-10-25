@@ -7,10 +7,11 @@ import {
   deleteExame 
 } from '../controllers/exameController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { requirePremiumFeature } from '../middlewares/subscriptionMiddleware.js';
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(authMiddleware, requirePremiumFeature);
 
 router.get('/', getAllExames);
 router.get('/animal/:animalId', getExamesByAnimal);

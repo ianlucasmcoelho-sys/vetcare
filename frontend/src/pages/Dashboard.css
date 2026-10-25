@@ -3,7 +3,6 @@
 
 .v-dash-layout {
   min-height: 100vh;
-  padding: 2rem 3rem;
   font-family: 'Plus Jakarta Sans', sans-serif;
   position: relative;
   z-index: 1;
@@ -22,6 +21,9 @@
   overflow: hidden;
   pointer-events: none;
   background-color: var(--bg-primary, #f8fafc);
+  contain: strict;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 [data-theme='dark'] .v-dash-mesh {
@@ -49,13 +51,35 @@
 .v-orb-dash {
   position: absolute;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.15;
-  transition: transform 0.2s ease-out;
+  filter: blur(80px);
+  opacity: 0.12;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  pointer-events: none;
 }
 
-.v-orb-primary { width: 500px; height: 500px; background: #14b8a6; top: -10%; left: -5%; }
-.v-orb-secondary { width: 400px; height: 400px; background: #3b82f6; bottom: -5%; right: -5%; }
+@keyframes dashOrbFloat1 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(35px, 25px, 0) scale(1.05); }
+  100% { transform: translate3d(-25px, -15px, 0) scale(0.95); }
+}
+
+@keyframes dashOrbFloat2 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-30px, -20px, 0) scale(1.04); }
+  100% { transform: translate3d(25px, 30px, 0) scale(0.96); }
+}
+
+.v-orb-primary { 
+  width: 500px; height: 500px; background: #14b8a6; top: -10%; left: -5%; 
+  animation: dashOrbFloat1 22s ease-in-out infinite alternate;
+}
+.v-orb-secondary { 
+  width: 400px; height: 400px; background: #3b82f6; bottom: -5%; right: -5%; 
+  animation: dashOrbFloat2 26s ease-in-out infinite alternate;
+}
 
 /* Loading & Error States */
 .v-dash-loading, .v-dash-error {

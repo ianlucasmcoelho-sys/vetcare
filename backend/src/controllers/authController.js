@@ -1,9 +1,11 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { openDb } from '../db.js';
+import { createHash, randomBytes } from 'node:crypto';
+import { openDb, runTransaction } from '../db.js';
 import { OAuth2Client } from 'google-auth-library';
+import { enviarEmailRecuperacao } from '../services/emailService.js';
 
-const JWT_SECRET = 'vetcare_secret_key_2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'vetcare_secret_key_2024';
 const googleClient = new OAuth2Client('1057629123787-gskt2kvcok51e44dqtin4jkd93ks311q.apps.googleusercontent.com');
 
 export const login = async (req, res) => {
@@ -102,9 +104,10 @@ export const googleLogin = async (req, res) => {
 
     if (!usuario) {
       // Se não existe, cria a clínica primeiro
+      const trialExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       const resultClinica = await db.run(
-        `INSERT INTO clinicas (nome, plano_id, status_assinatura, data_criacao) VALUES (?, 1, 'ativa', CURRENT_TIMESTAMP)`,
-        [`Clínica de ${nome}`]
+        `INSERT INTO clinicas (nome, plano_id, status_assinatura, data_expiracao, data_criacao) VALUES (?, 'free', 'trial', ?, CURRENT_TIMESTAMP)`,
+        [`Clínica de ${nome}`, trialExpiresAt]
       );
       const clinicaId = resultClinica.lastID;
 
@@ -292,12 +295,21 @@ export const alterarSenha = async (req, res) => {
     const { id } = req.params;
     const { senhaAtual, novaSenha } = req.body;
 
+    if (Number(id) !== Number(req.usuario.id) && req.usuario.perfil !== 'admin') {
+      return res.status(403).json({ error: 'Você só pode alterar sua senha.' });
+    }
+
     if (!senhaAtual || !novaSenha) {
       return res.status(400).json({ error: 'Senha atual e nova senha são obrigatórias' });
     }
 
     if (novaSenha.length < 6) {
       return res.status(400).json({ error: 'A nova senha deve ter no mínimo 6 caracteres' });
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
+    if (!passwordRegex.test(novaSenha)) {
+      return res.status(400).json({ error: 'Senha fraca. Deve ter no mínimo 8 caracteres, maiúscula, minúscula, número e símbolo.' });
     }
 
     const db = await openDb();
@@ -312,7 +324,7 @@ export const alterarSenha = async (req, res) => {
     }
 
     const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
-    await db.run('UPDATE usuarios SET senha = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [novaSenhaHash, id]);
+    await db.run('UPDATE usuarios SET senha = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND clinica_id = ?', [novaSenhaHash, id, req.usuario.clinica_id]);
 
     res.json({ success: true, message: 'Senha alterada com sucesso' });
   } catch (error) {
@@ -324,6 +336,12 @@ export const alterarSenha = async (req, res) => {
 export const cadastroClinica = async (req, res) => {
   try {
     const { clinica_nome, clinica_cnpj, clinica_telefone, clinica_email, admin_nome, admin_email, admin_senha } = req.body;
+    
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
+    if (!passwordRegex.test(admin_senha)) {
+      return res.status(400).json({ error: 'Senha fraca. Deve ter no mínimo 8 caracteres, maiúscula, minúscula, número e símbolo.' });
+    }
+
     const db = await openDb();
 
     const adminExistente = await db.get('SELECT id FROM usuarios WHERE email = ?', [admin_email]);
@@ -331,13 +349,10 @@ export const cadastroClinica = async (req, res) => {
       return res.status(400).json({ error: 'E-mail do administrador já cadastrado' });
     }
 
-    const hoje = new Date();
-    hoje.setDate(hoje.getDate() + 7);
-    const expiracaoTrial = hoje.toISOString();
-
+    const trialExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const clinicaResult = await db.run(
       `INSERT INTO clinicas (nome, cnpj, telefone, email, status_assinatura, data_expiracao, plano_id) VALUES (?, ?, ?, ?, 'trial', ?, 'free')`,
-      [clinica_nome, clinica_cnpj, clinica_telefone, clinica_email, expiracaoTrial]
+      [clinica_nome, clinica_cnpj, clinica_telefone, clinica_email, trialExpiresAt]
     );
     const clinicaId = clinicaResult.lastID;
 
@@ -348,7 +363,7 @@ export const cadastroClinica = async (req, res) => {
     );
     const userId = userResult.lastID;
 
-    const token = jwt.sign(
+      const token = jwt.sign(
       { id: userId, email: admin_email, nome: admin_nome, perfil: 'admin', clinica_id: clinicaId },
       JWT_SECRET,
       { expiresIn: '8h' }
@@ -368,7 +383,7 @@ export const cadastroClinica = async (req, res) => {
         id: clinicaId,
         nome: clinica_nome,
         status_assinatura: 'trial',
-        data_expiracao: expiracaoTrial,
+        data_expiracao: trialExpiresAt,
         plano_id: 'free',
         onboarding_concluido: 0
       }
@@ -384,16 +399,33 @@ export const recuperarSenha = async (req, res) => {
     const { email } = req.body;
     const db = await openDb();
     
-    const usuario = await db.get('SELECT id, nome, email FROM usuarios WHERE email = ?', [email]);
-    if (!usuario) {
-      return res.status(404).json({ error: 'E-mail não encontrado' });
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      return res.status(400).json({ error: 'Informe um e-mail válido.' });
     }
 
-    const token = jwt.sign({ id: usuario.id, email: usuario.email }, JWT_SECRET, { expiresIn: '1h' });
-    const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/resetar-senha?token=${token}`;
+    const usuario = await db.get('SELECT id, nome, email FROM usuarios WHERE LOWER(email) = ?', [normalizedEmail]);
+    if (!usuario) {
+      return res.status(202).json({ success: true, message: 'Se o e-mail estiver cadastrado, as instruções serão enviadas.' });
+    }
 
-    console.log('Link de recuperação:', resetLink);
-    res.json({ success: true, message: 'E-mail de recuperação enviado' });
+    const rawToken = randomBytes(32).toString('hex');
+    const tokenHash = createHash('sha256').update(rawToken).digest('hex');
+    await db.run('DELETE FROM password_reset_tokens WHERE user_id = ?', [usuario.id]);
+    await db.run(
+      'INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)',
+      [usuario.id, tokenHash, Date.now() + 60 * 60 * 1000]
+    );
+    
+    try {
+      await enviarEmailRecuperacao(usuario.email, usuario.nome, rawToken);
+    } catch (emailError) {
+      await db.run('DELETE FROM password_reset_tokens WHERE token_hash = ? AND used_at IS NULL', [tokenHash]);
+      console.error('Falha ao enviar e-mail de recuperação:', emailError.code || emailError.message);
+      return res.status(503).json({ error: 'O serviço de e-mail está indisponível. Tente novamente mais tarde.' });
+    }
+
+    res.status(202).json({ success: true, message: 'Se o e-mail estiver cadastrado, as instruções serão enviadas.' });
   } catch (error) {
     console.error('Erro na recuperação:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
@@ -403,16 +435,38 @@ export const recuperarSenha = async (req, res) => {
 export const resetarSenha = async (req, res) => {
   try {
     const { token, novaSenha } = req.body;
-    const decoded = jwt.verify(token, JWT_SECRET);
-    
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
+    if (typeof novaSenha !== 'string' || !passwordRegex.test(novaSenha)) {
+      return res.status(400).json({ error: 'Senha fraca. Use ao menos 8 caracteres, maiúscula, minúscula, número e símbolo.' });
+    }
+    if (typeof token !== 'string' || !/^[a-f0-9]{64}$/i.test(token)) {
+      return res.status(400).json({ error: 'Token inválido ou expirado.' });
+    }
     const db = await openDb();
-    const senhaHash = await bcrypt.hash(novaSenha, 10);
-    await db.run('UPDATE usuarios SET senha = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [senhaHash, decoded.id]);
-
-    res.json({ success: true, message: 'Senha alterada com sucesso!' });
+    const senhaHash = await bcrypt.hash(novaSenha, 12);
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    const resetToken = await db.get(
+      'SELECT id, user_id FROM password_reset_tokens WHERE token_hash = ? AND used_at IS NULL AND expires_at > ?',
+      [tokenHash, Date.now()]
+    );
+    if (!resetToken) return res.status(400).json({ error: 'Token inválido ou expirado.' });
+    const changed = await runTransaction(async (tx) => {
+      const claimed = await tx.run(
+        'UPDATE password_reset_tokens SET used_at = CURRENT_TIMESTAMP WHERE id = ? AND used_at IS NULL AND expires_at > ?',
+        [resetToken.id, Date.now()]
+      );
+      if (!claimed.changes) return false;
+      const updated = await tx.run(
+        'UPDATE usuarios SET senha = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [senhaHash, resetToken.user_id]
+      );
+      return updated.changes > 0;
+    });
+    if (!changed) return res.status(400).json({ error: 'Token inválido ou expirado.' });
+    return res.json({ success: true, message: 'Senha alterada com sucesso!' });
   } catch (error) {
     console.error('Erro ao resetar senha:', error);
-    res.status(500).json({ error: 'Token inválido ou expirado' });
+    return res.status(400).json({ error: 'Token inválido ou expirado.' });
   }
 };
 

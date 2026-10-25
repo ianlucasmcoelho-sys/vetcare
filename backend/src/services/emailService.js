@@ -1,35 +1,34 @@
 // backend/src/services/emailService.js
 import nodemailer from 'nodemailer';
 
-// Configuração (modo desenvolvimento - simulação)
-const MODO_TESTE = true; // Em produção, mude para false e configure SMTP
+// Configuração dinâmica: se as credenciais SMTP estiverem definidas, ativa envio real
+const isSmtpConfigured = Boolean(process.env.SMTP_USER && process.env.SMTP_PASS);
+const MODO_TESTE = process.env.EMAIL_TEST_MODE === 'true' || (!isSmtpConfigured && process.env.NODE_ENV !== 'production');
 
-// Configuração real (para quando for usar)
-const transporter = MODO_TESTE ? null : nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: process.env.SMTP_PORT || 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+const getTransporter = () => {
+  if (!isSmtpConfigured) return null;
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587', 10),
+    secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+};
 
-// Simular envio (modo teste)
+const transporter = isSmtpConfigured ? getTransporter() : null;
+
+// Simular envio (modo desenvolvimento ou sem SMTP configurado)
 const simularEnvio = (email, assunto, html) => {
-  console.log('=' .repeat(60));
-  console.log('📧 [E-MAIL - MODO TESTE] 📧');
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
+  console.log('📧 [E-MAIL - SIMULAÇÃO / DEV] 📧');
+  console.log('='.repeat(60));
   console.log(`📨 Para: ${email}`);
   console.log(`📌 Assunto: ${assunto}`);
-  console.log(`📝 Conteúdo:`);
-  console.log('-'.repeat(40));
-  // Remove tags HTML para exibição
-  const textoLimpo = html.replace(/<[^>]*>/g, ' ');
-  console.log(textoLimpo.substring(0, 500));
-  console.log('-'.repeat(40));
-  console.log('✅ E-mail seria enviado (modo teste)');
-  console.log('=' .repeat(60));
+  console.log(`📝 Configure SMTP_USER e SMTP_PASS no .env para envio real.`);
+  console.log('='.repeat(60));
   
   return { success: true, mode: 'test', email, assunto };
 };
@@ -46,8 +45,7 @@ const enviarReal = async (email, assunto, html) => {
     console.log(`📧 E-mail enviado para ${email}`);
     return info;
   } catch (error) {
-    console.error('❌ Erro ao enviar e-mail:', error);
-    return null;
+    throw error;
   }
 };
 
@@ -55,14 +53,17 @@ const enviarReal = async (email, assunto, html) => {
 export const enviarEmail = async (email, assunto, html) => {
   if (MODO_TESTE) {
     return simularEnvio(email, assunto, html);
-  } else {
-    return enviarReal(email, assunto, html);
   }
+  if (!transporter) throw new Error('SMTP não configurado para envio de e-mail.');
+  return enviarReal(email, assunto, html);
 };
 
 // Enviar e-mail de recuperação de senha
 export const enviarEmailRecuperacao = async (email, nome, token) => {
-  const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/resetar-senha?token=${token}`;
+  const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/resetar-senha#token=${encodeURIComponent(token)}`;
+  const nomeSeguro = String(nome || '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
   
   const assunto = 'Recuperação de Senha - VetCare';
   const html = `
@@ -71,7 +72,7 @@ export const enviarEmailRecuperacao = async (email, nome, token) => {
         <h1 style="color: white; margin: 0;">🐾 VetCare</h1>
       </div>
       <div style="padding: 30px; background: #f8fafc;">
-        <h2 style="color: #1e293b;">Olá, ${nome}!</h2>
+        <h2 style="color: #1e293b;">Olá, ${nomeSeguro}!</h2>
         <p style="color: #475569;">Recebemos uma solicitação para redefinir sua senha.</p>
         <p style="color: #475569;">Clique no botão abaixo para criar uma nova senha:</p>
         <div style="text-align: center; margin: 30px 0;">

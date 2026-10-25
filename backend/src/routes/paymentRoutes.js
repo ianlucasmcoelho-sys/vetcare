@@ -13,16 +13,19 @@ if (process.env.STRIPE_SECRET_KEY) {
 
 router.post('/checkout', authMiddleware, async (req, res) => {
   try {
-    const { plano_id, duracao } = req.body; // 'pro', 'premium', e duração em meses
+    const { plano_id } = req.body;
     const { clinica_id } = req.usuario;
+    if (!['complete', 'pro', 'premium', 'clinica'].includes(plano_id)) {
+      return res.status(400).json({ error: 'Plano inválido.' });
+    }
+    const planoFinal = 'complete';
 
     // Se não tiver Stripe configurado, criar um link simulado para testes
     if (!stripe) {
       console.log('⚠️ [MOCK STRIPE] Gerando link de checkout simulado para clínica:', clinica_id);
       
       // Vamos gerar um link falso que redireciona de volta para o frontend com sucesso
-      const meses = duracao || 1;
-      const mockCheckoutUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/pagamento-sucesso?session_id=mock_${Date.now()}&plano_id=${plano_id}&duracao=${meses}`;
+      const mockCheckoutUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/pagamento-sucesso?session_id=mock_${Date.now()}&plano_id=complete`;
       
       return res.json({ url: mockCheckoutUrl, mock: true });
     }
@@ -35,9 +38,9 @@ router.post('/checkout', authMiddleware, async (req, res) => {
           price_data: {
             currency: 'brl',
             product_data: {
-              name: `Plano ${plano_id.toUpperCase()} - Vet Care`,
+              name: 'VetCare Completo',
             },
-            unit_amount: plano_id === 'premium' ? 14900 : 9900, // em centavos
+            unit_amount: 9700,
             recurring: {
               interval: 'month',
             },
@@ -49,6 +52,8 @@ router.post('/checkout', authMiddleware, async (req, res) => {
       success_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/pagamento-sucesso?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/planos`,
       client_reference_id: clinica_id.toString(),
+      metadata: { plano_id: planoFinal },
+      subscription_data: { metadata: { clinica_id: clinica_id.toString(), plano_id: planoFinal } },
     });
 
     res.json({ url: session.url, mock: false });
@@ -58,24 +63,30 @@ router.post('/checkout', authMiddleware, async (req, res) => {
   }
 });
 
-// Mock Webhook (Usado pelo frontend para simular a confirmação do pagamento)
+// Mock Webhook (Usado pelo frontend para simular a confirmação do pagamento em desenvolvimento)
 router.post('/mock-webhook-success', authMiddleware, async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({ error: 'Mock webhooks estão desativados em produção.' });
+  }
+
   try {
     const { clinica_id } = req.usuario;
-    const { plano_id, duracao } = req.body;
+    const { plano_id } = req.body;
+    if (!String(req.body.session_id || '').startsWith('mock_')) {
+      return res.status(400).json({ error: 'Sessão de demonstração inválida.' });
+    }
+    if (plano_id && !['pro', 'premium', 'clinica', 'complete'].includes(plano_id)) {
+      return res.status(400).json({ error: 'Plano inválido.' });
+    }
     const db = await openDb();
 
-    // Renova pela quantidade de meses especificada (ou 1 mês por padrão)
-    const meses = duracao ? parseInt(duracao, 10) : 1;
-    const planoFinal = plano_id || 'premium';
-
     const hoje = new Date();
-    hoje.setMonth(hoje.getMonth() + meses);
+    hoje.setMonth(hoje.getMonth() + 1);
     const expiracao = hoje.toISOString();
 
     await db.run(
-      'UPDATE clinicas SET status_assinatura = "ativo", data_expiracao = ?, plano_id = ? WHERE id = ?',
-      [expiracao, planoFinal, clinica_id]
+      "UPDATE clinicas SET status_assinatura = 'active', data_expiracao = ?, plano_id = ? WHERE id = ?",
+      [expiracao, 'complete', clinica_id]
     );
 
     res.json({ success: true, message: 'Assinatura ativada com sucesso (MOCK)' });

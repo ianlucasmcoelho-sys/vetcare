@@ -1,91 +1,141 @@
-import React, { useState } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar.jsx";
 import TopBar from "./components/TopBar.jsx";
 import MenuToggle from "./components/MenuToggle.jsx";
-import Login from "./pages/Login.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import Responsaveis from "./pages/Responsaveis.jsx";
-import Animais from "./pages/Animais.jsx";
-import Historico from "./pages/Historico.jsx";
-import Retornos from "./pages/Retornos.jsx";
-import Agenda from "./pages/Agenda.jsx";
-import Vacinas from "./pages/Vacinas.jsx";
-import Estoque from "./pages/Estoque.jsx";
-import Financeiro from "./pages/Financeiro.jsx";
-import Documentos from "./pages/Documentos.jsx";
-import Retencao from "./pages/Retencao.jsx";
-import CentralArquivos from "./pages/CentralArquivos.jsx";
-import PerfilTutor from "./pages/PerfilTutor.jsx";
-import PerfilAnimal from "./pages/PerfilAnimal.jsx";
-import Receituario from "./pages/Receituario.jsx";
-import Relatorios from "./pages/Relatorios.jsx";
-import Configuracoes from "./pages/Configuracoes.jsx";
-import MeuPerfil from "./pages/MeuPerfil.jsx";
-import CadastroClinica from "./pages/CadastroClinica.jsx";
-import ResetarSenha from "./pages/ResetarSenha.jsx";
-import Usuarios from "./pages/Usuarios.jsx";
-import Internacao from "./pages/Internacao.jsx";
-import Exames from "./pages/Exames.jsx";
-import TemplateManager from "./pages/TemplateManager.jsx";
-import TabelaPrecos from "./pages/TabelaPrecos.jsx";
-import Landing from "./pages/Landing.jsx";
-import Orcamentos from "./pages/Orcamentos.jsx";
-import Planos from "./pages/Planos.jsx";
-import Checkout from "./pages/Checkout.jsx";
-import PagamentoSucesso from "./pages/PagamentoSucesso.jsx";
-import Onboarding from "./pages/Onboarding.jsx";
-import Automacoes from "./pages/Automacoes.jsx";
-import Comissoes from "./pages/Comissoes.jsx";
-import BanhoTosa from "./pages/BanhoTosa.jsx";
+import ErrorBoundary from "./components/ErrorBoundary.jsx";
+const Login = lazy(() => import("./pages/Login.jsx"));
+const Dashboard = lazy(() => import("./pages/Dashboard.jsx"));
+const Responsaveis = lazy(() => import("./pages/Responsaveis.jsx"));
+const Animais = lazy(() => import("./pages/Animais.jsx"));
+const Historico = lazy(() => import("./pages/Historico.jsx"));
+const Retornos = lazy(() => import("./pages/Retornos.jsx"));
+const Agenda = lazy(() => import("./pages/Agenda.jsx"));
+const Vacinas = lazy(() => import("./pages/Vacinas.jsx"));
+const Estoque = lazy(() => import("./pages/Estoque.jsx"));
+const Financeiro = lazy(() => import("./pages/Financeiro.jsx"));
+const Documentos = lazy(() => import("./pages/Documentos.jsx"));
+const Retencao = lazy(() => import("./pages/Retencao.jsx"));
+const CentralArquivos = lazy(() => import("./pages/CentralArquivos.jsx"));
+const PerfilTutor = lazy(() => import("./pages/PerfilTutor.jsx"));
+const PerfilAnimal = lazy(() => import("./pages/PerfilAnimal.jsx"));
+const Receituario = lazy(() => import("./pages/Receituario.jsx"));
+const Relatorios = lazy(() => import("./pages/Relatorios.jsx"));
+const Configuracoes = lazy(() => import("./pages/Configuracoes.jsx"));
+const MeuPerfil = lazy(() => import("./pages/MeuPerfil.jsx"));
+const CadastroClinica = lazy(() => import("./pages/CadastroClinica.jsx"));
+const ResetarSenha = lazy(() => import("./pages/ResetarSenha.jsx"));
+const RecuperarSenha = lazy(() => import("./pages/RecuperarSenha.jsx"));
+const Usuarios = lazy(() => import("./pages/Usuarios.jsx"));
+const Internacao = lazy(() => import("./pages/Internacao.jsx"));
+const Exames = lazy(() => import("./pages/Exames.jsx"));
+const TemplateManager = lazy(() => import("./pages/TemplateManager.jsx"));
+const TabelaPrecos = lazy(() => import("./pages/TabelaPrecos.jsx"));
+const Landing = lazy(() => import("./pages/Landing.jsx"));
+const Orcamentos = lazy(() => import("./pages/Orcamentos.jsx"));
+const Planos = lazy(() => import("./pages/Planos.jsx"));
+const Checkout = lazy(() => import("./pages/Checkout.jsx"));
+const PagamentoSucesso = lazy(() => import("./pages/PagamentoSucesso.jsx"));
+const Onboarding = lazy(() => import("./pages/Onboarding.jsx"));
+const Comissoes = lazy(() => import("./pages/Comissoes.jsx"));
+const BanhoTosa = lazy(() => import("./pages/BanhoTosa.jsx"));
+const Assinatura = lazy(() => import("./pages/Assinatura.jsx"));
+const NotasFiscais = lazy(() => import("./pages/NotasFiscais.jsx"));
 import "./App.css";
 import "./Global.css";
 
 function AppLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem("vetcare.sidebarCollapsed") === "true";
+    } catch {
+      return false;
+    }
+  });
   const location = useLocation();
   const token = localStorage.getItem("token");
-  const [mousePos, setMouseX] = useState({ x: 0, y: 0 });
 
-  const handleMouseMove = (e) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * 20;
-    const y = (e.clientY / window.innerHeight - 0.5) * 20;
-    setMouseX({ x, y });
-  };
-
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
+  const toggleMobileMenu = () => setMobileMenuOpen((open) => !open);
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
   };
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed((collapsed) => {
+      const next = !collapsed;
+      try {
+        localStorage.setItem("vetcare.sidebarCollapsed", String(next));
+      } catch {
+        // O estado continua funcionando mesmo quando o armazenamento está indisponível.
+      }
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    closeMobileMenu();
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    const handleEscape = (event) => {
+      if (event.key === "Escape") closeMobileMenu();
+    };
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [mobileMenuOpen]);
+
   const usuarioStr = localStorage.getItem("usuario");
   const usuario = usuarioStr ? JSON.parse(usuarioStr) : null;
   const plano = usuario?.clinica?.plano_id || 'free';
-  const status = usuario?.clinica?.status_assinatura || 'trial';
-  const isApenasClinica = plano === 'clinica' && status !== 'trial';
+  const status = (usuario?.clinica?.status_assinatura || 'trial').toLowerCase();
+  const dataExpiracao = usuario?.clinica?.data_expiracao ? new Date(usuario.clinica.data_expiracao) : null;
+  const isPeriodoTeste = ['free', 'trial'].includes(status) && dataExpiracao && new Date() <= dataExpiracao;
+  const isAssinaturaValida = ['active', 'ativo', 'ativa', 'lifetime', 'vitalicio'].includes(status) || Boolean(isPeriodoTeste);
+  const isFreePlan = plano === 'free' && status !== 'vitalicio';
 
   // Rotas Públicas (Quando NÃO está logado)
   if (!token) {
     return (
+      <Suspense fallback={<div role="status" aria-live="polite" className="route-loading">Carregando...</div>}>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<CadastroClinica />} />
+        <Route path="/recuperar-senha" element={<RecuperarSenha />} />
         <Route path="/resetar-senha" element={<ResetarSenha />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </Suspense>
+    );
+  }
+
+  if (location.pathname === "/resetar-senha" || location.pathname === "/recuperar-senha") {
+    return (
+      <Suspense fallback={<div role="status" aria-live="polite" className="route-loading">Carregando...</div>}>
+        <Routes>
+          <Route path="/resetar-senha" element={<ResetarSenha />} />
+          <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Suspense>
     );
   }
 
   // Rotas Privadas (Quando ESTÁ logado)
   const isLoginPage = location.pathname === "/login";
   const isCadastroPage = location.pathname === "/cadastro";
-  const isResetPage = location.pathname === "/resetar-senha";
   
-  if (isLoginPage || isCadastroPage || isResetPage) {
+  if (isLoginPage || isCadastroPage) {
     return <Navigate to="/" replace />;
   }
 
@@ -96,40 +146,55 @@ function AppLayout() {
   const isPlanosPage = location.pathname === "/planos" || location.pathname === "/checkout" || location.pathname === "/pagamento-sucesso";
   const isFullScreenPage = isPlanosPage || isOnboardingPage;
 
-  if (needsOnboarding && !isOnboardingPage && !isPlanosPage) {
+  // Bloqueio de Acesso: Redireciona para /planos se a assinatura estiver vencida ou expirada
+  if (!isAssinaturaValida && !isPlanosPage) {
+    return <Navigate to="/planos" replace />;
+  }
+
+  if (needsOnboarding && !isOnboardingPage && !isPlanosPage && isAssinaturaValida) {
     return <Navigate to="/onboarding" replace />;
   }
 
   if (isFullScreenPage) {
     return (
+      <Suspense fallback={<div role="status" aria-live="polite" className="route-loading">Carregando...</div>}>
       <Routes>
         <Route path="/planos" element={<Planos />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/pagamento-sucesso" element={<PagamentoSucesso />} />
         <Route path="/onboarding" element={<Onboarding usuario={usuario} />} />
       </Routes>
+      </Suspense>
     );
   }
 
   return (
-    <div className="layout v-global-mesh-layout" onMouseMove={handleMouseMove}>
+    <div className={`layout v-global-mesh-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       {/* Global Background Ambience */}
       <div className="v-dash-mesh">
-        <div className="v-orb-dash v-orb-primary" style={{ transform: `translate(${mousePos.x * 2}px, ${mousePos.y * 2}px)` }}></div>
-        <div className="v-orb-dash v-orb-secondary" style={{ transform: `translate(${-mousePos.x * 2}px, ${-mousePos.y * 2}px)` }}></div>
+        <div className="v-orb-dash v-orb-primary"></div>
+        <div className="v-orb-dash v-orb-secondary"></div>
       </div>
 
       <MenuToggle isOpen={mobileMenuOpen} onClick={toggleMobileMenu} />
-      <div 
+      <button
+        type="button"
         className={`sidebar-overlay ${mobileMenuOpen ? "active" : ""}`} 
-        onClick={closeMobileMenu} 
+        onClick={closeMobileMenu}
+        aria-label="Fechar menu de navegação"
+        aria-hidden={!mobileMenuOpen}
+        tabIndex={mobileMenuOpen ? 0 : -1}
       />
-      <div className={`sidebar ${mobileMenuOpen ? "mobile-open" : ""}`}>
-        <Sidebar onLinkClick={closeMobileMenu} />
-      </div>
-      <TopBar />
+      <Sidebar
+        isCollapsed={sidebarCollapsed}
+        isMobileOpen={mobileMenuOpen}
+        onToggle={toggleSidebar}
+        onLinkClick={closeMobileMenu}
+      />
+      <TopBar isCollapsed={sidebarCollapsed} />
       <main className="content">
-        <Routes>
+        <Suspense fallback={<div role="status" aria-live="polite" className="route-loading">Carregando...</div>}>
+      <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/responsaveis" element={<Responsaveis />} />
           <Route path="/perfil-tutor/:id" element={<PerfilTutor />} />
@@ -141,27 +206,31 @@ function AppLayout() {
           <Route path="/vacinas" element={<Vacinas />} />
           <Route path="/tabela-precos" element={<TabelaPrecos />} />
           <Route path="/receituario" element={<Receituario />} />
-          <Route path="/financeiro" element={<Financeiro />} />
+          <Route path="/financeiro" element={isFreePlan ? <Navigate to="/planos" /> : <Financeiro />} />
           <Route path="/documentos" element={<Documentos />} />
           <Route path="/arquivos" element={<CentralArquivos />} />
+          <Route path="/assinatura" element={<Assinatura />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/perfil" element={<MeuPerfil />} />
           <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/templates" element={<TemplateManager />} />
           <Route path="/orcamentos" element={<Orcamentos />} />
+          <Route path="/notas-fiscais" element={isFreePlan ? <Navigate to="/planos" /> : <NotasFiscais />} />
 
           {/* Premium / Blocked Features for Vet Clínica */}
-          <Route path="/internacao" element={<Internacao />} />
-          <Route path="/exames" element={<Exames />} />
-          <Route path="/servicos" element={<Estoque />} />
-          <Route path="/comissoes" element={isApenasClinica ? <Navigate to="/planos" /> : <Comissoes />} />
-          <Route path="/crm" element={isApenasClinica ? <Navigate to="/planos" /> : <Retencao />} />
-          <Route path="/automacoes" element={isApenasClinica ? <Navigate to="/planos" /> : <Automacoes />} />
-          <Route path="/relatorios" element={isApenasClinica ? <Navigate to="/planos" /> : <Relatorios />} />
-          <Route path="/banhotosa" element={isApenasClinica ? <Navigate to="/planos" /> : <BanhoTosa />} />
+          <Route path="/internacao" element={isFreePlan ? <Navigate to="/planos" /> : <Internacao />} />
+          <Route path="/exames" element={isFreePlan ? <Navigate to="/planos" /> : <Exames />} />
+          <Route path="/estoque" element={isFreePlan ? <Navigate to="/planos" /> : <Estoque />} />
+          <Route path="/servicos" element={isFreePlan ? <Navigate to="/planos" /> : <Estoque />} />
+          <Route path="/comissoes" element={isFreePlan ? <Navigate to="/planos" /> : <Comissoes />} />
+          <Route path="/crm" element={isFreePlan ? <Navigate to="/planos" /> : <Retencao />} />
+          <Route path="/automacoes" element={<Navigate to="/" replace />} />
+          <Route path="/relatorios" element={isFreePlan ? <Navigate to="/planos" /> : <Relatorios />} />
+          <Route path="/banhotosa" element={isFreePlan ? <Navigate to="/planos" /> : <BanhoTosa />} />
           
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+      </Suspense>
       </main>
     </div>
   );
@@ -169,8 +238,10 @@ function AppLayout() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AppLayout />
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AppLayout />
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }

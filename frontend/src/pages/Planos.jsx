@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { apiPost } from '../services/api';
-import { FiCheck, FiLogOut, FiZap, FiShield, FiStar } from 'react-icons/fi';
+import { FiCheck, FiLogOut, FiZap, FiShield, FiStar, FiHeart } from 'react-icons/fi';
 import './Planos.css';
 
 const Planos = () => {
-  const [loading, setLoading] = useState(false);
   const [usuario, setUsuario] = useState(null);
-  const [mousePos, setMouseX] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const userStr = localStorage.getItem('usuario');
@@ -15,14 +12,8 @@ const Planos = () => {
     }
   }, []);
 
-  const handleMouseMove = (e) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * 20;
-    const y = (e.clientY / window.innerHeight - 0.5) * 20;
-    setMouseX({ x, y });
-  };
-
-  const handleAssinar = (planoId) => {
-    window.location.href = `/checkout?plano=${planoId}`;
+  const handleAssinar = () => {
+    window.location.href = '/checkout?plano=complete';
   };
 
   const handleLogout = () => {
@@ -32,7 +23,7 @@ const Planos = () => {
   };
 
   return (
-    <div className="v-planos-layout" onMouseMove={handleMouseMove}>
+    <div className="v-planos-layout">
       {/* Mesh Background */}
       <div className="v-planos-mesh">
         <div className="v-planos-orb v-orb-purple"></div>
@@ -55,67 +46,56 @@ const Planos = () => {
         <div className="v-planos-header reveal-bottom">
           <h1 className="v-planos-title">Escolha o seu nível de <span>Excelência</span></h1>
           <p className="v-planos-subtitle">
-            Sua clínica <strong>{usuario?.clinica?.nome || 'Veterinária'}</strong> atingiu o limite do período de testes. 
-            Assine agora para continuar transformando a saúde animal com a melhor tecnologia do mercado.
+            Escolha o acesso ideal para <strong>{usuario?.clinica?.nome || 'sua clínica'}</strong>. O teste gratuito dura 7 dias; depois, assine por R$ 97 ao mês para continuar usando o sistema.
           </p>
         </div>
 
-        <div className="v-planos-grid" style={{ 
-            transform: `perspective(1000px) rotateY(${mousePos.x * 0.1}deg) rotateX(${-mousePos.y * 0.1}deg)` 
-        }}>
+        <div className="v-planos-grid">
           
-          {/* Card Básico */}
           <div className="v-plano-card v-glass-panel reveal-left">
-            <div className="v-plano-icon-wrapper"><FiZap /></div>
-            <h2>Essencial</h2>
-            <p className="v-plano-desc">O fundamental para manter sua clínica operando com eficiência.</p>
+            <div className="v-plano-icon-wrapper"><FiHeart /></div>
+            <h2>Free</h2>
+            <p className="v-plano-desc">Recursos essenciais para começar a organizar a rotina da clínica.</p>
             <div className="v-plano-price">
-              R$ 99<span>/mês</span>
+              Grátis<span> por 7 dias</span>
             </div>
             
             <ul className="v-plano-features">
-              <li><FiCheck className="v-check-icon" /> Até 500 atendimentos/mês</li>
-              <li><FiCheck className="v-check-icon" /> Cadastro ilimitado de pets</li>
-              <li><FiCheck className="v-check-icon" /> Prontuário e Histórico</li>
-              <li className="v-feature-disabled"><FiCheck className="v-check-icon" /> Controle de Estoque Completo</li>
-              <li className="v-feature-disabled"><FiCheck className="v-check-icon" /> DRE Financeiro e Relatórios</li>
+              <li><FiCheck className="v-check-icon" /> Dashboard e agenda</li>
+              <li><FiCheck className="v-check-icon" /> Tutores e cadastro de pacientes</li>
+              <li><FiCheck className="v-check-icon" /> Prontuário e histórico clínico</li>
+              <li><FiCheck className="v-check-icon" /> Sem cartão durante o período de teste</li>
             </ul>
 
-            <button 
-              className="v-btn-plano-secondary"
-              onClick={() => handleAssinar('pro')}
-              disabled={loading}
-            >
-              {loading ? 'Processando...' : 'Assinar Essencial'}
+            <button className="v-btn-plano-secondary" onClick={() => { window.location.href = '/'; }}>
+              Acessar o sistema
             </button>
           </div>
 
-          {/* Card Premium */}
           <div className="v-plano-card v-plano-premium v-glass-panel reveal-right">
-            <div className="v-premium-badge">RECOMENDADO</div>
+            <div className="v-premium-badge">PLANO COMPLETO</div>
             <div className="v-premium-glow"></div>
             
             <div className="v-plano-icon-wrapper v-premium-icon"><FiStar /></div>
-            <h2>Premium Elite</h2>
-            <p className="v-plano-desc">Gestão completa e inteligência de dados para clínicas de alta performance.</p>
+            <h2>VetCare Completo</h2>
+            <p className="v-plano-desc">Todos os módulos de gestão em uma única assinatura mensal.</p>
             <div className="v-plano-price v-price-premium">
-              R$ 149<span>/mês</span>
+              R$ 97<span>/mês</span>
             </div>
             
             <ul className="v-plano-features">
-              <li><FiCheck className="v-check-icon v-premium-check" /> Atendimentos <strong>Ilimitados</strong></li>
-              <li><FiCheck className="v-check-icon v-premium-check" /> Controle de Estoque Completo</li>
-              <li><FiCheck className="v-check-icon v-premium-check" /> DRE Financeiro e Relatórios VIP</li>
-              <li><FiCheck className="v-check-icon v-premium-check" /> Agendamento e Notificações (Em breve)</li>
-              <li><FiCheck className="v-check-icon v-premium-check" /> Suporte Prioritário (WhatsApp)</li>
+              <li><FiCheck className="v-check-icon v-premium-check" /> Todos os recursos do Free</li>
+              <li><FiCheck className="v-check-icon v-premium-check" /> Estoque, internação e exames</li>
+              <li><FiCheck className="v-check-icon v-premium-check" /> Financeiro, relatórios e comissões</li>
+              <li><FiCheck className="v-check-icon v-premium-check" /> CRM e gestão de banho e tosa</li>
+              <li><FiCheck className="v-check-icon v-premium-check" /> Cancele quando quiser</li>
             </ul>
 
             <button 
               className="v-btn-plano-primary-3d"
-              onClick={() => handleAssinar('premium')}
-              disabled={loading}
+              onClick={handleAssinar}
             >
-              {loading ? 'Processando...' : 'Desbloquear Premium'}
+              Assinar por R$ 97/mês
             </button>
           </div>
 

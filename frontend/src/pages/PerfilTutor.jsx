@@ -52,7 +52,9 @@ export default function PerfilTutor() {
       const res = await apiGet(`/animais?responsavel_id=${id}`);
       if (res && res.ok) {
         const data = await res.json();
-        setAnimais(Array.isArray(data) ? data : []);
+        const lista = Array.isArray(data) ? data : [];
+        const filtrados = lista.filter(a => String(a.responsavel_id) === String(id));
+        setAnimais(filtrados);
       }
     } catch (err) {
       console.error("Erro ao carregar animais:", err);
@@ -64,8 +66,10 @@ export default function PerfilTutor() {
       const animaisRes = await apiGet(`/animais?responsavel_id=${id}`);
       if (animaisRes && animaisRes.ok) {
         const animaisData = await animaisRes.json();
+        const lista = Array.isArray(animaisData) ? animaisData : [];
+        const animaisDoTutor = lista.filter(a => String(a.responsavel_id) === String(id));
         let todasConsultas = [];
-        for (const animal of (Array.isArray(animaisData) ? animaisData : [])) {
+        for (const animal of animaisDoTutor) {
           const consultasRes = await apiGet(`/agendamentos/animal/${animal.id}`);
           if (consultasRes && consultasRes.ok) {
             const consultasData = await consultasRes.json();
@@ -84,8 +88,10 @@ export default function PerfilTutor() {
       const animaisRes = await apiGet(`/animais?responsavel_id=${id}`);
       if (animaisRes && animaisRes.ok) {
         const animaisData = await animaisRes.json();
+        const lista = Array.isArray(animaisData) ? animaisData : [];
+        const animaisDoTutor = lista.filter(a => String(a.responsavel_id) === String(id));
         let todasVacinas = [];
-        for (const animal of (Array.isArray(animaisData) ? animaisData : [])) {
+        for (const animal of animaisDoTutor) {
           const vacinasRes = await apiGet(`/vacinas/animal/${animal.id}`);
           if (vacinasRes && vacinasRes.ok) {
             const vacinasData = await vacinasRes.json();

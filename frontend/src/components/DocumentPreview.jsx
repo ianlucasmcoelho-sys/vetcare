@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useRef } from 'react';
 import { FiPrinter, FiX } from 'react-icons/fi';
 import './DocumentPreview.css';
 
@@ -10,6 +10,7 @@ import './DocumentPreview.css';
  * @param {function} onClose - Função para fechar o preview
  */
 const DocumentPreview = ({ html, css, dados, onClose }) => {
+  const documentFrame = useRef(null);
   
   // Função para processar placeholders no frontend (mesma lógica do backend para redundância)
   const processarTemplate = (templateHtml, info) => {
@@ -50,9 +51,15 @@ const DocumentPreview = ({ html, css, dados, onClose }) => {
   };
 
   const htmlFinal = processarTemplate(html, dados);
+  const isolatedDocument = useMemo(() => {
+    const policy = "default-src 'none'; img-src data: blob:; style-src 'unsafe-inline'; font-src data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+    return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${policy}"><style>${css || ''}\nbody { width: 210mm; min-height: 297mm; box-sizing: border-box; margin: 0 auto; padding: 20mm; background: #fff; } @media print { body { width: auto; min-height: auto; margin: 0 !important; } }</style></head><body>${htmlFinal}</body></html>`;
+  }, [css, htmlFinal]);
 
   const handlePrint = () => {
-    window.print();
+    const frameWindow = documentFrame.current?.contentWindow;
+    frameWindow?.focus();
+    frameWindow?.print();
   };
 
   return (
@@ -71,10 +78,12 @@ const DocumentPreview = ({ html, css, dados, onClose }) => {
         </div>
         
         <div className="doc-content-wrapper">
-          <style dangerouslySetInnerHTML={{ __html: css }} />
-          <div 
-            className="printable-document" 
-            dangerouslySetInnerHTML={{ __html: htmlFinal }} 
+          <iframe
+            ref={documentFrame}
+            className="printable-document-frame"
+            title="Pré-visualização do documento"
+            sandbox="allow-same-origin allow-modals"
+            srcDoc={isolatedDocument}
           />
         </div>
       </div>

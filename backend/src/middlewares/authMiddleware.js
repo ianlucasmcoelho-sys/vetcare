@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-const JWT_SECRET = 'vetcare_secret_key_2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'vetcare_secret_key_2024';
 
 import { openDb } from '../db.js';
 
@@ -22,7 +22,10 @@ export const authMiddleware = async (req, res, next) => {
 
     // --- SaaS Subscription Check ---
     // Bypass for payment/billing routes so they can actually pay
-    if (req.originalUrl.includes('/pagamento') || req.originalUrl.includes('/planos')) {
+    const isBillingRoute = req.originalUrl.includes('/pagamento')
+      || req.originalUrl.includes('/planos')
+      || ['/api/asaas/subscribe', '/api/asaas/status'].some((path) => req.originalUrl.startsWith(path));
+    if (isBillingRoute) {
       return next();
     }
 
@@ -39,18 +42,24 @@ export const authMiddleware = async (req, res, next) => {
       return next();
     }
 
+    // Contas Free têm sete dias de avaliação. Sem vencimento cadastrado, o acesso é negado.
+    if (['free', 'trial'].includes(status_assinatura) && !data_expiracao) {
+      await db.run("UPDATE clinicas SET status_assinatura = 'vencido' WHERE id = ?", [decoded.clinica_id]);
+      return res.status(402).json({ error: 'Período gratuito encerrado', code: 'SUBSCRIPTION_EXPIRED', message: 'Seu período gratuito de 7 dias terminou. Assine o VetCare Completo para continuar.' });
+    }
+
     if (data_expiracao) {
       const expirationDate = new Date(data_expiracao);
       const now = new Date();
 
       if (now > expirationDate) {
         if (status_assinatura !== 'vencido') {
-          await db.run('UPDATE clinicas SET status_assinatura = "vencido" WHERE id = ?', [decoded.clinica_id]);
+          await db.run("UPDATE clinicas SET status_assinatura = 'vencido' WHERE id = ?", [decoded.clinica_id]);
         }
         return res.status(402).json({ 
           error: 'Assinatura vencida', 
           code: 'SUBSCRIPTION_EXPIRED',
-          message: 'Seu período de acesso terminou. Por favor, assine um plano para continuar.' 
+          message: 'Seu período gratuito ou assinatura terminou. Assine o VetCare Completo para continuar.' 
         });
       }
     }

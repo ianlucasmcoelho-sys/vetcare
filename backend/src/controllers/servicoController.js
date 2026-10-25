@@ -148,7 +148,7 @@ export const createServico = async (req, res) => {
       ]
     );
 
-    const novoServico = await db.get('SELECT * FROM servicos WHERE id = ?', [result.lastID]);
+    const novoServico = await db.get('SELECT * FROM servicos WHERE id = ? AND clinica_id = ?', [result.lastID, clinica_id]);
     
     res.status(201).json({ success: true, ...novoServico });
   } catch (error) {
@@ -225,7 +225,7 @@ export const updateServico = async (req, res) => {
       ]
     );
 
-    const servicoAtualizado = await db.get('SELECT * FROM servicos WHERE id = ?', [id]);
+    const servicoAtualizado = await db.get('SELECT * FROM servicos WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
     res.json({ success: true, ...servicoAtualizado });
   } catch (error) {
     console.error('Erro ao atualizar item:', error);

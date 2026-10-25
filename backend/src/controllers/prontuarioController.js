@@ -119,6 +119,14 @@ export const createProntuario = async (req, res) => {
     }
 
     const db = await openDb();
+    if (animal_id) {
+      const animal = await db.get('SELECT id FROM animais WHERE id = ? AND clinica_id = ?', [animal_id, clinica_id]);
+      if (!animal) return res.status(404).json({ error: 'Animal não encontrado nesta clínica.' });
+    }
+    if (veterinario_id) {
+      const veterinarioDaClinica = await db.get('SELECT id FROM usuarios WHERE id = ? AND clinica_id = ?', [veterinario_id, clinica_id]);
+      if (!veterinarioDaClinica) return res.status(404).json({ error: 'Veterinário não encontrado nesta clínica.' });
+    }
     const result = await db.run(
       `INSERT INTO prontuarios (
         clinica_id, animal_id, pet_nome, tutor_nome, 
@@ -152,8 +160,8 @@ export const createProntuario = async (req, res) => {
       FROM prontuarios p
       LEFT JOIN animais a ON p.animal_id = a.id
       LEFT JOIN responsaveis r ON a.responsavel_id = r.id
-      WHERE p.id = ?
-    `, [result.lastID]);
+      WHERE p.id = ? AND p.clinica_id = ?
+    `, [result.lastID, clinica_id]);
     
     res.status(201).json(novoProntuario);
   } catch (error) {
@@ -190,6 +198,15 @@ export const updateProntuario = async (req, res) => {
     const existe = await db.get('SELECT id FROM prontuarios WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
     if (!existe) {
       return res.status(404).json({ error: 'Prontuário não encontrado ou sem permissão' });
+    }
+
+    if (animal_id) {
+      const animal = await db.get('SELECT id FROM animais WHERE id = ? AND clinica_id = ?', [animal_id, clinica_id]);
+      if (!animal) return res.status(404).json({ error: 'Animal não encontrado nesta clínica.' });
+    }
+    if (veterinario_id) {
+      const veterinarioDaClinica = await db.get('SELECT id FROM usuarios WHERE id = ? AND clinica_id = ?', [veterinario_id, clinica_id]);
+      if (!veterinarioDaClinica) return res.status(404).json({ error: 'Veterinário não encontrado nesta clínica.' });
     }
 
     await db.run(
@@ -237,8 +254,8 @@ export const updateProntuario = async (req, res) => {
       FROM prontuarios p
       LEFT JOIN animais a ON p.animal_id = a.id
       LEFT JOIN responsaveis r ON a.responsavel_id = r.id
-      WHERE p.id = ?
-    `, [id]);
+      WHERE p.id = ? AND p.clinica_id = ?
+    `, [id, clinica_id]);
     res.json(prontuarioAtualizado);
   } catch (error) {
     console.error('Erro ao atualizar prontuário:', error);

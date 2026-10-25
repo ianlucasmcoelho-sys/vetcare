@@ -61,6 +61,10 @@ export const createFinanceiro = async (req, res) => {
     }
 
     const result = await runTransaction(async (db) => {
+      if (veterinario_id) {
+        const veterinario = await db.get('SELECT id FROM usuarios WHERE id = ? AND clinica_id = ? AND ativo = 1', [veterinario_id, clinica_id]);
+        if (!veterinario) throw new Error('Veterinário não encontrado nesta clínica.');
+      }
       const financeiroRes = await db.run(
         `INSERT INTO financeiro (
           clinica_id, descricao, categoria, valor, tipo, data, metodo_pagamento, observacoes, veterinario_id
@@ -109,7 +113,7 @@ export const createFinanceiro = async (req, res) => {
     });
 
     const db = await openDb();
-    const novaTransacao = await db.get('SELECT * FROM financeiro WHERE id = ?', [result]);
+    const novaTransacao = await db.get('SELECT * FROM financeiro WHERE id = ? AND clinica_id = ?', [result, clinica_id]);
     res.status(201).json({ success: true, ...novaTransacao });
   } catch (error) {
     console.error('Erro ao criar transação:', error);
@@ -157,7 +161,7 @@ export const updateFinanceiro = async (req, res) => {
     });
 
     const db = await openDb();
-    const transacaoAtualizada = await db.get('SELECT * FROM financeiro WHERE id = ?', [result]);
+    const transacaoAtualizada = await db.get('SELECT * FROM financeiro WHERE id = ? AND clinica_id = ?', [result, clinica_id]);
     res.json({ success: true, ...transacaoAtualizada });
   } catch (error) {
     console.error('Erro ao atualizar transação:', error.message);

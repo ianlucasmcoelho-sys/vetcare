@@ -1,5 +1,6 @@
 // frontend/src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { API_URL } from '../services/api.js';
 
 const AuthContext = createContext({});
 
@@ -10,7 +11,7 @@ export function AuthProvider({ children }) {
 
   const carregarClinica = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/configuracoes`, {
+      const response = await fetch(`${API_URL}/configuracoes`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {

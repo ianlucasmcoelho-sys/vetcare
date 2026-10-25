@@ -65,7 +65,7 @@ export const createExame = async (req, res) => {
       [clinica_id, animal_id, tipo_exame, data_solicitacao, laboratorio]
     );
 
-    const novoExame = await db.get('SELECT * FROM exames WHERE id = ?', [result.lastID]);
+    const novoExame = await db.get('SELECT * FROM exames WHERE id = ? AND clinica_id = ?', [result.lastID, clinica_id]);
     res.status(201).json({ success: true, ...novoExame });
   } catch (error) {
     console.error('Erro ao criar exame:', error);
@@ -97,7 +97,7 @@ export const updateExame = async (req, res) => {
       [data_resultado, resultado, status, laboratorio, id, clinica_id]
     );
 
-    const atualizado = await db.get('SELECT * FROM exames WHERE id = ?', [id]);
+    const atualizado = await db.get('SELECT * FROM exames WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
     res.json({ success: true, ...atualizado });
   } catch (error) {
     console.error('Erro ao atualizar exame:', error);

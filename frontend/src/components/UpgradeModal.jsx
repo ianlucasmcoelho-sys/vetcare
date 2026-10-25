@@ -18,7 +18,7 @@ export default function UpgradeModal({ isOpen, onClose, featureName }) {
         </div>
         
         <h2>Recurso Premium</h2>
-        <p>O módulo de <strong>{featureName}</strong> é exclusivo do plano <strong>Premium Elite</strong>.</p>
+        <p>O módulo de <strong>{featureName}</strong> está incluído no plano <strong>VetCare Completo</strong>, por R$ 97 ao mês.</p>
         
         <div className="v-upgrade-features">
           <div className="v-upgrade-badge"><FiStar /> Gestão Ilimitada</div>

@@ -66,7 +66,7 @@ export default function Onboarding({ usuario }) {
         {step === 2 && (
           <div className="onboarding-step">
             <h2 className="onboarding-title">O que você tem acesso?</h2>
-            <p className="onboarding-subtitle">Seu plano atual é o <strong>{isComplete ? "Vet Complete" : "Vet Clínica"}</strong>. Aqui estão seus novos super poderes:</p>
+            <p className="onboarding-subtitle">Seu plano atual é o <strong>{isComplete ? "VetCare Completo" : "Free"}</strong>. Aqui estão os recursos disponíveis:</p>
             
             <div className="features-grid">
               <div className="feature-card">

@@ -24,7 +24,7 @@ export const registrarMovimentacao = async (req, res) => {
       if (novaQtde < 0) throw new Error('Saldo insuficiente em estoque');
 
       // 3. Atualizar saldo no produto
-      await db.run('UPDATE servicos SET quantidade = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [novaQtde, produto_id]);
+      await db.run('UPDATE servicos SET quantidade = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND clinica_id = ?', [novaQtde, produto_id, clinica_id]);
 
       // 4. Registrar log de movimentação
       await db.run(`

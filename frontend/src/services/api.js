@@ -1,10 +1,14 @@
 // frontend/src/services/api.js
 const getApiUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl && !envUrl.includes('192.168.1.163')) {
-    return envUrl;
+  if (envUrl) {
+    return envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl;
   }
   if (typeof window !== 'undefined' && window.location) {
+    // Se estiver em HTTPS ou produção com domínio, usa a mesma origem via proxy reverso (/api)
+    if (window.location.protocol === 'https:' || import.meta.env.PROD) {
+      return `${window.location.origin}/api`;
+    }
     return `http://${window.location.hostname}:3001/api`;
   }
   return 'http://localhost:3001/api';
@@ -35,8 +39,11 @@ export const api = async (endpoint, options = {}) => {
     if (response.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('usuario');
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/cadastro') {
-        window.location.href = '/login';
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('session-expired'));
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/cadastro') {
+          window.location.href = '/login?reason=expired';
+        }
       }
       return null;
     }

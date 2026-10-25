@@ -78,6 +78,10 @@ export const createRetorno = async (req, res) => {
     }
 
     const db = await openDb();
+    if (consulta_id) {
+      const consulta = await db.get('SELECT id FROM agendamentos WHERE id = ? AND clinica_id = ?', [consulta_id, clinica_id]);
+      if (!consulta) return res.status(404).json({ error: 'Consulta não encontrada nesta clínica.' });
+    }
     const result = await db.run(
       `INSERT INTO retornos (
         clinica_id, consulta_id, pet_nome, tutor_nome, data_retorno, 
@@ -96,7 +100,7 @@ export const createRetorno = async (req, res) => {
       ]
     );
 
-    const novoRetorno = await db.get('SELECT * FROM retornos WHERE id = ?', [result.lastID]);
+    const novoRetorno = await db.get('SELECT * FROM retornos WHERE id = ? AND clinica_id = ?', [result.lastID, clinica_id]);
     
     res.status(201).json(novoRetorno);
   } catch (error) {
@@ -129,6 +133,11 @@ export const updateRetorno = async (req, res) => {
       return res.status(404).json({ error: 'Retorno não encontrado ou sem permissão' });
     }
 
+    if (consulta_id) {
+      const consulta = await db.get('SELECT id FROM agendamentos WHERE id = ? AND clinica_id = ?', [consulta_id, clinica_id]);
+      if (!consulta) return res.status(404).json({ error: 'Consulta não encontrada nesta clínica.' });
+    }
+
     await db.run(
       `UPDATE retornos SET
         consulta_id = ?,
@@ -155,7 +164,7 @@ export const updateRetorno = async (req, res) => {
       ]
     );
 
-    const retornoAtualizado = await db.get('SELECT * FROM retornos WHERE id = ?', [id]);
+    const retornoAtualizado = await db.get('SELECT * FROM retornos WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
     res.json(retornoAtualizado);
   } catch (error) {
     console.error('Erro ao atualizar retorno:', error);
@@ -186,7 +195,7 @@ export const updateRetornoStatus = async (req, res) => {
       [status, id, clinica_id]
     );
 
-    const retornoAtualizado = await db.get('SELECT * FROM retornos WHERE id = ?', [id]);
+    const retornoAtualizado = await db.get('SELECT * FROM retornos WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
     res.json(retornoAtualizado);
   } catch (error) {
     console.error('Erro ao atualizar status do retorno:', error);

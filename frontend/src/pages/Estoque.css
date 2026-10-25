@@ -68,8 +68,6 @@
 .stat-card.success .stat-icon { background: #f0fdf4; color: #16a34a; }
 
 /* Main Card */
-  /* Herda de .v-glass-panel */
-  overflow: hidden;
 
 .tabs-header {
   display: flex;
@@ -539,7 +537,7 @@
 @media (max-width: 768px) {
   .estoque-container { padding: 16px; }
   .tabs-header { flex-direction: column; align-items: stretch; }
-  .tabs-header .search-wrapper { min-width: 100%; }
-  .produtos-grid { grid-template-columns: 1fr; padding: 16px; }
+  .tabs-header .search-wrapper { min-width: 0; width: 100%; }
+  .produtos-grid { grid-template-columns: minmax(0, 1fr); padding: 12px 0; }
   .stats-grid { grid-template-columns: 1fr; }
 }

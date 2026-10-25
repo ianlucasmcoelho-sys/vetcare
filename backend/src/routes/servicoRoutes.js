@@ -12,10 +12,11 @@ import {
   deleteServico
 } from '../controllers/servicoController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { requirePremiumFeature } from '../middlewares/subscriptionMiddleware.js';
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(authMiddleware, requirePremiumFeature);
 
 // Rotas de serviços/estoque
 router.get('/', getAllServicos);

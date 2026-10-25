@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { apiPost } from '../services/api';
 import { FiCheckCircle } from 'react-icons/fi';
 
 const PagamentoSucesso = () => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [status, setStatus] = useState('Processando pagamento...');
 
   useEffect(() => {
@@ -13,19 +12,18 @@ const PagamentoSucesso = () => {
     const planoId = searchParams.get('plano_id');
     const duracao = searchParams.get('duracao');
 
-    if (sessionId) {
-      // Se for ambiente de testes (MOCK) ou ainda sem webhook configurado:
-      // Vamos acionar a rota mock para liberar a conta agora.
+    if (sessionId?.startsWith('mock_')) {
       apiPost('/pagamento/mock-webhook-success', { session_id: sessionId, plano_id: planoId, duracao: duracao })
-        .then(() => {
+        .then((response) => {
+          if (!response?.ok) throw new Error('Não foi possível confirmar o pagamento de demonstração.');
           setStatus('Pagamento aprovado! Redirecionando...');
           
           // Atualiza o plano no localStorage para refletir no sistema
           const usuarioStr = localStorage.getItem("usuario");
-          if (usuarioStr && planoId) {
+          if (usuarioStr) {
             const usuario = JSON.parse(usuarioStr);
-            usuario.clinica.plano_id = planoId;
-            usuario.clinica.status_assinatura = 'ativa';
+            if (planoId) usuario.clinica.plano_id = 'complete';
+            usuario.clinica.status_assinatura = 'active';
             localStorage.setItem("usuario", JSON.stringify(usuario));
           }
 
@@ -34,12 +32,14 @@ const PagamentoSucesso = () => {
           }, 2000);
         })
         .catch(() => {
-          setStatus('Erro ao confirmar pagamento. Contate o suporte.');
+          setStatus('A confirmação do pagamento de demonstração falhou. Volte ao painel e tente novamente.');
         });
+    } else if (sessionId) {
+      setStatus('Pagamento recebido. A liberação da assinatura depende da confirmação segura do gateway; atualize o painel em instantes.');
     } else {
       setStatus('Sessão inválida.');
     }
-  }, [searchParams, navigate]);
+  }, [searchParams]);
 
   return (
     <div style={{
@@ -53,7 +53,7 @@ const PagamentoSucesso = () => {
       textAlign: 'center'
     }}>
       <FiCheckCircle size={80} color="var(--success-color)" style={{ marginBottom: '1.5rem' }} />
-      <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Oba! Tudo certo.</h1>
+      <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Status do pagamento</h1>
       <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>{status}</p>
     </div>
   );

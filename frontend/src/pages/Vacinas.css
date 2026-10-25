@@ -12,7 +12,6 @@
   min-height: 100vh;
 }
 
-  overflow: hidden;
 
 .filters-section {
   display: flex;
@@ -77,11 +76,6 @@
   padding: 0;
 }
 
-  /* Herda de .v-glass-panel */
-  overflow: hidden;
-  transition: all var(--transition-normal);
-  display: flex;
-  flex-direction: column;
 
 .vacina-card-item:hover {
   transform: translateY(-4px);
@@ -212,7 +206,10 @@
 }
 
 @media (max-width: 768px) {
-  .vacinas-card { margin: 16px; }
-  .filters-section { flex-direction: column; align-items: stretch; }
+  .vacinas-container { padding: 1rem 0.75rem; }
+  .vacinas-card { margin: 0; }
+  .filters-section { flex-direction: column; align-items: stretch; padding: 1rem 0; }
+  .search-wrapper { min-width: 0; width: 100%; }
+  .vacinas-list { grid-template-columns: minmax(0, 1fr); }
   .status-filters { justify-content: center; }
 }

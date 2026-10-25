@@ -1,66 +1,48 @@
 import stripeLib from 'stripe';
-import { openDb } from '../db.js';
+import { runTransaction } from '../db.js';
 
-let stripe;
-if (process.env.STRIPE_SECRET_KEY) {
-  stripe = stripeLib(process.env.STRIPE_SECRET_KEY);
-}
+const stripe = process.env.STRIPE_SECRET_KEY ? stripeLib(process.env.STRIPE_SECRET_KEY) : null;
 
 export const handleStripeWebhook = async (req, res) => {
-  const sig = req.headers['stripe-signature'];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
+  if (!stripe || !endpointSecret) {
+    return res.status(503).json({ error: 'Webhook Stripe não configurado.' });
+  }
   let event;
-
-  // Só valida criptografia se tiver a chave configurada no .env
-  if (stripe && endpointSecret) {
-    try {
-      // O req.body precisa ser o formato RAW passado pelo express.raw()
-      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-    } catch (err) {
-      console.error('⚠️ [Stripe] Erro na assinatura do Webhook:', err.message);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-  } else {
-    // Modo Fallback/Simulado se não tiver Stripe real configurado
-    try {
-      // No modo fallback, o express.raw preencheu um buffer, precisamos fazer parse pra JSON manual
-      const payloadString = req.body.toString('utf8');
-      event = JSON.parse(payloadString);
-    } catch (e) {
-      return res.status(400).send(`Webhook Error: Fallback JSON parse failed`);
-    }
+  try {
+    event = stripe.webhooks.constructEvent(req.body, req.headers['stripe-signature'], endpointSecret);
+  } catch (err) {
+    console.warn('Assinatura do webhook Stripe inválida:', err.message);
+    return res.status(400).json({ error: 'Webhook inválido.' });
   }
-
-  // Manipular o evento de sucesso de checkout
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    
-    // O client_reference_id guarda o ID da clínica
-    const clinica_id = session.client_reference_id;
-    
-    if (clinica_id) {
-      try {
-        const db = await openDb();
-        
-        // Define +30 dias de acesso (Pode ser melhorado para ler a data do próprio Stripe depois)
-        const hoje = new Date();
-        hoje.setDate(hoje.getDate() + 30);
-        const novaDataExpiracao = hoje.toISOString();
-        
-        await db.run(
-          'UPDATE clinicas SET status_assinatura = "ativo", data_expiracao = ? WHERE id = ?',
-          [novaDataExpiracao, clinica_id]
+    const session = event.data?.object;
+    const clinicId = Number(session?.client_reference_id);
+    const planId = session?.metadata?.plano_id;
+    if (!Number.isSafeInteger(clinicId) || clinicId <= 0 || session?.mode !== 'subscription' || !['clinica', 'complete'].includes(planId)) {
+      return res.status(400).json({ error: 'Sessão de pagamento inválida.' });
+    }
+    if (session.payment_status !== 'paid') return res.status(200).json({ received: true, pending: true });
+    try {
+      const updated = await runTransaction(async (db) => {
+        const eventInsert = await db.run(
+          'INSERT INTO processed_webhook_events (provider, event_id) VALUES (?, ?) ON CONFLICT(provider, event_id) DO NOTHING',
+          ['stripe', event.id]
         );
-        
-        console.log(`✅ [Stripe Webhook] Pagamento aprovado! Clínica ${clinica_id} renovada até ${novaDataExpiracao}`);
-      } catch (error) {
-        console.error(`❌ [Stripe Webhook] Erro ao atualizar banco de dados para clínica ${clinica_id}:`, error);
-        return res.status(500).send('Database Error');
-      }
+        if (!eventInsert.changes) return 'duplicate';
+        const clinic = await db.get('SELECT id, data_expiracao FROM clinicas WHERE id = ?', [clinicId]);
+        if (!clinic) throw new Error('Clínica não encontrada.');
+        const currentExpiry = clinic.data_expiracao ? new Date(clinic.data_expiracao) : new Date();
+        const expiry = Number.isNaN(currentExpiry.getTime()) || currentExpiry < new Date() ? new Date() : currentExpiry;
+        expiry.setDate(expiry.getDate() + 30);
+        await db.run('UPDATE clinicas SET status_assinatura = ?, data_expiracao = ?, plano_id = ? WHERE id = ?', ['active', expiry.toISOString(), planId, clinicId]);
+        return 'updated';
+      });
+      if (updated === 'duplicate') return res.status(200).json({ received: true, duplicate: true });
+    } catch (error) {
+      console.error('Falha ao processar evento Stripe:', error);
+      return res.status(500).json({ error: 'Falha ao processar evento.' });
     }
   }
-
-  // O Stripe exige que retornemos 200 OK para saber que recebemos
-  res.status(200).json({ received: true });
+  return res.status(200).json({ received: true });
 };

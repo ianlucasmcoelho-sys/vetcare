@@ -14,10 +14,13 @@
   --bg-card: #ffffff;
   --bg-card-rgb: 255, 255, 255;
   --bg-hover: #f1f5f9;
+  --bg-sidebar: #ffffff;
   
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --text-main: #0f172a;
   
   --border-color: #e2e8f0;
   --border-light: #f1f5f9;
@@ -29,7 +32,7 @@
   --danger: #ef4444;
   --danger-rgb: 239, 68, 68;
 
-  /* SISTEMA DE SOMBRAS (Layered Shadows) */
+  /* SISTEMA DE SOMBRAS */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -57,10 +60,13 @@
   --bg-card: #0f172a;
   --bg-card-rgb: 15, 23, 42;
   --bg-hover: #1e293b;
+  --bg-sidebar: #0a0f1e;
   
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
+  --text-light: #475569;
+  --text-main: #f8fafc;
   
   --border-color: #1e293b;
   --border-light: #0f172a;
@@ -81,7 +87,22 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   line-height: 1.5;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+}
+
+/* GPU Accelerated Compositor Layers */
+.topbar,
+.sidebar,
+.v-top-nav,
+.v-whatsapp-float {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Tipografia */
@@ -92,60 +113,33 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .page-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 800;
   letter-spacing: -1px;
   color: var(--text-primary);
   margin-bottom: 0.25rem;
 }
 
-/* Page Header Standard - Sticky Support */
+/* ===== Page Header Standard ===== */
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1.5rem;
-  
-  position: sticky;
-  top: var(--topbar-height);
-  z-index: 90;
+  padding: 0.5rem 0;
   background-color: transparent;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 1rem 0;
-  margin-top: -1rem; /* Absorb container padding */
-  border-bottom: 1px solid transparent;
   transition: all 0.3s ease;
-}
-
-/* Glass effect when stuck (simulated via transition if possible, but keep simple) */
-.page-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--border-color);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-[data-theme='dark'] .page-header {
-  background-color: transparent;
 }
 
 .page-subtitle {
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
-.header-info {
-  flex: 1;
-}
+.header-info { flex: 1; }
 
 .header-actions {
   display: flex;
@@ -153,23 +147,16 @@ h1, h2, h3, h4, h5, h6 {
   gap: 12px;
 }
 
-/* Scrollbar Customizada */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-}
+/* ===== Scrollbar Customizada ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: 10px;
-  border: 2px solid var(--bg-primary);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
-}
+::-webkit-scrollbar-thumb:hover { background: var(--text-light); }
 
-/* Inputs e Forms */
+/* ===== Inputs e Forms ===== */
 input, select, textarea {
   background-color: var(--bg-card);
   color: var(--text-primary);
@@ -178,6 +165,7 @@ input, select, textarea {
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  font-family: inherit;
 }
 
 input:focus, select:focus, textarea:focus {
@@ -186,7 +174,7 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
 }
 
-/* Botões Modernos */
+/* ===== Botões do Sistema ===== */
 .btn-primary {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #ffffff;
@@ -200,6 +188,7 @@ input:focus, select:focus, textarea:focus {
   gap: 0.5rem;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.25);
+  font-family: inherit;
 }
 
 .btn-primary:hover {
@@ -207,11 +196,9 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.35);
 }
 
-.btn-primary:active {
-  transform: translateY(0);
-}
+.btn-primary:active { transform: translateY(0); }
 
-/* Utilitários */
+/* ===== Glass Effect ===== */
 .glass-effect {
   background: rgba(var(--bg-card-rgb), 0.7);
   backdrop-filter: blur(12px);
@@ -219,12 +206,11 @@ input:focus, select:focus, textarea:focus {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* ===== Animações Globais ===== */
+.fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -260,6 +246,7 @@ input:focus, select:focus, textarea:focus {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-family: inherit;
 }
 .v-btn-primary-glow:hover { 
   transform: translateY(-2px); 
@@ -275,7 +262,7 @@ input:focus, select:focus, textarea:focus {
 @keyframes revealUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes revealLeft { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 
-/* Fundo Animado Mesh (Aplicado no App.jsx) */
+/* Fundo Animado Mesh com Aceleração por GPU */
 .v-dash-mesh {
   position: fixed;
   inset: 0;
@@ -283,6 +270,9 @@ input:focus, select:focus, textarea:focus {
   overflow: hidden;
   pointer-events: none;
   background-color: var(--bg-primary);
+  contain: strict;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .v-dash-mesh::after {
@@ -290,8 +280,8 @@ input:focus, select:focus, textarea:focus {
   position: absolute;
   inset: 0;
   background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: radial-gradient(circle at top left, black 30%, transparent 70%);
   -webkit-mask-image: radial-gradient(circle at top left, black 30%, transparent 70%);
@@ -299,17 +289,39 @@ input:focus, select:focus, textarea:focus {
 
 [data-theme='dark'] .v-dash-mesh::after {
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
 }
 
 .v-orb-dash {
   position: absolute;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.15;
-  transition: transform 0.2s ease-out;
+  filter: blur(80px);
+  opacity: 0.12;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  pointer-events: none;
 }
 
-.v-orb-primary { width: 500px; height: 500px; background: #14b8a6; top: -10%; left: -5%; }
-.v-orb-secondary { width: 400px; height: 400px; background: #3b82f6; bottom: -5%; right: -5%; }
+@keyframes globalOrbFloat1 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(35px, 25px, 0) scale(1.05); }
+  100% { transform: translate3d(-25px, -15px, 0) scale(0.95); }
+}
+
+@keyframes globalOrbFloat2 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-30px, -20px, 0) scale(1.04); }
+  100% { transform: translate3d(25px, 30px, 0) scale(0.96); }
+}
+
+.v-orb-primary { 
+  width: 500px; height: 500px; background: #14b8a6; top: -10%; left: -5%; 
+  animation: globalOrbFloat1 22s ease-in-out infinite alternate;
+}
+.v-orb-secondary { 
+  width: 400px; height: 400px; background: #3b82f6; bottom: -5%; right: -5%; 
+  animation: globalOrbFloat2 26s ease-in-out infinite alternate;
+}

@@ -21,8 +21,6 @@
 }
 
 /* Card Principal e Busca */
-  /* Herda de .v-glass-panel */
-  overflow: hidden;
 
 .search-section {
   padding: 20px 24px;
@@ -40,11 +38,6 @@
 }
 
 /* Card de Paciente - Padrão "Responsaveis" */
-  /* Herda de .v-glass-panel */
-  overflow: hidden;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
 
 .paciente-card-item:hover {
   transform: translateY(-6px);

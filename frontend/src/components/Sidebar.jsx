@@ -1,126 +1,170 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { usePermission } from "../hooks/usePermission";
-import UpgradeModal from "./UpgradeModal";
-import "./Sidebar.css";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import {
-  TbLayoutDashboard, TbUser, TbPaw, TbCalendar, TbHistory,
-  TbRefresh, TbCube, TbCurrencyDollar, TbVaccine, TbFileText,
-  TbReport, TbSettings, TbUsers, TbActivity, TbFlask, TbReceiptTax, TbMessageCircle
-} from "react-icons/tb";
-import { FiLock, FiScissors } from "react-icons/fi";
+  TbLayoutDashboard,
+  TbCalendar,
+  TbUsers,
+  TbPaw,
+  TbStethoscope,
+  TbBed,
+  TbFlask,
+  TbVaccine,
+  TbRefresh,
+  TbPrescription,
+  TbFileCertificate,
+  TbFileInvoice,
+  TbScissors,
+  TbReceiptTax,
+  TbReceipt,
+  TbPackage,
+  TbTags,
+  TbReportMoney,
+  TbFolderOpen,
+  TbTemplate,
+  TbHeartHandshake,
+  TbFileAnalytics,
+  TbUserCheck,
+  TbSettings,
+  TbChevronLeft,
+  TbChevronRight
+} from 'react-icons/tb';
+import './Sidebar.css';
 
-export default function Sidebar({ onLinkClick }) {
-  const { can, isAdmin } = usePermission();
-  const podeVerUsuarios = can("verUsuarios");
-  const podeVerRelatorios = can("verRelatorios");
-
-  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
-  const [featureToUpgrade, setFeatureToUpgrade] = useState("");
-
+export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkClick }) {
+  const visuallyCollapsed = isCollapsed && !isMobileOpen;
   const usuarioStr = localStorage.getItem("usuario");
   const usuario = usuarioStr ? JSON.parse(usuarioStr) : null;
-  
-  // plano_id = 'clinica' (Apenas Clínica), 'complete' (Clínica + Petshop), 'free' (Trial)
   const plano = usuario?.clinica?.plano_id || 'free';
   const status = usuario?.clinica?.status_assinatura || 'trial';
-  
-  // O plano Clínica bloqueia módulos avançados (Comissões, CRM, Relatórios VIP)
-  const isApenasClinica = plano === 'clinica' && status !== 'trial';
+  const isPlanoGratuito = plano === 'free' && status !== 'vitalicio';
 
-  const handleRestrictedClick = (e, featureName) => {
-    if (isApenasClinica) {
-      e.preventDefault();
-      setFeatureToUpgrade(featureName);
-      setUpgradeModalOpen(true);
-      if (onLinkClick) onLinkClick(); // close mobile menu if open
-    } else {
-      if (onLinkClick) onLinkClick();
+  const menuSections = [
+    {
+      title: 'Principal',
+      items: [
+        { path: '/', label: 'Dashboard', icon: TbLayoutDashboard },
+        { path: '/agenda', label: 'Agendamentos', icon: TbCalendar },
+        { path: '/responsaveis', label: 'Tutores / Clientes', icon: TbUsers },
+        { path: '/animais', label: 'Pacientes (Pets)', icon: TbPaw },
+      ]
+    },
+    {
+      title: 'Atendimento Clínico',
+      items: [
+        { path: '/historico', label: 'Consultas & Prontuários', icon: TbStethoscope },
+        { path: '/internacao', label: 'Internação Clínica', icon: TbBed, premium: isPlanoGratuito },
+        { path: '/exames', label: 'Exames Laboratoriais', icon: TbFlask, premium: isPlanoGratuito },
+        { path: '/vacinas', label: 'Vacinas & Vermífugos', icon: TbVaccine },
+        { path: '/retornos', label: 'Retornos Clínicos', icon: TbRefresh },
+        { path: '/receituario', label: 'Receituário', icon: TbPrescription },
+        { path: '/documentos', label: 'Documentos & Atestados', icon: TbFileCertificate },
+      ]
+    },
+    {
+      title: 'Estética & Bem-Estar',
+      items: [
+        { path: '/banhotosa', label: 'Banho & Tosa', icon: TbScissors, premium: isPlanoGratuito },
+      ]
+    },
+    {
+      title: 'Gestão & Suprimentos',
+      items: [
+        { path: '/financeiro', label: 'Financeiro / Caixa', icon: TbReceiptTax, premium: isPlanoGratuito },
+        { path: '/orcamentos', label: 'Orçamentos', icon: TbReceipt },
+        { path: '/notas-fiscais', label: 'Notas Fiscais', icon: TbFileInvoice, premium: isPlanoGratuito },
+        { path: '/estoque', label: 'Controle de Estoque', icon: TbPackage, premium: isPlanoGratuito },
+        { path: '/tabela-precos', label: 'Tabela de Preços', icon: TbTags },
+        { path: '/comissoes', label: 'Comissões', icon: TbReportMoney, premium: isPlanoGratuito },
+        { path: '/arquivos', label: 'Arquivos da Clínica', icon: TbFolderOpen },
+        { path: '/templates', label: 'Modelos de Texto', icon: TbTemplate },
+      ]
+    },
+    {
+      title: 'Inteligência & Sistema',
+      items: [
+        { path: '/crm', label: 'Retenção & CRM', icon: TbHeartHandshake, premium: isPlanoGratuito },
+        { path: '/relatorios', label: 'Relatórios & DRE', icon: TbFileAnalytics, premium: isPlanoGratuito },
+        { path: '/usuarios', label: 'Equipe & Usuários', icon: TbUserCheck },
+        { path: '/configuracoes', label: 'Configurações', icon: TbSettings },
+      ]
     }
+  ];
+
+  const handleLinkClick = () => {
+    if (onLinkClick) onLinkClick();
   };
 
   return (
-    <>
-      <aside className="sidebar">
-        <div className="logo-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/logo.png" alt="Vet Care Logo" style={{ height: '32px', width: 'auto' }} />
-          Vet Care
-        </div>
-        <nav>
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">Principal</div>
-            <NavLink to="/" end onClick={onLinkClick}><TbLayoutDashboard /> Painel de Controle</NavLink>
-            <NavLink to="/agenda" onClick={onLinkClick}><TbCalendar /> Agenda</NavLink>
+    <aside id="app-navigation" className={`sidebar ${visuallyCollapsed ? 'collapsed' : ''} ${isMobileOpen ? 'mobile-open' : ''}`}>
+      {/* Brand Header */}
+      <div className="sidebar-header">
+        <NavLink to="/" className="sidebar-logo" onClick={handleLinkClick}>
+          <div className="sidebar-logo-icon">
+            <TbPaw />
           </div>
+          <span className="sidebar-logo-text">
+            Vet<span>Care</span>
+          </span>
+        </NavLink>
+        {onToggle && (
+          <button
+            className="sidebar-toggle-btn"
+            onClick={onToggle}
+            title={visuallyCollapsed ? 'Expandir menu' : 'Recolher menu'}
+          >
+            {visuallyCollapsed ? <TbChevronRight size={18} /> : <TbChevronLeft size={18} />}
+          </button>
+        )}
+      </div>
 
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">Clínica & Pacientes</div>
-            <NavLink to="/responsaveis" onClick={onLinkClick}><TbUser /> Tutores</NavLink>
-            <NavLink to="/animais" onClick={onLinkClick}><TbPaw /> Animais</NavLink>
-            <NavLink to="/historico" onClick={onLinkClick}><TbHistory /> Prontuário</NavLink>
-            
-            <NavLink to="/internacao" onClick={onLinkClick}>
-              <TbActivity /> Internação
-            </NavLink>
-            
-            <NavLink to="/retornos" onClick={onLinkClick}><TbRefresh /> Retornos</NavLink>
-            <NavLink to="/vacinas" onClick={onLinkClick}><TbVaccine /> Vacinas</NavLink>
-            
-            <NavLink to="/exames" onClick={onLinkClick}>
-              <TbFlask /> Exames
-            </NavLink>
+      {/* Navigation Sections */}
+      <nav className="sidebar-nav">
+        {menuSections.map((section, idx) => (
+          <div key={idx} className="sidebar-section">
+            {!visuallyCollapsed && <div className="sidebar-section-title">{section.title}</div>}
+            {section.items.map((item) => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  end={item.path === '/'}
+                  className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+                  title={visuallyCollapsed ? item.label : undefined}
+                  onClick={handleLinkClick}
+                >
+                  <span className="sidebar-link-icon">
+                    <Icon />
+                  </span>
+                  <span className="sidebar-link-text">{item.label}</span>
+                  {item.premium && !visuallyCollapsed && (
+                    <span className="sidebar-badge">PRO</span>
+                  )}
+                </NavLink>
+              );
+            })}
           </div>
+        ))}
+      </nav>
 
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">Gestão</div>
-            <NavLink to="/servicos" onClick={onLinkClick}>
-              <TbCube /> Estoque
-            </NavLink>
-            <NavLink to={isApenasClinica ? "#" : "/banhotosa"} className="sidebar-link" onClick={(e) => handleRestrictedClick(e, "Centro Estético")}>
-              <FiScissors size={20} style={{marginRight: '12px'}} /> Centro Estético {isApenasClinica && <FiLock style={{ marginLeft: 'auto', opacity: 0.5 }} />}
-            </NavLink>
-            <NavLink to="/financeiro" className="sidebar-link" onClick={onLinkClick}>
-              <TbCurrencyDollar /> Financeiro
-            </NavLink>
-            <NavLink to={isApenasClinica ? "#" : "/comissoes"} className="sidebar-link" onClick={(e) => handleRestrictedClick(e, "Gestão de Comissões")}>
-              <TbCurrencyDollar /> Comissões {isApenasClinica && <FiLock style={{ marginLeft: 'auto', opacity: 0.5 }} />}
-            </NavLink>
-            <NavLink to="/tabela-precos" className="sidebar-link" onClick={onLinkClick}><TbReceiptTax /> Tabela de Preços</NavLink>
-            <NavLink to="/orcamentos" onClick={onLinkClick}><TbFileText /> Orçamentos</NavLink>
+      {/* Footer Plan Info */}
+      <div className="sidebar-footer">
+        <NavLink to="/assinatura" style={{ textDecoration: 'none' }} onClick={handleLinkClick}>
+          <div className="sidebar-plan-card">
+            <div className="sidebar-plan-header">
+              <span className="sidebar-plan-name">
+                {status === 'vitalicio' ? 'Acesso Vitalício' : plano === 'free' ? 'Plano Free' : 'VetCare Completo'}
+              </span>
+              <span className="sidebar-plan-badge">
+                {status === 'vitalicio' ? 'VITALÍCIO' : status === 'free' ? 'FREE' : status === 'active' ? 'ATIVO' : 'TRIAL'}
+              </span>
+            </div>
+            <span className="sidebar-plan-desc">
+                {status === 'vitalicio' ? 'Acesso permanente' : plano === 'free' ? 'Conheça o plano completo' : 'Plano com acesso completo'}
+            </span>
           </div>
-
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">Documentos & CRM</div>
-            <NavLink to={isApenasClinica ? "#" : "/crm"} onClick={(e) => handleRestrictedClick(e, "Retenção & CRM")}>
-              <TbUsers /> Retenção & CRM {isApenasClinica && <FiLock style={{ marginLeft: 'auto', opacity: 0.5 }} />}
-            </NavLink>
-            <NavLink to={isApenasClinica ? "#" : "/automacoes"} onClick={(e) => handleRestrictedClick(e, "Automações via WhatsApp")}>
-              <TbMessageCircle /> WhatsApp & Automações {isApenasClinica && <FiLock style={{ marginLeft: 'auto', opacity: 0.5 }} />}
-            </NavLink>
-            <NavLink to="/receituario" onClick={onLinkClick}><TbFileText /> Receituário</NavLink>
-            <NavLink to="/documentos" onClick={onLinkClick}><TbFileText /> Centro de Documentos</NavLink>
-            <NavLink to="/arquivos" onClick={onLinkClick}><TbFileText /> Central de Arquivos</NavLink>
-          </div>
-
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">Administrativo</div>
-            {podeVerRelatorios && (
-              <NavLink to={isApenasClinica ? "#" : "/relatorios"} onClick={(e) => handleRestrictedClick(e, "Relatórios DRE Avançados")}>
-                <TbReport /> Relatórios {isApenasClinica && <FiLock style={{ marginLeft: 'auto', opacity: 0.5 }} />}
-              </NavLink>
-            )}
-            {podeVerUsuarios && <NavLink to="/usuarios" onClick={onLinkClick}><TbUsers /> Usuários</NavLink>}
-            {isAdmin() && <NavLink to="/templates" onClick={onLinkClick}><TbFileText /> Modelos</NavLink>}
-            <NavLink to="/configuracoes" onClick={onLinkClick}><TbSettings /> Configurações</NavLink>
-          </div>
-        </nav>
-      </aside>
-
-      <UpgradeModal 
-        isOpen={upgradeModalOpen} 
-        onClose={() => setUpgradeModalOpen(false)} 
-        featureName={featureToUpgrade} 
-      />
-    </>
+        </NavLink>
+      </div>
+    </aside>
   );
 }

@@ -227,8 +227,8 @@ export const createVacina = async (req, res) => {
         a.especie as animal_especie
       FROM vacinas v
       LEFT JOIN animais a ON v.animal_id = a.id
-      WHERE v.id = ?
-    `, [result]);
+      WHERE v.id = ? AND v.clinica_id = ?
+    `, [result, clinica_id]);
     
     res.status(201).json({ success: true, ...novaVacina });
   } catch (error) {
@@ -298,8 +298,8 @@ export const updateVacina = async (req, res) => {
         a.especie as animal_especie
       FROM vacinas v
       LEFT JOIN animais a ON v.animal_id = a.id
-      WHERE v.id = ?
-    `, [id]);
+      WHERE v.id = ? AND v.clinica_id = ?
+    `, [id, clinica_id]);
     
     res.json({ success: true, ...vacinaAtualizada });
   } catch (error) {

@@ -12,9 +12,9 @@ export const getDashboardStats = async (req, res) => {
       db.get('SELECT COUNT(*) as total FROM responsaveis WHERE clinica_id = ?', [clinica_id]),
       db.get('SELECT COUNT(*) as total FROM animais WHERE clinica_id = ?', [clinica_id]),
       db.get('SELECT COUNT(*) as total FROM agendamentos WHERE clinica_id = ? AND data = ?', [clinica_id, hoje]),
-      db.get('SELECT SUM(valor) as total FROM financeiro WHERE clinica_id = ? AND tipo = "entrada" AND data LIKE ?', [clinica_id, `${mesAtual}%`]),
-      db.get('SELECT COUNT(*) as total FROM internacoes WHERE clinica_id = ? AND status = "ativo"', [clinica_id]),
-      db.get('SELECT COUNT(*) as total FROM exames WHERE clinica_id = ? AND status = "pendente"', [clinica_id]),
+      db.get("SELECT SUM(valor) as total FROM financeiro WHERE clinica_id = ? AND tipo = 'entrada' AND data LIKE ?", [clinica_id, `${mesAtual}%`]),
+      db.get("SELECT COUNT(*) as total FROM internacoes WHERE clinica_id = ? AND status = 'ativo'", [clinica_id]),
+      db.get("SELECT COUNT(*) as total FROM exames WHERE clinica_id = ? AND status = 'pendente'", [clinica_id]),
       db.get('SELECT COUNT(*) as total FROM servicos WHERE clinica_id = ? AND quantidade <= estoqueMinimo', [clinica_id])
     ]);
 
@@ -33,7 +33,7 @@ export const getDashboardStats = async (req, res) => {
     // 3. Atividades Recentes (Prontuários)
     const atividadesRecentes = await db.all(`
       SELECT 
-        p.id, p.data_visita as data, p.diagnostico as desc,
+        p.id, p.data_visita as data, p.diagnostico as "desc",
         'Prontuário' as tipo
       FROM prontuarios p
       WHERE p.clinica_id = ?

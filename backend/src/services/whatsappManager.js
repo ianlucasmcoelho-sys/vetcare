@@ -9,13 +9,43 @@ const clients = new Map();
 const qrCodes = new Map();
 const status = new Map();
 
+// Limpa arquivos de trava residuais deixados por processos anteriores do Chrome
+function cleanSessionLocks(clinica_id) {
+  try {
+    const sessionDir = path.resolve(`./.wwebjs_auth/session-clinica_${clinica_id}`);
+    if (fs.existsSync(sessionDir)) {
+      const lockFiles = [
+        'DevToolsActivePort',
+        'SingletonLock',
+        'SingletonCookie',
+        'SingletonSocket',
+        'lockfile'
+      ];
+      for (const file of lockFiles) {
+        const filePath = path.join(sessionDir, file);
+        if (fs.existsSync(filePath)) {
+          try {
+            fs.unlinkSync(filePath);
+            console.log(`🧹 Lock residual removido: ${file} (Clínica ${clinica_id})`);
+          } catch (_) {}
+        }
+      }
+    }
+  } catch (err) {
+    console.warn(`Aviso ao verificar locks da sessão:`, err.message);
+  }
+}
+
 export const initWhatsApp = (clinica_id) => {
   if (clients.has(clinica_id)) {
     return clients.get(clinica_id);
   }
 
+  // Limpa travas antigas antes de lançar o Puppeteer
+  cleanSessionLocks(clinica_id);
+
   status.set(clinica_id, 'INICIANDO');
-  
+
   // Isola as pastas de sessão por clínica para garantir privacidade dos dados
   const client = new Client({
     authStrategy: new LocalAuth({
@@ -30,17 +60,13 @@ export const initWhatsApp = (clinica_id) => {
         '--disable-accelerated-2d-canvas',
         '--no-first-run',
         '--no-zygote',
-        '--disable-gpu'
+        '--disable-gpu',
+        '--disable-extensions'
       ]
-    },
-    webVersionCache: {
-      type: 'remote',
-      remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html'
     }
   });
 
   client.on('qr', async (qr) => {
-    // Transforma o QR numa imagem base64 para exibir no front-end
     try {
       const qrDataUrl = await qrcode.toDataURL(qr);
       qrCodes.set(clinica_id, qrDataUrl);
@@ -71,10 +97,22 @@ export const initWhatsApp = (clinica_id) => {
     status.set(clinica_id, 'DESCONECTADO');
     clients.delete(clinica_id);
     qrCodes.delete(clinica_id);
+    cleanSessionLocks(clinica_id);
   });
 
-  client.initialize();
   clients.set(clinica_id, client);
+
+  // Inicializa de forma segura sem crashar o processo Node se houver erro
+  client.initialize().catch(async (err) => {
+    console.error(`❌ Erro ao inicializar WhatsApp para Clínica ${clinica_id}:`, err.message);
+    status.set(clinica_id, 'FALHA');
+    clients.delete(clinica_id);
+    qrCodes.delete(clinica_id);
+    try {
+      await client.destroy();
+    } catch (_) {}
+    cleanSessionLocks(clinica_id);
+  });
 
   return client;
 };
@@ -94,16 +132,34 @@ export const getStatus = (clinica_id) => {
 export const disconnect = async (clinica_id) => {
   const client = clients.get(clinica_id);
   if (client) {
-    await client.logout();
-    await client.destroy();
+    try {
+      await client.logout();
+    } catch (_) {}
+    try {
+      await client.destroy();
+    } catch (_) {}
     clients.delete(clinica_id);
     status.set(clinica_id, 'DESCONECTADO');
     qrCodes.delete(clinica_id);
+    cleanSessionLocks(clinica_id);
     return true;
   }
+  cleanSessionLocks(clinica_id);
   return false;
 };
 
 export const getClient = (clinica_id) => {
   return clients.get(clinica_id);
+};
+
+// Encerramento gracioso dos navegadores ao parar o Node
+export const cleanupAllClients = async () => {
+  console.log('🔄 Fechando instâncias do WhatsApp...');
+  for (const [clinica_id, client] of clients.entries()) {
+    try {
+      await client.destroy();
+    } catch (_) {}
+    cleanSessionLocks(clinica_id);
+  }
+  clients.clear();
 };

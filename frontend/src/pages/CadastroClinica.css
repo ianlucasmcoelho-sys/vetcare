@@ -1,77 +1,272 @@
-/* CadastroClinica.css - Extensions for Login Style */
+/* CadastroClinica.css — Signup Premium, harmonizado com Login.css */
 
-/* Override specific to Signup to handle the larger form */
-.v-panel-signup {
-  max-width: 500px;
+/* ===================================================
+   LAYOUT PRINCIPAL
+   =================================================== */
+.v-signup-page {
+  overflow-y: auto;
+}
+
+/* Grid split - formulário à esquerda, painel visual à direita */
+.v-signup-content-split {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  padding: 2rem 8% 3rem;
+  z-index: 10;
+  max-width: 1400px;
+  margin: 0 auto;
   width: 100%;
+  gap: 5rem;
 }
 
-.v-signup-header-compact {
-  margin-bottom: 2rem;
+/* ===================================================
+   AUTH CARD — formulário maior que o do login
+   =================================================== */
+.v-signup-card {
+  max-width: 480px;
+  padding: 2.5rem 2.75rem;
 }
 
-.v-avatar-small {
-  width: 70px;
-  height: 70px;
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-}
-
-.v-form-signup-pill {
+/* ===================================================
+   FORM INTERNO
+   =================================================== */
+.v-signup-form {
   gap: 1.5rem;
 }
 
-.v-signup-pill-section {
+/* Seção (Clínica / Admin) */
+.v-signup-section {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
-.v-signup-pill-title {
-  font-size: 0.85rem;
+.v-signup-section-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
   font-weight: 800;
   color: var(--primary);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  padding-bottom: 0.6rem;
   border-bottom: 1px dashed var(--border-color);
-  padding-bottom: 0.5rem;
 }
 
-.v-signup-pill-grid {
+/* Grid 2 colunas dentro da seção */
+.v-signup-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .v-col-full {
   grid-column: span 2;
 }
 
-.v-divider-tall {
-  height: 500px;
+/* Wrapper para senha + strength meter */
+.v-password-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-/* Scroll handling if screen is too small vertically */
-.v-harmonized-signup-override {
-  height: auto;
-  min-height: 100vh;
+/* Strength Meter */
+.v-strength-meter {
+  padding: 0.5rem 0.25rem 0;
 }
 
-@media (max-width: 1024px) {
-  .v-signup-split-override {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+.v-strength-bars {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 0.35rem;
+}
+
+.v-strength-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+
+.v-strength-text {
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+.v-strength-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Success pill */
+.v-pill-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* ===================================================
+   PAINEL VISUAL DIREITO — específico do signup
+   =================================================== */
+
+/* Sticky para acompanhar o scroll do formulário */
+.v-panel-intro {
+  position: sticky;
+  top: calc(64px + 2rem);
+}
+
+/* Plan Badge no topo */
+.v-signup-plan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  margin-bottom: 1.5rem;
+}
+
+/* Stats Row */
+.v-signup-stats-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+}
+
+[data-theme='dark'] .v-signup-stats-row {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(255,255,255,0.07);
+}
+
+.v-signup-stat {
+  flex: 1;
+  text-align: center;
+}
+
+.v-signup-stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: var(--text-main);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.v-signup-stat-number span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary);
+  letter-spacing: 0;
+}
+
+.v-signup-stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Back link */
+.v-signup-back-link {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1.75rem;
+  padding: 0;
+  font-family: inherit;
+  transition: opacity 0.2s, transform 0.2s;
+  display: inline-block;
+}
+
+.v-signup-back-link:hover {
+  opacity: 0.7;
+  transform: translateX(4px);
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+@media (max-width: 1100px) {
+  .v-signup-content-split {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 2rem 6% 3rem;
+    justify-items: center;
+  }
+
+  .v-panel-intro {
+    position: static;
+    order: -1;
+    width: 100%;
+    max-width: 540px;
+    text-align: center;
+  }
+
+  .v-signup-plan-badge { margin: 0 auto 1.5rem auto; }
+  .v-intro-features-list { align-items: center; }
+  .v-intro-badges { justify-content: center; }
+  .v-signup-stats-row { justify-content: center; }
+
+  .v-signup-card {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
   }
 }
 
-@media (max-width: 600px) {
-  .v-signup-pill-grid {
+@media (max-width: 768px) {
+  .v-signup-grid {
     grid-template-columns: 1fr;
   }
+
   .v-col-full {
     grid-column: span 1;
   }
-  .v-panel-signup {
-    max-width: 100%;
+
+  .v-signup-card {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .v-signup-content-split {
+    padding: 1.5rem 4% 2.5rem;
+  }
+
+  .v-signup-card {
+    padding: 1.75rem 1.25rem;
+    border-radius: 20px;
+  }
+
+  .v-signup-stats-row {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .v-signup-stat-number {
+    font-size: 1.5rem;
   }
 }

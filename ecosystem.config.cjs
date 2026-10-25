@@ -4,30 +4,18 @@ module.exports = {
       name: 'vetcare-backend',
       script: 'src/index.js',
       cwd: './backend',
-      instances: 'max',
-      exec_mode: 'cluster',
+      instances: 1,
+      exec_mode: 'fork',
       autorestart: true,
+      max_memory_restart: '700M',
+      kill_timeout: 35000,
+      listen_timeout: 15000,
       env_production: {
         NODE_ENV: 'production',
+        HOST: '127.0.0.1',
         PORT: 3001,
-        ALLOWED_ORIGINS: 'http://localhost:5173,http://192.168.1.163:5173,http://192.168.1.163:80'
+        TRUST_PROXY_HOPS: 1
       }
-    },
-    {
-      name: 'vetcare-frontend',
-      script: 'serve',
-      env: {
-        PM2_SERVE_PATH: './frontend/dist',
-        PM2_SERVE_PORT: 3000,
-        PM2_SERVE_SPA: 'true',
-        PM2_SERVE_HOMEPAGE: '/index.html'
-      }
-    },
-    {
-      name: 'vetcare-backup',
-      script: 'backup_db.js',
-      cron_restart: '0 0 * * *', // Todo dia à meia-noite
-      autorestart: false
     }
   ]
 };

@@ -71,8 +71,8 @@ export const createBanhoTosa = async (req, res) => {
       FROM banho_tosa b
       LEFT JOIN animais an ON b.animal_id = an.id
       LEFT JOIN responsaveis r ON an.responsavel_id = r.id
-      WHERE b.id = ?
-    `, [result]);
+      WHERE b.id = ? AND b.clinica_id = ?
+    `, [result, clinica_id]);
 
     res.status(201).json({ success: true, ...novoRegistro });
   } catch (error) {

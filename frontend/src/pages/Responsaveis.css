@@ -1,20 +1,9 @@
 /* Responsaveis.css - Versão Elite Harmonizada */
 
 .responsaveis-container {
-  padding: 2rem 3rem;
   background: transparent;
   font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
-
-  
-  
-  min-height: 100vh;
-}
-
-.responsaveis-card {
-  /* Estilos base agora geridos por .v-glass-panel */
-  overflow: hidden;
-  margin: 0 32px 32px 32px;
 }
 
 .search-section {
@@ -60,7 +49,6 @@
 }
 
 .tutor-card-item {
-  /* Base agora em .v-glass-panel, apenas override */
   padding: 0;
   overflow: hidden;
   position: relative;
@@ -249,7 +237,6 @@
 }
 
 @media (max-width: 768px) {
-  .responsaveis-card { margin: 16px; }
-  .tutores-grid { padding: 16px; gap: 16px; }
+  .tutores-grid { grid-template-columns: minmax(0, 1fr); padding: 12px 0; gap: 16px; }
   .header-actions span { display: none; }
 }

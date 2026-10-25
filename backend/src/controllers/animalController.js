@@ -13,6 +13,9 @@ export async function createAnimal(req, res) {
     } = req.body;
     const clinica_id = req.usuario.clinica_id;
 
+    const responsavel = await db.get('SELECT id FROM responsaveis WHERE id = ? AND clinica_id = ?', [responsavel_id, clinica_id]);
+    if (!responsavel) return res.status(404).json({ error: 'Responsável não encontrado nesta clínica.' });
+
     const result = await db.run(
       `INSERT INTO animais (
         clinica_id, nome, microchip, especie, raca, sexo, nascimento,
@@ -42,7 +45,19 @@ export async function getAnimais(req, res) {
   try {
     const db = await openDb();
     const clinica_id = req.usuario.clinica_id;
-    const animais = await db.all("SELECT * FROM animais WHERE clinica_id = ?", [clinica_id]);
+    const { responsavel_id } = req.query;
+
+    let query = "SELECT * FROM animais WHERE clinica_id = ?";
+    const params = [clinica_id];
+
+    if (responsavel_id) {
+      query += " AND responsavel_id = ?";
+      params.push(responsavel_id);
+    }
+
+    query += " ORDER BY nome ASC";
+
+    const animais = await db.all(query, params);
     res.json(animais);
   } catch (err) {
     console.error(err);
@@ -82,6 +97,11 @@ export async function updateAnimal(req, res) {
       carteirinha_validade, alergias, doencas_cronicas,
       responsavel_id, obito, data_obito
     } = req.body;
+
+    if (responsavel_id !== undefined && responsavel_id !== null) {
+      const responsavel = await db.get('SELECT id FROM responsaveis WHERE id = ? AND clinica_id = ?', [responsavel_id, clinica_id]);
+      if (!responsavel) return res.status(404).json({ error: 'Responsável não encontrado nesta clínica.' });
+    }
 
     const result = await db.run(
       `UPDATE animais SET

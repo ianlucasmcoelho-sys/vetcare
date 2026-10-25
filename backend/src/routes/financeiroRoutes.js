@@ -9,12 +9,13 @@ import {
   getFinanceiroResumo
 } from '../controllers/financeiroController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { requirePremiumFeature } from '../middlewares/subscriptionMiddleware.js';
 
 import { validate, financeiroSchema } from '../middlewares/validationMiddleware.js';
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(authMiddleware, requirePremiumFeature);
 
 router.get('/', getAllFinanceiro);
 router.get('/resumo', getFinanceiroResumo);

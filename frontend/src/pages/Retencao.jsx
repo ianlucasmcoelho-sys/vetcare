@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { 
-  FiUsers, FiCalendar, FiArrowRight, FiMessageSquare, 
-  FiAlertCircle, FiTrendingUp, FiCheckCircle, FiSearch, FiClock
+  FiUsers, FiUser, FiAlertCircle, FiTrendingUp, FiCheckCircle, FiClock
 } from "react-icons/fi";
 import { MdOutlinePets } from "react-icons/md";
-import { apiGet, apiPost } from "../services/api";
+import { apiGet } from "../services/api";
 import { useToast } from "../context/ToastContext";
 import "./Retencao.css";
 
@@ -14,7 +13,6 @@ export default function Retencao() {
   const [sumidos, setSumidos] = useState([]);
   const [vacinas, setVacinas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isSending, setIsSending] = useState(false);
   const [activeTab, setActiveTab] = useState("sumidos");
   const [busca, setBusca] = useState("");
 
@@ -39,40 +37,6 @@ export default function Retencao() {
   };
 
   useEffect(() => { carregarDados(); }, []);
-
-  const enviarWhatsAppMassa = async () => {
-    if (!window.confirm("Deseja disparar as mensagens de WhatsApp para todos os clientes pendentes?")) return;
-    
-    try {
-      setIsSending(true);
-      showToast("Iniciando disparos em massa via WhatsApp...", "info");
-      
-      const res = await apiPost("/whatsapp/disparar", {});
-      
-      if (res.ok) {
-        showToast("Lembretes enviados com sucesso para a fila!", "success");
-      } else {
-        showToast("Erro ao processar disparos", "error");
-      }
-    } catch (error) {
-      showToast("Falha na comunicação com o servidor de WhatsApp", "error");
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  const testarWhatsApp = async (telefone) => {
-    try {
-      const res = await apiPost("/whatsapp/teste", { telefone, mensagem: "Olá! Este é um teste do sistema VetCare." });
-      if (res.ok) {
-        showToast("Mensagem de teste enviada!", "success");
-      } else {
-        showToast("Falha ao enviar teste", "error");
-      }
-    } catch(err) {
-      showToast("Erro na requisição", "error");
-    }
-  }
 
   return (
     <div className="retencao-container fade-in">
@@ -117,11 +81,6 @@ export default function Retencao() {
               <FiAlertCircle /> Próximas Vacinas
             </button>
           </div>
-          <div className="crm-actions">
-            <button className="btn-whatsapp-massa" onClick={() => enviarWhatsAppMassa(activeTab === 'sumidos' ? sumidos : vacinas, activeTab)}>
-              <FiMessageSquare /> Notificar em Massa
-            </button>
-          </div>
         </div>
 
         <div className="crm-content">
@@ -136,7 +95,6 @@ export default function Retencao() {
                     <th>Última Visita</th>
                     <th>Total Pets</th>
                     <th>Contato</th>
-                    <th>Ação</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -155,9 +113,6 @@ export default function Retencao() {
                       </td>
                       <td>{s.total_pets} pet(s)</td>
                       <td>{s.celular || s.email}</td>
-                      <td>
-                        <button className="btn-table-whatsapp"><FiMessageSquare /></button>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -167,7 +122,7 @@ export default function Retencao() {
             <div className="vacinas-list">
               <div className="campanha-grid">
                 {vacinas.map(v => (
-                  <div key={v.vacina_id} className="campanha-card">
+                  <div key={v.vacina_id || v.id} className="campanha-card">
                     <div className="pet-tag"><MdOutlinePets /> {v.pet_nome}</div>
                     <div className="vacina-info">
                       <strong>{v.nome_vacina}</strong>
@@ -176,9 +131,6 @@ export default function Retencao() {
                     <div className="tutor-info">
                       <FiUser /> {v.tutor_nome}
                     </div>
-                    <button className="btn-notify-single">
-                      <FiMessageSquare /> Lembrar Tutor
-                    </button>
                   </div>
                 ))}
               </div>

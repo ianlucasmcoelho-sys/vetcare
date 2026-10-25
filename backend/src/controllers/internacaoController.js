@@ -113,7 +113,11 @@ export const createInternacao = async (req, res) => {
 export const agendarMedicacao = async (req, res) => {
   try {
     const { internacao_id, medicamento, dosagem, horario_agendado, data_agendada } = req.body;
+    const clinica_id = req.usuario.clinica_id;
     const db = await openDb();
+
+    const internacao = await db.get('SELECT id FROM internacoes WHERE id = ? AND clinica_id = ?', [internacao_id, clinica_id]);
+    if (!internacao) return res.status(404).json({ error: 'Internação não encontrada.' });
     
     await db.run(`
       INSERT INTO internacao_medicacoes (internacao_id, medicamento, dosagem, horario_agendado, data_agendada)
@@ -130,14 +134,16 @@ export const agendarMedicacao = async (req, res) => {
 export const aplicarMedicacao = async (req, res) => {
   try {
     const { id } = req.params;
+    const clinica_id = req.usuario.clinica_id;
     const usuario_id = req.usuario.id;
     const db = await openDb();
     
-    await db.run(`
+    const result = await db.run(`
       UPDATE internacao_medicacoes 
       SET status = 'aplicado', aplicado_em = CURRENT_TIMESTAMP, usuario_id = ?
-      WHERE id = ?
-    `, [usuario_id, id]);
+      WHERE id = ? AND internacao_id IN (SELECT id FROM internacoes WHERE clinica_id = ?)
+    `, [usuario_id, id, clinica_id]);
+    if (!result.changes) return res.status(404).json({ error: 'Medicação não encontrada.' });
 
     res.json({ success: true });
   } catch (error) {
@@ -149,8 +155,12 @@ export const aplicarMedicacao = async (req, res) => {
 export const registrarSinaisVitais = async (req, res) => {
   try {
     const { internacao_id, temperatura, frequencia_cardiaca, frequencia_respiratoria, peso, observacao } = req.body;
+    const clinica_id = req.usuario.clinica_id;
     const usuario_id = req.usuario.id;
     const db = await openDb();
+
+    const internacao = await db.get('SELECT id FROM internacoes WHERE id = ? AND clinica_id = ?', [internacao_id, clinica_id]);
+    if (!internacao) return res.status(404).json({ error: 'Internação não encontrada.' });
 
     await db.run(`
       INSERT INTO internacao_sinais_vitais 

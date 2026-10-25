@@ -22,6 +22,11 @@ export const requireActiveSubscription = async (req, res, next) => {
       return next();
     }
 
+    if (['free', 'trial'].includes(status_assinatura) && !data_expiracao) {
+      await db.run("UPDATE clinicas SET status_assinatura = 'vencido' WHERE id = ?", [clinica_id]);
+      return res.status(402).json({ error: 'Período gratuito encerrado', code: 'SUBSCRIPTION_EXPIRED', message: 'Seu período gratuito de 7 dias terminou. Assine o VetCare Completo para continuar.' });
+    }
+
     // Se a data de expiração passou
     if (data_expiracao) {
       const expirationDate = new Date(data_expiracao);
@@ -30,7 +35,7 @@ export const requireActiveSubscription = async (req, res, next) => {
       if (now > expirationDate) {
         // Se ainda estiver listado como ativo ou trial no banco, mas já passou do prazo, atualiza para vencido
         if (status_assinatura !== 'vencido') {
-          await db.run('UPDATE clinicas SET status_assinatura = "vencido" WHERE id = ?', [clinica_id]);
+          await db.run("UPDATE clinicas SET status_assinatura = 'vencido' WHERE id = ?", [clinica_id]);
         }
         return res.status(402).json({ 
           error: 'Assinatura vencida', 
@@ -69,22 +74,15 @@ export const requirePremiumFeature = async (req, res, next) => {
 
     const { status_assinatura, plano_id } = clinica;
 
-    // Se está no período de Trial, tem acesso a tudo.
-    if (status_assinatura === 'trial') {
+    // Somente assinatura paga ativa ou acesso vitalício libera módulos completos.
+    if (status_assinatura === 'vitalicio' || (['active', 'ativo', 'ativa', 'lifetime'].includes(status_assinatura) && plano_id !== 'free')) {
       return next();
     }
-
-    // Se o plano é o 'clinica' (Apenas Clínica), bloqueia recursos do Vet Complete.
-    if (plano_id === 'clinica') {
-      return res.status(403).json({ 
-        error: 'Recurso Restrito', 
-        code: 'PREMIUM_REQUIRED',
-        message: 'Este recurso é exclusivo do plano Vet Complete. Faça o upgrade para acessar a Gestão 360º.' 
-      });
-    }
-
-    // Se for 'complete' ou 'vitalicio', libera acesso.
-    next();
+    return res.status(403).json({
+      error: 'Recurso Restrito',
+      code: 'PREMIUM_REQUIRED',
+      message: 'Este módulo está disponível no plano VetCare Completo. Assine por R$ 97/mês para liberar o acesso.'
+    });
   } catch (error) {
     console.error('Erro na validação de feature premium:', error);
     res.status(500).json({ error: 'Erro ao validar acesso a recurso premium' });

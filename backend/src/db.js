@@ -1,6 +1,76 @@
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
 import pg from 'pg';
+import path from 'path';
+
+let pgPoolInstance = null;
+let sqliteDbPromise = null;
+
+function getPostgresPool() {
+  if (!pgPoolInstance) {
+    const sslCa = process.env.PGSSL_CA_BASE64
+      ? Buffer.from(process.env.PGSSL_CA_BASE64.trim(), 'base64').toString('utf8')
+      : process.env.PGSSL_CA?.replace(/\\n/g, '\n');
+    const ssl = process.env.PGSSL === 'true'
+      ? { rejectUnauthorized: true, ...(sslCa ? { ca: sslCa } : {}) }
+      : undefined;
+    pgPoolInstance = new pg.Pool({
+      connectionString: process.env.DATABASE_URL,
+      ...(ssl ? { ssl } : {})
+    });
+  }
+  return pgPoolInstance;
+}
+
+function convertSqliteToPostgres(sql) {
+  if (!sql || typeof sql !== 'string') return sql;
+  return sql
+    .replace(/datetime\(\s*'now'\s*,\s*'localtime'\s*\)/gi, 'CURRENT_TIMESTAMP::text')
+    .replace(/\bTEXT\s+DEFAULT\s+CURRENT_TIMESTAMP\b/gi, 'TEXT DEFAULT (CURRENT_TIMESTAMP::text)')
+    .replace(/strftime\(\s*'%Y-%m'\s*,\s*([\w.]+)\s*\)/gi, "to_char(($1)::date, 'YYYY-MM')")
+    .replace(/date\(\s*'now'\s*,\s*'\+(\d+) days'\s*\)/gi, "(CURRENT_DATE + INTERVAL '$1 days')::date")
+    .replace(/date\(\s*'now'\s*\)/gi, 'CURRENT_DATE')
+    .replace(/date\(\s*([\w.]+|\?)\s*\)/gi, '($1)::date')
+    .replace(/INTEGER\s+PRIMARY\s+KEY\s+AUTOINCREMENT/gi, 'SERIAL PRIMARY KEY')
+    .replace(/INTEGER\s+PRIMARY\s+KEY/gi, 'SERIAL PRIMARY KEY');
+}
+
+function convertPlaceholders(sql) {
+  if (!sql || typeof sql !== 'string') return sql;
+  let index = 1;
+  let quote = null;
+  let converted = '';
+  for (let i = 0; i < sql.length; i += 1) {
+    const char = sql[i];
+    if (quote) {
+      converted += char;
+      if (char === quote && sql[i + 1] === quote) converted += sql[++i];
+      else if (char === quote) quote = null;
+    } else if (char === "'" || char === '"') {
+      quote = char;
+      converted += char;
+    } else if (char === '?') {
+      converted += `$${index++}`;
+    } else {
+      converted += char;
+    }
+  }
+  return converted;
+}
+
+function createPostgresAdapter(client) {
+  return {
+    exec: (sql) => client.query(convertSqliteToPostgres(sql)),
+    run: async (sql, params = []) => {
+      const normalizedSql = sql.trim().replace(/;+\s*$/, '');
+      const isInsert = /^INSERT\s+INTO\b/i.test(normalizedSql) && !/\bRETURNING\b/i.test(normalizedSql);
+      const compatibleSql = convertSqliteToPostgres(normalizedSql);
+      const query = convertPlaceholders(compatibleSql) + (isInsert ? ' RETURNING id' : '');
+      const result = await client.query(query, params);
+      return { lastID: result.rows?.[0]?.id, changes: result.rowCount };
+    },
+    get: async (sql, params = []) => (await client.query(convertPlaceholders(convertSqliteToPostgres(sql)), params)).rows[0],
+    all: async (sql, params = []) => (await client.query(convertPlaceholders(convertSqliteToPostgres(sql)), params)).rows
+  };
+}
 
 /**
  * Abre a conexão com o banco de dados.
@@ -8,55 +78,104 @@ import pg from 'pg';
  */
 export async function openDb() {
   if (process.env.DATABASE_URL) {
-    // Configuração para PostgreSQL (Produção)
-    const pool = new pg.Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false } // Necessário para Supabase/Render
-    });
-    
-    // Adaptador simples para manter compatibilidade com os métodos .exec e .run do sqlite
-    return {
-      exec: (sql) => pool.query(sql),
-      run: (sql, params) => pool.query(sql, params),
-      get: async (sql, params) => {
-        const res = await pool.query(sql, params);
-        return res.rows[0];
-      },
-      all: async (sql, params) => {
-        const res = await pool.query(sql, params);
-        return res.rows;
-      }
-    };
+    return createPostgresAdapter(getPostgresPool());
   }
 
   // Fallback para SQLite (Desenvolvimento Local)
-  return open({
-    filename: './clinica.db',
-    driver: sqlite3.Database
-  });
+  if (!sqliteDbPromise) sqliteDbPromise = openSqliteConnection();
+  return sqliteDbPromise;
+}
+
+async function openSqliteConnection() {
+  // SQLite é apenas fallback local. Não carregue o addon nativo em produção
+  // quando o banco ativo é PostgreSQL (DATABASE_URL), evitando incompatibilidade
+  // do binário sqlite3 com a GLIBC do runtime gerenciado.
+  const [{ default: sqlite3 }, { open }] = await Promise.all([
+    import('sqlite3'),
+    import('sqlite')
+  ]);
+  const dbPath = path.resolve(process.cwd().endsWith('backend') ? './clinica.db' : './backend/clinica.db');
+  const sqliteDb = await open({ filename: dbPath, driver: sqlite3.Database });
+  await sqliteDb.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;');
+  return sqliteDb;
 }
 
 /**
- * Wrapper para executar operações em uma transação SQL (SQLite).
+ * Wrapper para executar operações em uma transação no banco ativo.
  */
 export async function runTransaction(callback) {
-  const db = await openDb();
-  await db.exec('BEGIN TRANSACTION');
+  if (process.env.DATABASE_URL) {
+    const client = await getPostgresPool().connect();
+    try {
+      await client.query('BEGIN');
+      const result = await callback(createPostgresAdapter(client));
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  const db = await openSqliteConnection();
+  let transactionStarted = false;
   try {
+    await db.exec('BEGIN TRANSACTION');
+    transactionStarted = true;
     const result = await callback(db);
     await db.exec('COMMIT');
+    transactionStarted = false;
     return result;
   } catch (error) {
-    await db.exec('ROLLBACK');
+    if (transactionStarted) await db.exec('ROLLBACK');
     console.error('❌ [Erro na Transação - Rollback executado]:', error.message);
     throw error;
+  } finally {
+    await db.close();
+  }
+}
+
+export async function closeDatabase() {
+  if (sqliteDbPromise) {
+    const dbPromise = sqliteDbPromise;
+    sqliteDbPromise = null;
+    await (await dbPromise).close();
+  }
+  if (pgPoolInstance) {
+    const pool = pgPoolInstance;
+    pgPoolInstance = null;
+    await pool.end();
   }
 }
 
 export async function initDb() {
   const db = await openDb();
 
+  // Otimizações de Alta Concorrência para SQLite
+  if (!process.env.DATABASE_URL) {
+    try {
+      await db.exec(`
+        PRAGMA journal_mode = WAL;
+        PRAGMA busy_timeout = 5000;
+        PRAGMA synchronous = NORMAL;
+      `);
+      console.log('⚡ [SQLite] Modo WAL e busy_timeout=5000ms ativados com sucesso!');
+    } catch (pragmaErr) {
+      console.warn('⚠️ [SQLite] Falha ao configurar pragmas:', pragmaErr.message);
+    }
+  }
+
   await db.exec(`
+    CREATE TABLE IF NOT EXISTS processed_webhook_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      provider TEXT NOT NULL,
+      event_id TEXT NOT NULL,
+      processed_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE (provider, event_id)
+    );
+
     CREATE TABLE IF NOT EXISTS clinicas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       nome TEXT,
@@ -80,6 +199,16 @@ export async function initDb() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (clinica_id) REFERENCES clinicas(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      token_hash TEXT NOT NULL UNIQUE,
+      expires_at INTEGER NOT NULL,
+      used_at TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS responsaveis (
@@ -423,37 +552,131 @@ export async function initDb() {
       FOREIGN KEY (financeiro_id) REFERENCES financeiro(id) ON DELETE CASCADE,
       FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     );
+
+    CREATE TABLE IF NOT EXISTS banho_tosa (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clinica_id INTEGER NOT NULL,
+      animal_id INTEGER NOT NULL,
+      data TEXT NOT NULL,
+      horario TEXT NOT NULL,
+      pacote_mensal INTEGER DEFAULT 0,
+      status TEXT DEFAULT 'Aguardando',
+      observacoes TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (clinica_id) REFERENCES clinicas(id),
+      FOREIGN KEY (animal_id) REFERENCES animais(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS configuracoes_whatsapp (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clinica_id INTEGER NOT NULL UNIQUE,
+      ativo INTEGER DEFAULT 0,
+      api_url TEXT,
+      instancia TEXT,
+      token TEXT,
+      lembrete_consulta INTEGER DEFAULT 1,
+      lembrete_vacina INTEGER DEFAULT 1,
+      lembrete_aniversario INTEGER DEFAULT 1,
+      mensagem_consulta TEXT,
+      mensagem_vacina TEXT,
+      mensagem_aniversario TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (clinica_id) REFERENCES clinicas(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS notas_fiscais (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clinica_id INTEGER NOT NULL,
+      tipo TEXT NOT NULL, -- 'NFSE' ou 'NFCE'
+      numero TEXT,
+      serie TEXT DEFAULT '1',
+      chave_acesso TEXT,
+      tutor_id INTEGER,
+      tutor_nome TEXT,
+      tutor_cpf TEXT,
+      tutor_email TEXT,
+      tutor_telefone TEXT,
+      descricao TEXT,
+      valor REAL NOT NULL,
+      itens TEXT, -- JSON com lista detalhada de itens/serviços
+      status TEXT DEFAULT 'autorizada', -- 'autorizada', 'processando', 'rejeitada', 'cancelada'
+      forma_pagamento TEXT,
+      motivo_cancelamento TEXT,
+      mensagem_retorno TEXT,
+      url_pdf TEXT,
+      url_xml TEXT,
+      data_emissao TEXT DEFAULT (datetime('now', 'localtime')),
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (clinica_id) REFERENCES clinicas(id),
+      FOREIGN KEY (tutor_id) REFERENCES responsaveis(id) ON DELETE SET NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS configuracoes_fiscais (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clinica_id INTEGER NOT NULL UNIQUE,
+      cnpj TEXT,
+      razao_social TEXT,
+      nome_fantasia TEXT,
+      inscricao_municipal TEXT,
+      inscricao_estadual TEXT,
+      regime_tributario TEXT DEFAULT 'simples_nacional',
+      provedor TEXT DEFAULT 'focus_nfe',
+      ambiente TEXT DEFAULT 'homologacao',
+      api_token TEXT,
+      cnae TEXT DEFAULT '7500-1/00',
+      codigo_servico_municipal TEXT DEFAULT '5.01',
+      aliquota_iss REAL DEFAULT 2.0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (clinica_id) REFERENCES clinicas(id)
+    );
   `);
 
-  // Migrações de segurança
-  try {
-    await db.exec(`ALTER TABLE clinicas ADD COLUMN status_assinatura TEXT DEFAULT 'trial'`);
-  } catch (e) {}
+  // Migrações legadas e idempotentes: somente coluna já existente é ignorada.
+  const migrations = [
+    `ALTER TABLE clinicas ADD COLUMN status_assinatura TEXT DEFAULT 'trial'`,
+    `ALTER TABLE clinicas ADD COLUMN onboarding_concluido INTEGER DEFAULT 0`,
+    `ALTER TABLE clinicas ADD COLUMN data_expiracao TEXT`,
+    `ALTER TABLE clinicas ADD COLUMN plano_id TEXT DEFAULT 'free'`,
+    `ALTER TABLE clinicas ADD COLUMN asaas_customer_id TEXT`,
+    `ALTER TABLE clinicas ADD COLUMN asaas_subscription_id TEXT`,
+    'ALTER TABLE animais ADD COLUMN obito INTEGER DEFAULT 0',
+    'ALTER TABLE animais ADD COLUMN data_obito TEXT',
+    'ALTER TABLE servicos ADD COLUMN codigoBarras TEXT',
+    'ALTER TABLE financeiro ADD COLUMN veterinario_id INTEGER REFERENCES usuarios(id)'
+  ];
+  for (const sql of migrations) {
+    try {
+      await db.exec(sql);
+    } catch (error) {
+      const duplicateColumn = error.code === '42701' || /duplicate column name/i.test(error.message || '');
+      if (!duplicateColumn) throw error;
+    }
+  }
 
-  try {
-    await db.exec(`ALTER TABLE clinicas ADD COLUMN onboarding_concluido INTEGER DEFAULT 0`);
-  } catch (e) {}
+  // Contas Free antigas recebem sete dias de transição a partir desta migração.
+  const freeTransitionExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  await db.run(`
+    UPDATE clinicas
+    SET status_assinatura = 'trial', data_expiracao = ?
+    WHERE plano_id = 'free' AND status_assinatura = 'free' AND status_assinatura <> 'vitalicio'
+  `, [freeTransitionExpiry]);
 
-  try {
-    await db.exec(`ALTER TABLE clinicas ADD COLUMN data_expiracao TEXT`);
-  } catch (e) {}
+  // Criação de Índices de Desempenho Multi-tenant
+  await db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_animais_clinica ON animais(clinica_id);
+    CREATE INDEX IF NOT EXISTS idx_responsaveis_clinica ON responsaveis(clinica_id);
+    CREATE INDEX IF NOT EXISTS idx_agendamentos_clinica ON agendamentos(clinica_id);
+    CREATE INDEX IF NOT EXISTS idx_prontuarios_clinica ON prontuarios(clinica_id);
+    CREATE INDEX IF NOT EXISTS idx_financeiro_clinica ON financeiro(clinica_id);
+    CREATE INDEX IF NOT EXISTS idx_vacinas_clinica ON vacinas(clinica_id);
+    CREATE INDEX IF NOT EXISTS idx_banhotosa_clinica ON banho_tosa(clinica_id);
+    CREATE INDEX IF NOT EXISTS idx_notas_fiscais_clinica ON notas_fiscais(clinica_id);
+    CREATE INDEX IF NOT EXISTS idx_notas_fiscais_data ON notas_fiscais(data_emissao);
+  `);
 
-  try {
-    await db.exec(`ALTER TABLE clinicas ADD COLUMN plano_id TEXT DEFAULT 'free'`);
-  } catch (e) {}
-
-  try {
-    await db.exec('ALTER TABLE animais ADD COLUMN obito INTEGER DEFAULT 0');
-    await db.exec('ALTER TABLE animais ADD COLUMN data_obito TEXT');
-  } catch (e) {}
-
-  try {
-    await db.exec('ALTER TABLE servicos ADD COLUMN codigoBarras TEXT');
-  } catch (e) {}
-
-  try {
-    await db.exec('ALTER TABLE financeiro ADD COLUMN veterinario_id INTEGER REFERENCES usuarios(id)');
-  } catch (e) {}
-
-  console.log("✅ Banco de dados SQLite sincronizado!");
+  console.log(`✅ Banco de dados ${process.env.DATABASE_URL ? 'PostgreSQL' : 'SQLite'} sincronizado!`);
 }

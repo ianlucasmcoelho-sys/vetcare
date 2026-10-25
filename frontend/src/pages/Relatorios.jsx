@@ -7,7 +7,6 @@ import {
 import { MdOutlineVaccines } from "react-icons/md";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
 import { apiGet } from "../services/api";
 import "./Relatorios.css";
 

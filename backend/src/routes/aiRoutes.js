@@ -20,9 +20,12 @@ router.post("/prontuario", authMiddleware, async (req, res) => {
       return res.status(500).json({ error: "Chave da API do Gemini não configurada no servidor." });
     }
 
-    // Configurar o modelo (usando gemini-pro-latest)
+    // Configurar o modelo moderno (gemini-1.5-flash com JSON estrito nativo)
     const model = genAI.getGenerativeModel({
-      model: "gemini-pro-latest"
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json"
+      }
     });
 
     const prompt = `
@@ -30,7 +33,7 @@ router.post("/prontuario", authMiddleware, async (req, res) => {
     
     Relato ditado: "${textoBruto}"
     
-    Retorne um objeto JSON estrito com a seguinte estrutura:
+    Retorne um objeto JSON com a seguinte estrutura:
     {
       "sintomas": "Resumo dos sintomas ou queixa principal (ou string vazia se não mencionado)",
       "diagnostico": "Diagnóstico ou suspeita clínica (ou string vazia se não mencionado)",
@@ -38,16 +41,18 @@ router.post("/prontuario", authMiddleware, async (req, res) => {
       "prescricoes": "Receituário para casa, medicamentos, doses (ou string vazia se não mencionado)",
       "observacoes": "Quaisquer outras informações relevantes (ou string vazia se não mencionado)"
     }
-    
-    Retorne APENAS o JSON válido.
     `;
 
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
     
-    // Limpar markdown
-    let cleanResponse = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-    const structuredData = JSON.parse(cleanResponse);
+    let structuredData;
+    try {
+      structuredData = JSON.parse(responseText.trim());
+    } catch (parseError) {
+      const cleanResponse = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      structuredData = JSON.parse(cleanResponse);
+    }
 
     return res.json(structuredData);
 

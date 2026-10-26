@@ -8,6 +8,7 @@ import { MdOutlineVaccines } from "react-icons/md";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { apiGet } from "../services/api";
+import { exportExcel } from "../utils/exportExcel";
 import "./Relatorios.css";
 
 export default function Relatorios() {
@@ -94,6 +95,17 @@ export default function Relatorios() {
     doc.save(`relatorio_vetcare_${activeTab}.pdf`);
   };
 
+  const exportarExcel = () => {
+    const datasets = {
+      financeiro: { sheetName: "Financeiro", columns: ["Data", "Descrição", "Categoria", "Valor", "Tipo"], rows: financeiro.map(t => [t.data, t.descricao, t.categoria, Number(t.valor) || 0, t.tipo]) },
+      producao: { sheetName: "Produção", columns: ["Pet", "Serviço", "Data", "Tutor", "Status"], rows: producao.map(p => [p.animal_nome, p.tipo_servico, p.data, p.tutor_nome, p.status]) },
+      vacinas: { sheetName: "Vacinas", columns: ["Pet", "Vacina", "Data de aplicação", "Próxima dose", "Observações"], rows: vacinas.map(v => [v.pet_nome, v.nome_vacina, v.data_aplicacao, v.proxima_dose, v.observacoes]) },
+      retornos: { sheetName: "Retornos", columns: ["Pet", "Tutor", "Data do retorno", "Motivo", "Status"], rows: retornos.map(r => [r.pet_nome, r.tutor_nome, r.data_retorno, r.motivo, r.status]) }
+    };
+    const { sheetName, columns, rows } = datasets[activeTab];
+    exportExcel({ fileName: `relatorio_vetcare_${activeTab}_${dataInicio}_${dataFim}`, sheetName, columns, rows });
+  };
+
   return (
     <div className="relatorios-container reveal-fade">
       <div className="page-header">
@@ -104,6 +116,9 @@ export default function Relatorios() {
         <div className="header-actions">
           <button className="v-btn-primary-glow" onClick={exportarPDF}>
             <FiPrinter /> Exportar PDF
+          </button>
+          <button className="btn-outline" onClick={exportarExcel}>
+            <FiDownload /> Exportar Excel
           </button>
         </div>
       </div>
@@ -192,6 +207,8 @@ export default function Relatorios() {
                       <th>Valor</th>
                       <th>Status</th>
                     </tr>
+                  ) : activeTab === "vacinas" ? (
+                    <tr><th>Paciente</th><th>Vacina</th><th>Aplicação</th><th>Próxima dose</th><th>Observações</th></tr>
                   ) : (
                     <tr>
                       <th>Paciente</th>
@@ -213,6 +230,16 @@ export default function Relatorios() {
                           {t.tipo === 'entrada' ? '+' : '-'} R$ {t.valor}
                         </td>
                         <td><span className={`badge-status ${t.tipo}`}>{t.tipo.toUpperCase()}</span></td>
+                      </tr>
+                    ))
+                  ) : activeTab === "vacinas" ? (
+                    vacinas.map(v => (
+                      <tr key={v.id}>
+                        <td><strong>{v.pet_nome}</strong></td>
+                        <td>{v.nome_vacina}</td>
+                        <td>{v.data_aplicacao}</td>
+                        <td>{v.proxima_dose}</td>
+                        <td>{v.observacoes}</td>
                       </tr>
                     ))
                   ) : (

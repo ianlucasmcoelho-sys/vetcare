@@ -44,6 +44,42 @@ const NotasFiscais = lazy(() => import("./pages/NotasFiscais.jsx"));
 import "./App.css";
 import "./Global.css";
 
+function RequiredFieldMessages() {
+  useEffect(() => {
+    const handleInvalid = (event) => {
+      const field = event.target;
+      if (!field.validity?.valueMissing) return;
+
+      const labelElement = field.labels?.[0]
+        || field.closest(".input-group, .form-group, .form-field")?.querySelector("label");
+      const rawLabel = labelElement?.textContent
+        || field.getAttribute("aria-label")
+        || field.placeholder
+        || field.name?.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]/g, " ")
+        || "campo obrigatório";
+      const label = rawLabel.replace(/\*/g, "").replace(/\s+/g, " ").trim().toLocaleLowerCase("pt-BR");
+      const readableLabel = label.charAt(0).toLocaleUpperCase("pt-BR") + label.slice(1);
+
+      field.setCustomValidity(`Preencha o campo ${readableLabel}.`);
+    };
+
+    const clearInvalidMessage = (event) => {
+      if (event.target.required) event.target.setCustomValidity("");
+    };
+
+    document.addEventListener("invalid", handleInvalid, true);
+    document.addEventListener("input", clearInvalidMessage, true);
+    document.addEventListener("change", clearInvalidMessage, true);
+    return () => {
+      document.removeEventListener("invalid", handleInvalid, true);
+      document.removeEventListener("input", clearInvalidMessage, true);
+      document.removeEventListener("change", clearInvalidMessage, true);
+    };
+  }, []);
+
+  return null;
+}
+
 function AppLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -240,6 +276,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        <RequiredFieldMessages />
         <AppLayout />
       </BrowserRouter>
     </ErrorBoundary>

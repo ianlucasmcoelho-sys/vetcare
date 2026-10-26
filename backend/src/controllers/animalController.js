@@ -12,6 +12,11 @@ export async function createAnimal(req, res) {
       responsavel_id, obito, data_obito
     } = req.body;
     const clinica_id = req.usuario.clinica_id;
+    const idadeNumerica = idade === "" || idade === null || idade === undefined ? null : Number(idade);
+
+    if (idadeNumerica !== null && (!Number.isInteger(idadeNumerica) || idadeNumerica < 0)) {
+      return res.status(400).json({ error: "A idade deve ser um número inteiro não negativo." });
+    }
 
     const responsavel = await db.get('SELECT id FROM responsaveis WHERE id = ? AND clinica_id = ?', [responsavel_id, clinica_id]);
     if (!responsavel) return res.status(404).json({ error: 'Responsável não encontrado nesta clínica.' });
@@ -26,7 +31,7 @@ export async function createAnimal(req, res) {
       ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         clinica_id, nome, microchip, especie, raca, sexo, nascimento,
-        idade, idade_unidade, temperamento, porte, pelagem,
+        idadeNumerica, idade_unidade, temperamento, porte, pelagem,
         castrado, rga, plano_saude, carteirinha_numero,
         carteirinha_validade, alergias, doencas_cronicas,
         responsavel_id, obito || 0, data_obito || null
@@ -98,6 +103,11 @@ export async function updateAnimal(req, res) {
       responsavel_id, obito, data_obito
     } = req.body;
 
+    const idadeNumerica = idade === "" || idade === null || idade === undefined ? null : Number(idade);
+    if (idadeNumerica !== null && (!Number.isInteger(idadeNumerica) || idadeNumerica < 0)) {
+      return res.status(400).json({ error: "A idade deve ser um número inteiro não negativo." });
+    }
+
     if (responsavel_id !== undefined && responsavel_id !== null) {
       const responsavel = await db.get('SELECT id FROM responsaveis WHERE id = ? AND clinica_id = ?', [responsavel_id, clinica_id]);
       if (!responsavel) return res.status(404).json({ error: 'Responsável não encontrado nesta clínica.' });
@@ -113,7 +123,7 @@ export async function updateAnimal(req, res) {
       WHERE id=? AND clinica_id=?`,
       [
         nome, microchip, especie, raca, sexo, nascimento,
-        idade, idade_unidade, temperamento, porte, pelagem,
+        idadeNumerica, idade_unidade, temperamento, porte, pelagem,
         castrado, rga, plano_saude, carteirinha_numero,
         carteirinha_validade, alergias, doencas_cronicas,
         responsavel_id, obito || 0, data_obito || null, id, clinica_id

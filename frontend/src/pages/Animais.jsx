@@ -17,6 +17,7 @@ export default function Animais() {
   const [busca, setBusca] = useState("");
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [idadeModo, setIdadeModo] = useState("nascimento");
 
   // Estados de Paginação
   const [currentPage, setCurrentPage] = useState(1);
@@ -82,6 +83,7 @@ export default function Animais() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    e.target.setCustomValidity("");
     setForm(prev => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value
@@ -90,10 +92,21 @@ export default function Animais() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (idadeModo === "nascimento" && !form.nascimento) {
+      alert("Informe a data de nascimento ou escolha informar a idade do pet.");
+      return;
+    }
+    if (idadeModo === "idade" && form.idade === "") {
+      alert("Informe a idade do pet.");
+      return;
+    }
     setLoading(true);
     try {
       const payload = {
         ...form,
+        nascimento: idadeModo === "nascimento" ? form.nascimento : null,
+        idade: idadeModo === "idade" ? Number(form.idade) : null,
+        idade_unidade: idadeModo === "idade" ? form.idade_unidade : null,
         responsavel_id: Number(form.responsavel_id),
         castrado: form.castrado ? 1 : 0,
         obito: form.obito ? 1 : 0
@@ -109,7 +122,10 @@ export default function Animais() {
         // Feedback visual poderia ser um Toast aqui
       } else if (res) {
         const errorData = await res.json();
-        alert(errorData.error || "Erro ao salvar animal.");
+        const details = Array.isArray(errorData.details)
+          ? errorData.details.map(detail => detail.message).join("\n")
+          : "";
+        alert([errorData.error || "Erro ao salvar animal.", details].filter(Boolean).join("\n"));
       }
     } catch (err) {
       alert("Erro ao conectar com o servidor.");
@@ -120,11 +136,13 @@ export default function Animais() {
 
   const fecharModal = () => {
     setForm(initialForm);
+    setIdadeModo("nascimento");
     setEditId(null);
     setShowModal(false);
   };
 
   const abrirEdicao = (animal) => {
+    setIdadeModo(animal.nascimento ? "nascimento" : animal.idade != null ? "idade" : "nascimento");
     setForm({
       nome: animal.nome || "",
       microchip: animal.microchip || "",
@@ -132,7 +150,7 @@ export default function Animais() {
       raca: animal.raca || "",
       sexo: animal.sexo || "",
       nascimento: animal.nascimento || "",
-      idade: animal.idade || "",
+      idade: animal.idade ?? "",
       idade_unidade: animal.idade_unidade || "anos",
       temperamento: animal.temperamento || "",
       porte: animal.porte || "",
@@ -433,16 +451,71 @@ export default function Animais() {
 
                   <h3 className="form-section-title">Saúde e Identificação</h3>
 
-                  <div className="input-group">
-                    <label className="input-label">DATA NASCIMENTO</label>
-                    <input
-                      type="date"
-                      name="nascimento"
+                  <div className="input-group full-width">
+                    <label className="input-label" htmlFor="idadeModo">COMO INFORMAR A IDADE</label>
+                    <select
+                      id="idadeModo"
                       className="form-input"
-                      value={form.nascimento}
-                      onChange={handleChange}
-                    />
+                      value={idadeModo}
+                      onChange={(e) => {
+                        const modo = e.target.value;
+                        setIdadeModo(modo);
+                        setForm(prev => ({
+                          ...prev,
+                          nascimento: modo === "idade" ? "" : prev.nascimento,
+                          idade: modo === "nascimento" ? "" : prev.idade
+                        }));
+                      }}
+                    >
+                      <option value="nascimento">Data de nascimento</option>
+                      <option value="idade">Idade aproximada</option>
+                    </select>
                   </div>
+
+                  {idadeModo === "nascimento" ? (
+                    <div className="input-group">
+                      <label className="input-label">DATA NASCIMENTO</label>
+                      <input
+                        type="date"
+                        name="nascimento"
+                        className="form-input"
+                        value={form.nascimento}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="input-group">
+                        <label className="input-label" htmlFor="idadePet">IDADE DO PET</label>
+                        <input
+                          id="idadePet"
+                          type="number"
+                          name="idade"
+                          className="form-input"
+                          min="0"
+                          step="1"
+                          value={form.idade}
+                          onChange={handleChange}
+                          placeholder="Informe a idade"
+                          required
+                        />
+                      </div>
+                      <div className="input-group">
+                        <label className="input-label" htmlFor="idadeUnidade">UNIDADE</label>
+                        <select
+                          id="idadeUnidade"
+                          name="idade_unidade"
+                          className="form-input"
+                          value={form.idade_unidade}
+                          onChange={handleChange}
+                        >
+                          <option value="anos">Anos</option>
+                          <option value="meses">Meses</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
 
                   <div className="input-group">
                     <label className="input-label">MICROCHIP</label>

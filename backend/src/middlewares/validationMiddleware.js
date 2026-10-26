@@ -10,9 +10,10 @@ export const validate = (schema) => (req, res, next) => {
     });
     next();
   } catch (error) {
+    const issues = error.issues || error.errors || [];
     return res.status(400).json({
       error: 'Erro de validação',
-      details: error.errors.map(err => ({
+      details: issues.map(err => ({
         path: err.path.join('.'),
         message: err.message
       }))
@@ -37,7 +38,7 @@ export const animalSchema = z.object({
     especie: z.string().min(1, 'Espécie é obrigatória'),
     raca: z.string().optional(),
     sexo: z.enum(['M', 'F', 'Macho', 'Fêmea']).optional(),
-    nascimento: z.string().optional(),
+    nascimento: z.string().nullable().optional(),
     responsavel_id: z.number().positive('Responsável é obrigatório'),
   })
 });

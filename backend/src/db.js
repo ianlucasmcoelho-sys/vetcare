@@ -205,7 +205,7 @@ export async function initDb() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
       token_hash TEXT NOT NULL UNIQUE,
-      expires_at INTEGER NOT NULL,
+      expires_at BIGINT NOT NULL,
       used_at TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
@@ -655,6 +655,11 @@ export async function initDb() {
       const duplicateColumn = error.code === '42701' || /duplicate column name/i.test(error.message || '');
       if (!duplicateColumn) throw error;
     }
+  }
+
+  // Reset tokens store epoch milliseconds, which exceed PostgreSQL INTEGER capacity.
+  if (process.env.DATABASE_URL) {
+    await db.exec('ALTER TABLE password_reset_tokens ALTER COLUMN expires_at TYPE BIGINT');
   }
 
   // Contas Free antigas recebem sete dias de transição a partir desta migração.

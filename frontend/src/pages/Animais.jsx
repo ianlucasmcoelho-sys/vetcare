@@ -185,18 +185,6 @@ export default function Animais() {
     return resp ? resp.nome : "Não vinculado";
   };
 
-  const calcularIdade = (nascimento) => {
-    if (!nascimento) return null;
-    const hoje = new Date();
-    const nasc = new Date(nascimento);
-    let idade = hoje.getFullYear() - nasc.getFullYear();
-    const mesDiff = hoje.getMonth() - nasc.getMonth();
-    if (mesDiff < 0 || (mesDiff === 0 && hoje.getDate() < nasc.getDate())) {
-      idade--;
-    }
-    return idade;
-  };
-
   const animaisFiltrados = animais.filter(a => 
     a.nome?.toLowerCase().includes(busca.toLowerCase()) ||
     a.raca?.toLowerCase().includes(busca.toLowerCase()) ||
@@ -262,7 +250,6 @@ export default function Animais() {
           <>
             <div className="animais-grid">
               {animaisExibidos.map((animal) => {
-                const idade = calcularIdade(animal.nascimento);
                 const tutorNome = getResponsavelNome(animal.responsavel_id);
                 
                 return (
@@ -295,10 +282,13 @@ export default function Animais() {
                       
                       <div className="info-row">
                         <FiCalendar className="info-icon" size={14} />
-                        <span className="info-label">Nascimento:</span>
+                        <span className="info-label">{animal.nascimento ? "Nascimento:" : "Idade:"}</span>
                         <span className="info-value">
-                          {animal.nascimento || "Não informado"}
-                          {idade !== null && ` (${idade} anos)`}
+                          {animal.nascimento
+                            ? animal.nascimento
+                            : animal.idade !== null && animal.idade !== undefined
+                              ? `${animal.idade} ${animal.idade_unidade || "anos"}`
+                              : "Não informado"}
                         </span>
                       </div>
 

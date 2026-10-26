@@ -165,15 +165,14 @@ export default function PerfilAnimal() {
         <div className="stat-card">
           <div className="stat-icon"><FiActivity /></div>
           <div className="stat-data">
-            <label>Idade</label>
-            <strong>{animal.idade || "0"} {animal.idade_unidade || "anos"}</strong>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon"><FiClock /></div>
-          <div className="stat-data">
-            <label>Nascimento</label>
-            <strong>{animal.nascimento || "--/--/----"}</strong>
+            <label>{animal.nascimento ? "Nascimento" : "Idade"}</label>
+            <strong>
+              {animal.nascimento
+                ? animal.nascimento
+                : animal.idade !== null && animal.idade !== undefined
+                  ? `${animal.idade} ${animal.idade_unidade || "anos"}`
+                  : "Não informada"}
+            </strong>
           </div>
         </div>
         <div className="stat-card">

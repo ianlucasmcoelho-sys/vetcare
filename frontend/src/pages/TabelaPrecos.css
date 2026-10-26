@@ -87,6 +87,25 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
+  table-layout: fixed;
+  min-width: 880px;
+}
+
+.precos-table .col-item { width: 29%; }
+.precos-table .col-category { width: 16%; }
+.precos-table .col-unit { width: 12%; }
+.precos-table .col-stock { width: 12%; }
+.precos-table .col-price { width: 18%; }
+.precos-table .col-actions { width: 13%; }
+
+.precos-table th.text-right,
+.precos-table td.text-right {
+  text-align: right;
+}
+
+.precos-table th.text-center,
+.precos-table td.text-center {
+  text-align: center;
 }
 
 .precos-table th {
@@ -147,9 +166,39 @@
 
 .price-cell {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-weight: 800;
+  white-space: nowrap;
+  min-width: 150px;
+}
+
+.price-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 122px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid rgba(var(--primary-rgb), 0.18);
+  border-radius: 999px;
+  background: var(--primary-light);
   color: var(--primary-dark);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.stock-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .text-right {

@@ -1,10 +1,11 @@
+import { getDashboardVaccines } from '../services/dashboardVaccines.js';
 import { openDb } from '../db.js';
 
 export const getDashboardStats = async (req, res) => {
   try {
     const db = await openDb();
     const clinica_id = req.usuario.clinica_id;
-    const hoje = new Date().toISOString().split('T')[0];
+    const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
     const mesAtual = hoje.slice(0, 7);
 
     // 1. Estatísticas Gerais
@@ -65,7 +66,10 @@ export const getDashboardStats = async (req, res) => {
       saidas.push(f.sai || 0);
     }
 
+    const vacinasResumo = await getDashboardVaccines(db, clinica_id, hoje);
+
     res.json({
+      vacinasResumo,
       stats: {
         tutores: stats[0].total,
         pets: stats[1].total,

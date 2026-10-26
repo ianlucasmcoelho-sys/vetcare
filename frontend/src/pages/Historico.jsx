@@ -9,6 +9,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from "../services/api";
 import { usePermission } from "../hooks/usePermission";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import MedicalRecordPreview from "../components/MedicalRecordPreview";
 import Pagination from "../components/Pagination";
 import "./HistoricoMedico.css";
 
@@ -17,6 +18,7 @@ export default function Prontuarios() {
   const podeEditar = can("editarProntuarios");
   
   // Estados de Controle
+  const [printRecord, setPrintRecord] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [busca, setBusca] = useState("");
@@ -286,7 +288,7 @@ export default function Prontuarios() {
         ['TEMPERATURA', pront.temperatura ? `${pront.temperatura} °C` : "N/A"],
       ],
       theme: 'striped',
-      headStyles: { fillColor: [34, 197, 94] }
+      headStyles: { fillColor: [15, 118, 110] }
     });
 
     // Tabela de Evolução Clínica
@@ -302,8 +304,8 @@ export default function Prontuarios() {
         ['RETORNO PREVISTO', pront.proxima_visita || "Não agendado"],
       ],
       theme: 'grid',
-      headStyles: { fillColor: [59, 130, 246] },
-      columnStyles: { 0: { fontStyle: 'bold', width: 50 } }
+      headStyles: { fillColor: [15, 118, 110] },
+      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } }
     });
 
     doc.save(`Prontuario_${pront.pet_nome}_${pront.data_visita}.pdf`);
@@ -337,6 +339,7 @@ export default function Prontuarios() {
 
   return (
     <div className="prontuario-container fade-in">
+      {printRecord && <MedicalRecordPreview records={[printRecord]} onClose={() => setPrintRecord(null)} onDownload={() => gerarPDF(printRecord)} />}
       <div className="page-header">
         <div className="header-info">
           {animalSelecionado ? (
@@ -433,7 +436,7 @@ export default function Prontuarios() {
                     </div>
                   </div>
                   <div className="prontuario-header-actions">
-                    <button onClick={() => gerarPDF(p)} className="action-icon" title="Baixar PDF">
+                    <button onClick={() => setPrintRecord(p)} className="action-icon" title="Imprimir prontuário" aria-label="Imprimir prontuário">
                       <FiPrinter size={14} />
                     </button>
                     {podeEditar && (

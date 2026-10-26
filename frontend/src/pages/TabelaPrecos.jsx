@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { 
-  FiPlus, FiSearch, FiX, FiBox, FiAlertTriangle, FiTag, 
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  FiPlus, FiSearch, FiX, FiBox, FiAlertTriangle, FiTag,
   FiShoppingBag, FiEdit2, FiTrash2, FiPackage, FiDollarSign,
   FiCalendar, FiInfo, FiRefreshCw, FiArrowUpRight, FiArrowDownLeft,
   FiClock, FiList, FiTrendingUp, FiTool, FiUser, FiActivity
@@ -32,11 +32,11 @@ export default function TabelaPrecos() {
   const [filtroCategoria, setFiltroCategoria] = useState("todas");
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
-  
+
   const [form, setForm] = useState({
     nome: "", categoria: "Consulta", quantidade: 0, unidade: "sessão",
     precoVenda: "", precoCusto: "", margemLucro: "", estoqueMinimo: 0,
-    fornecedor: "", fabricante: "", lote: "", dataExpiracao: "", 
+    fornecedor: "", fabricante: "", lote: "", dataExpiracao: "",
     codigoBarras: "", observacoes: ""
   });
 
@@ -68,14 +68,14 @@ export default function TabelaPrecos() {
     setCurrentPage(1);
   }, [busca, filtroCategoria]);
 
-  const categoriasExistentes = [...new Set(itens.map(item => item.categoria))];
+  const categoriasExistentes = useMemo(() => [...new Set(itens.map(item => item.categoria))], [itens]);
 
-  const itensFiltrados = itens.filter(item => {
-    const matchBusca = (item.nome?.toLowerCase().includes(busca.toLowerCase())) || 
+  const itensFiltrados = useMemo(() => itens.filter(item => {
+    const matchBusca = (item.nome?.toLowerCase().includes(busca.toLowerCase())) ||
                        (item.categoria?.toLowerCase().includes(busca.toLowerCase()));
     const matchCategoria = filtroCategoria === "todas" || item.categoria === filtroCategoria;
     return matchBusca && matchCategoria;
-  });
+  }), [itens, busca, filtroCategoria]);
 
   // Lógica de Paginação
   const totalPages = Math.ceil(itensFiltrados.length / itemsPerPage);
@@ -100,7 +100,7 @@ export default function TabelaPrecos() {
     const { name, value } = e.target;
     setForm(prev => {
       const newForm = { ...prev, [name]: value };
-      
+
       // Cálculo automático de preço/margem
       if (name === "precoCusto" || name === "margemLucro") {
         const custo = parseFloat(name === "precoCusto" ? value : prev.precoCusto) || 0;
@@ -115,7 +115,7 @@ export default function TabelaPrecos() {
           newForm.margemLucro = (((venda / custo) - 1) * 100).toFixed(2);
         }
       }
-      
+
       return newForm;
     });
   };
@@ -124,10 +124,10 @@ export default function TabelaPrecos() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = editId 
+      const response = editId
         ? await apiPut(`/servicos/${editId}`, form)
         : await apiPost("/servicos", form);
-      
+
       if (response && response.ok) {
         setShowModal(false);
         resetForm();
@@ -136,10 +136,10 @@ export default function TabelaPrecos() {
         const error = await response.json();
         alert(error.error || "Erro ao salvar item.");
       }
-    } catch (err) { 
-      alert("Erro ao salvar item."); 
-    } finally { 
-      setLoading(false); 
+    } catch (err) {
+      alert("Erro ao salvar item.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,7 +156,7 @@ export default function TabelaPrecos() {
     setForm({
       nome: "", categoria: "Consulta", quantidade: 0, unidade: "sessão",
       precoVenda: "", precoCusto: "", margemLucro: "", estoqueMinimo: 0,
-      fornecedor: "", fabricante: "", lote: "", dataExpiracao: "", 
+      fornecedor: "", fabricante: "", lote: "", dataExpiracao: "",
       codigoBarras: "", observacoes: ""
     });
     setEditId(null);
@@ -165,14 +165,14 @@ export default function TabelaPrecos() {
   const abrirEdicao = (item) => {
     setForm({
       nome: item.nome, categoria: item.categoria, quantidade: item.quantidade || 0,
-      unidade: item.unidade || "sessão", precoVenda: item.precoVenda, 
-      precoCusto: item.precoCusto || "", 
+      unidade: item.unidade || "sessão", precoVenda: item.precoVenda,
+      precoCusto: item.precoCusto || "",
       margemLucro: item.margemLucro || "",
       estoqueMinimo: item.estoqueMinimo || 0,
       fornecedor: item.fornecedor || "",
       fabricante: item.fabricante || "",
       lote: item.lote || "",
-      dataExpiracao: item.dataExpiracao || "", 
+      dataExpiracao: item.dataExpiracao || "",
       codigoBarras: item.codigoBarras || "",
       observacoes: item.observacoes || ""
     });
@@ -206,16 +206,16 @@ export default function TabelaPrecos() {
             />
           </div>
           <div className="category-filters">
-            <button 
-              className={`filter-btn ${filtroCategoria === "todas" ? "active" : ""}`} 
+            <button
+              className={`filter-btn ${filtroCategoria === "todas" ? "active" : ""}`}
               onClick={() => setFiltroCategoria("todas")}
             >
               Todas
             </button>
             {categoriasExistentes.map(cat => (
-              <button 
-                key={cat} 
-                className={`filter-btn ${filtroCategoria === cat ? "active" : ""}`} 
+              <button
+                key={cat}
+                className={`filter-btn ${filtroCategoria === cat ? "active" : ""}`}
                 onClick={() => setFiltroCategoria(cat)}
               >
                 {cat}
@@ -283,8 +283,8 @@ export default function TabelaPrecos() {
                 </tbody>
               </table>
             </div>
-            
-            <Pagination 
+
+            <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}

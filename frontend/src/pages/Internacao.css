@@ -6,12 +6,12 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
 
-  
+
   animation: fadeIn 0.4s ease;
 }
 
 /* Header de Página */
-.page-title {
+.internacao-container .page-title {
   font-size: 28px;
   font-weight: 700;
   background: linear-gradient(135deg, #0f766e, #14b8a6);
@@ -22,14 +22,14 @@
 
 /* Card Principal e Busca */
 
-.search-section {
+.internacao-container .search-section {
   padding: 20px 24px;
   border-bottom: 1px solid var(--border-color);
   background: transparent;
 }
 
 /* Grid de Pacientes */
-.pacientes-grid {
+.internacao-container .pacientes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
@@ -39,13 +39,13 @@
 
 /* Card de Paciente - Padrão "Responsaveis" */
 
-.paciente-card-item:hover {
+.internacao-container .paciente-card-item:hover {
   transform: translateY(-6px);
   border-color: #14b8a6;
   box-shadow: 0 15px 30px -10px rgba(20, 184, 166, 0.15);
 }
 
-.paciente-card-badge {
+.internacao-container .paciente-card-badge {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -60,7 +60,7 @@
   border: 1px solid #fee2e2;
 }
 
-.paciente-card-header {
+.internacao-container .paciente-card-header {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -68,7 +68,7 @@
   background: transparent;
 }
 
-.pet-avatar-hospital {
+.internacao-container .pet-avatar-hospital {
   width: 50px;
   height: 50px;
   background: linear-gradient(135deg, #0f766e, #14b8a6);
@@ -80,14 +80,14 @@
   box-shadow: 0 8px 16px -4px rgba(20, 184, 166, 0.3);
 }
 
-.pet-nome {
+.internacao-container .pet-nome {
   font-size: 17px;
   font-weight: 800;
   color: var(--text-primary);
   margin: 0 0 2px 0;
 }
 
-.pet-tutor {
+.internacao-container .pet-tutor {
   font-size: 12px;
   color: var(--text-secondary);
   margin: 0;
@@ -96,11 +96,11 @@
   gap: 6px;
 }
 
-.paciente-card-body {
+.internacao-container .paciente-card-body {
   padding: 0 20px 20px 20px;
 }
 
-.hospital-info-row {
+.internacao-container .hospital-info-row {
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
@@ -110,26 +110,26 @@
   border: 1px dashed var(--border-color);
 }
 
-.info-item {
+.internacao-container .info-item {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.info-label {
+.internacao-container .info-label {
   font-size: 10px;
   font-weight: 800;
   color: var(--text-secondary);
   text-transform: uppercase;
 }
 
-.info-value {
+.internacao-container .info-value {
   font-size: 13px;
   font-weight: 700;
   color: var(--text-secondary);
 }
 
-.paciente-card-footer {
+.internacao-container .paciente-card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -138,7 +138,7 @@
   border-top: 1px solid var(--border-color);
 }
 
-.card-actions-hint {
+.internacao-container .card-actions-hint {
   font-size: 12px;
   font-weight: 700;
   color: #14b8a6;
@@ -148,7 +148,7 @@
 }
 
 /* Modal Hospitalar Premium (O Mapa) */
-.hospital-modal-premium {
+.internacao-container .hospital-modal-premium {
   max-width: 950px !important;
   background: var(--bg-card) !important;
   max-height: 92vh;
@@ -158,7 +158,7 @@
   border-radius: 28px !important;
 }
 
-.hospital-header-fixed {
+.internacao-container .hospital-header-fixed {
   padding: 24px 32px;
   background: var(--bg-card);
   border-bottom: 1px solid #eef2f6;
@@ -167,7 +167,7 @@
   align-items: center;
 }
 
-.patient-avatar-gradient {
+.internacao-container .patient-avatar-gradient {
   width: 64px;
   height: 64px;
   background: linear-gradient(135deg, #1e293b, #334155);
@@ -179,8 +179,8 @@
   box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
 }
 
-.hospital-title { font-size: 26px; font-weight: 800; color: var(--text-primary); margin: 0; }
-.hospital-tabs-nav {
+.internacao-container .hospital-title { font-size: 26px; font-weight: 800; color: var(--text-primary); margin: 0; }
+.internacao-container .hospital-tabs-nav {
   display: flex;
   gap: 32px;
   padding: 0 32px;
@@ -188,7 +188,7 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.nav-tab {
+.internacao-container .nav-tab {
   padding: 18px 0;
   background: none;
   border: none;
@@ -203,9 +203,9 @@
   transition: all 0.2s;
 }
 
-.nav-tab.active { color: #14b8a6; border-bottom-color: #14b8a6; }
+.internacao-container .nav-tab.active { color: #14b8a6; border-bottom-color: #14b8a6; }
 
-.hospital-content-scroll {
+.internacao-container .hospital-content-scroll {
   flex: 1;
   overflow-y: auto;
   padding: 32px;
@@ -213,7 +213,7 @@
 }
 
 /* Agenda de Medicações */
-.med-card-hospital {
+.internacao-container .med-card-hospital {
   background: var(--bg-card);
   border-radius: 18px;
   padding: 20px;
@@ -226,15 +226,15 @@
   transition: all 0.2s;
 }
 
-.med-card-hospital.aplicado { opacity: 0.6; background: var(--bg-hover); border-left: 5px solid #10b981; }
-.med-card-hospital.pendente { border-left: 5px solid #f59e0b; }
+.internacao-container .med-card-hospital.aplicado { opacity: 0.6; background: var(--bg-hover); border-left: 5px solid #10b981; }
+.internacao-container .med-card-hospital.pendente { border-left: 5px solid #f59e0b; }
 
-.med-time-box { display: flex; flex-direction: column; text-align: center; background: var(--bg-hover); padding: 8px; border-radius: 12px; }
-.med-time-box .time { font-size: 18px; font-weight: 800; color: var(--text-primary); }
-.med-time-box .date { font-size: 10px; font-weight: 700; color: var(--text-secondary); }
+.internacao-container .med-time-box { display: flex; flex-direction: column; text-align: center; background: var(--bg-hover); padding: 8px; border-radius: 12px; }
+.internacao-container .med-time-box .time { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+.internacao-container .med-time-box .date { font-size: 10px; font-weight: 700; color: var(--text-secondary); }
 
 /* Modal Cadastro Internação (Fixed Height) */
-.internacao-modal-fixed {
+.internacao-container .internacao-modal-fixed {
   max-width: 700px !important;
   max-height: 90vh;
   display: flex;
@@ -242,7 +242,7 @@
   overflow: hidden;
 }
 
-.hospital-info-box {
+.internacao-container .hospital-info-box {
   margin-top: 24px;
   background: #f0f9ff;
   border: 1px solid #bae6fd;
@@ -259,6 +259,6 @@
 /* ... Estilos de botões seguindo btn-primary global ... */
 
 @media (max-width: 768px) {
-  .pacientes-grid { grid-template-columns: 1fr; }
-  .med-card-hospital { grid-template-columns: 1fr; text-align: center; }
+  .internacao-container .pacientes-grid { grid-template-columns: 1fr; }
+  .internacao-container .med-card-hospital { grid-template-columns: 1fr; text-align: center; }
 }

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  FiPlus, FiSearch, FiEdit2, FiTrash2, FiX, FiUser, 
+import {
+  FiPlus, FiSearch, FiEdit2, FiTrash2, FiX, FiUser,
   FiCalendar, FiPackage, FiInfo, FiAlertCircle, FiEye
 } from "react-icons/fi";
 import { MdOutlinePets } from "react-icons/md";
@@ -112,7 +112,7 @@ export default function Animais() {
         obito: form.obito ? 1 : 0
       };
 
-      const res = editId 
+      const res = editId
         ? await apiPut(`/animais/${editId}`, payload)
         : await apiPost("/animais", payload);
 
@@ -179,18 +179,19 @@ export default function Animais() {
     }
   };
 
+  const responsaveisPorId = useMemo(() => new Map(responsaveis.map(r => [String(r.id), r.nome])), [responsaveis]);
+
   const getResponsavelNome = (id) => {
     if (!id || id === 0 || id === "0") return "Não vinculado";
-    const resp = responsaveis.find(r => r.id === parseInt(id));
-    return resp ? resp.nome : "Não vinculado";
+    return responsaveisPorId.get(String(id)) || "Não vinculado";
   };
 
-  const animaisFiltrados = animais.filter(a => 
+  const animaisFiltrados = useMemo(() => animais.filter(a =>
     a.nome?.toLowerCase().includes(busca.toLowerCase()) ||
     a.raca?.toLowerCase().includes(busca.toLowerCase()) ||
     a.especie?.toLowerCase().includes(busca.toLowerCase()) ||
     getResponsavelNome(a.responsavel_id).toLowerCase().includes(busca.toLowerCase())
-  );
+  ), [animais, responsaveis, busca]);
 
   // Lógica de Paginação
   const totalPages = Math.ceil(animaisFiltrados.length / itemsPerPage);
@@ -251,7 +252,7 @@ export default function Animais() {
             <div className="animais-grid">
               {animaisExibidos.map((animal) => {
                 const tutorNome = getResponsavelNome(animal.responsavel_id);
-                
+
                 return (
                   <div key={animal.id} className="animal-card-item v-glass-panel" onClick={() => navigate(`/perfil-animal/${animal.id}`)} style={{ cursor: 'pointer', animationDelay: `${0.1 + (0.05 * (animal.id % 10))}s` }}>
                     <div className="animal-card-header">
@@ -279,7 +280,7 @@ export default function Animais() {
                         <span className="info-label">Tutor:</span>
                         <span className="info-value">{tutorNome}</span>
                       </div>
-                      
+
                       <div className="info-row">
                         <FiCalendar className="info-icon" size={14} />
                         <span className="info-label">{animal.nascimento ? "Nascimento:" : "Idade:"}</span>
@@ -308,22 +309,22 @@ export default function Animais() {
                       {animal.castrado === 1 && (
                         <span className="badge-castrado" style={{ marginRight: 'auto' }}>Castrado</span>
                       )}
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); navigate(`/perfil-animal/${animal.id}`); }} 
+                      <button
+                        onClick={(e) => { e.stopPropagation(); navigate(`/perfil-animal/${animal.id}`); }}
                         className="action-btn view-btn"
                         title="Ver Perfil"
                       >
                         <FiEye size={14} />
                       </button>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); abrirEdicao(animal); }} 
+                      <button
+                        onClick={(e) => { e.stopPropagation(); abrirEdicao(animal); }}
                         className="action-btn edit-btn"
                         title="Editar"
                       >
                         <FiEdit2 size={14} />
                       </button>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); deletarAnimal(animal.id); }} 
+                      <button
+                        onClick={(e) => { e.stopPropagation(); deletarAnimal(animal.id); }}
                         className="action-btn delete-btn"
                         title="Excluir"
                       >
@@ -334,8 +335,8 @@ export default function Animais() {
                 );
               })}
             </div>
-            
-            <Pagination 
+
+            <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
@@ -364,7 +365,7 @@ export default function Animais() {
               <div className="form-scroll">
                 <div className="form-grid">
                   <h3 className="form-section-title">Informações Básicas</h3>
-                  
+
                   <div className="input-group full-width">
                     <label className="input-label">NOME *</label>
                     <input
@@ -377,7 +378,7 @@ export default function Animais() {
                       required
                     />
                   </div>
-                  
+
                   <div className="input-group">
                     <label className="input-label">ESPÉCIE *</label>
                     <select
@@ -396,7 +397,7 @@ export default function Animais() {
                       <option value="Outro">Outro</option>
                     </select>
                   </div>
-                  
+
                   <div className="input-group">
                     <label className="input-label">RAÇA</label>
                     <input
@@ -408,7 +409,7 @@ export default function Animais() {
                       placeholder="Raça do animal"
                     />
                   </div>
-                  
+
                   <div className="input-group">
                     <label className="input-label">SEXO</label>
                     <select
@@ -422,7 +423,7 @@ export default function Animais() {
                       <option value="F">Fêmea</option>
                     </select>
                   </div>
-                  
+
                   <div className="input-group">
                     <label className="input-label">TUTOR *</label>
                     <select

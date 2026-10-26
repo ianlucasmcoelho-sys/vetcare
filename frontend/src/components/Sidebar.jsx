@@ -29,6 +29,7 @@ import {
   TbChevronRight
 } from 'react-icons/tb';
 import './Sidebar.css';
+import { preloadRoute } from '../utils/routePreload';
 
 export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkClick }) {
   const visuallyCollapsed = isCollapsed && !isMobileOpen;
@@ -109,6 +110,8 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
         {onToggle && (
           <button
             className="sidebar-toggle-btn"
+            aria-label={visuallyCollapsed ? "Expandir menu" : "Recolher menu"}
+            aria-expanded={!visuallyCollapsed}
             onClick={onToggle}
             title={visuallyCollapsed ? 'Expandir menu' : 'Recolher menu'}
           >
@@ -132,6 +135,8 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
                   className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
                   title={visuallyCollapsed ? item.label : undefined}
                   onClick={handleLinkClick}
+                  onMouseEnter={() => preloadRoute(item.path)}
+                  onFocus={() => preloadRoute(item.path)}
                 >
                   <span className="sidebar-link-icon">
                     <Icon />

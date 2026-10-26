@@ -94,7 +94,7 @@ export default function MeuPerfil() {
   };
 
   return (
-    <div className="perfil-page fade-in">
+    <div className="meuperfil-container fade-in">
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Meu Perfil</h1>
@@ -102,14 +102,14 @@ export default function MeuPerfil() {
         </div>
       </div>
 
-      <div className="perfil-grid">
+      <div className="meuperfil-grid">
         {/* Card de Dados Pessoais */}
         <div className="perfil-card">
           <div className="card-header-perfil">
             <FiUser />
             <h3>Dados Pessoais</h3>
           </div>
-          <form onSubmit={atualizarDados}>
+          <form className="perfil-form" onSubmit={atualizarDados}>
             <div className="form-group">
               <label>Nome Completo</label>
               <input 
@@ -146,7 +146,7 @@ export default function MeuPerfil() {
             <FiLock />
             <h3>Segurança e Senha</h3>
           </div>
-          <form onSubmit={alterarSenha}>
+          <form className="perfil-form" onSubmit={alterarSenha}>
             <div className="form-group">
               <label>Senha Atual</label>
               <input 

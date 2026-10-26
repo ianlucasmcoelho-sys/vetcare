@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { 
   FiUsers, FiCalendar, FiDollarSign, FiRefreshCw,
@@ -169,6 +170,25 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      <section className="vaccine-reminders" aria-label="Lembretes de vacinação">
+        <div className="vaccine-reminders-heading">
+          <div><h2><TbVaccine aria-hidden="true" /> Atenção às vacinas</h2><p>Próximas doses registradas dos pacientes da clínica.</p></div>
+          <Link to="/vacinas">Ver carteira de vacinas <FiArrowRight /></Link>
+        </div>
+        {data.vacinasResumo ? <>
+          <div className="vaccine-summary">
+            <Link className="vaccine-summary-overdue" to="/vacinas?status=vencidas"><strong>{data.vacinasResumo.vencidas}</strong><span>Doses vencidas</span></Link>
+            <Link className="vaccine-summary-upcoming" to="/vacinas?status=proximas"><strong>{data.vacinasResumo.pendentes}</strong><span>Pendentes nos próximos 30 dias (inclui hoje)</span></Link>
+          </div>
+          {data.vacinasResumo.itens.length ? <ul className="vaccine-reminders-list">
+            {data.vacinasResumo.itens.map(vacina => <li key={vacina.id}>
+              <Link to={`/perfil-animal/${vacina.animal_id}`}><strong>{vacina.animal_nome}</strong><span>{vacina.nome_vacina}</span></Link>
+              <time dateTime={vacina.proxima_dose}>{new Date(`${String(vacina.proxima_dose).slice(0, 10)}T12:00:00`).toLocaleDateString('pt-BR')}</time>
+            </li>)}
+          </ul> : <p className="vaccine-empty">Nenhuma dose vencida ou prevista para os próximos 30 dias.</p>}
+        </> : <p>Os lembretes de vacinação estão temporariamente indisponíveis.</p>}
+      </section>
 
       {/* Main Content Split */}
       <div className="v-dash-main-split">

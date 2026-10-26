@@ -276,9 +276,6 @@ export default function Agenda() {
                   <div className="action-buttons">
                     {ag.status !== "Concluído" && ag.status !== "Cancelado" && (
                       <>
-                        <button onClick={() => atualizarStatus(ag.id, "Confirmado")} className="action-btn confirm-btn">
-                          <FiCheckCircle size={14} /> Confirmar
-                        </button>
                         <button onClick={() => atualizarStatus(ag.id, "Concluído")} className="action-btn success-btn">
                           <FiCheckCircle size={14} /> Concluir
                         </button>

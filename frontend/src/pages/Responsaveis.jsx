@@ -6,6 +6,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { apiGet, apiPost, apiPut, apiDelete } from "../services/api";
 import Pagination from "../components/Pagination";
+import { exportExcel } from "../utils/exportExcel";
 import "./Responsaveis.css";
 
 export default function Responsaveis() {
@@ -145,6 +146,16 @@ export default function Responsaveis() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    setShowExportModal(false);
+  };
+
+  const exportarExcel = () => {
+    const columns = ["ID", "Nome", "CPF", "RG", "Nascimento", "Telefone", "Celular", "E-mail", "CEP", "Endereço", "Cidade", "Estado", "Observações"];
+    const rows = tutores.map(t => [
+      t.id, t.nome, t.cpf, t.rg, t.nascimento, t.telefone, t.celular,
+      t.email, t.cep, t.endereco, t.cidade, t.estado, t.observacoes
+    ]);
+    exportExcel({ fileName: `tutores_${new Date().toISOString().split("T")[0]}`, sheetName: "Tutores", columns, rows });
     setShowExportModal(false);
   };
 
@@ -305,7 +316,7 @@ export default function Responsaveis() {
               </button>
             </div>
             <div className="form-scroll">
-              <p style={{ color: '#475569', fontSize: '14px', marginBottom: '16px' }}>Deseja exportar a lista de tutores em formato CSV?</p>
+              <p style={{ color: '#475569', fontSize: '14px', marginBottom: '16px' }}>Escolha o formato para exportar a lista completa de tutores.</p>
               <div style={{ background: '#f0fdfa', padding: '12px', borderRadius: '10px', display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <FiInfo size={18} color="#0d9488" />
                 <span style={{ fontSize: '12px', color: '#0d9488' }}>O arquivo será compatível com Excel e outros editores de planilha.</span>
@@ -313,7 +324,8 @@ export default function Responsaveis() {
             </div>
             <div className="modal-footer">
               <button onClick={() => setShowExportModal(false)} className="btn-secondary">Cancelar</button>
-              <button onClick={exportarCSV} className="v-btn-primary-glow">Exportar Agora</button>
+              <button onClick={exportarCSV} className="btn-secondary">Exportar CSV</button>
+              <button onClick={exportarExcel} className="v-btn-primary-glow">Exportar Excel</button>
             </div>
           </div>
         </div>

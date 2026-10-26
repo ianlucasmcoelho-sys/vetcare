@@ -387,7 +387,11 @@ export default function PerfilTutor() {
                     </div>
                     <div className="animal-card-body">
                       {animal.microchip && <div className="animal-microchip"><FiPackage size={12} /><span>Microchip: {animal.microchip}</span></div>}
-                      {animal.nascimento && <div className="animal-nascimento"><FiCalendar size={12} /><span>Nascimento: {animal.nascimento}</span></div>}
+                      {animal.nascimento ? (
+                        <div className="animal-nascimento"><FiCalendar size={12} /><span>Nascimento: {animal.nascimento}</span></div>
+                      ) : animal.idade !== null && animal.idade !== undefined ? (
+                        <div className="animal-nascimento"><FiCalendar size={12} /><span>Idade: {animal.idade} {animal.idade_unidade || "anos"}</span></div>
+                      ) : null}
                     </div>
                   </div>
                 ))}

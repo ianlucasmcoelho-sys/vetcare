@@ -15,6 +15,18 @@ const DocumentPreview = ({ html, css, dados, onClose }) => {
   // Função para processar placeholders no frontend (mesma lógica do backend para redundância)
   const processarTemplate = (templateHtml, info) => {
     let result = templateHtml;
+    const escapeHtml = value => String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const formatMultiline = value => escapeHtml(value).replace(/\r\n|\r|\n/g, "<br>");
+    const multilineFields = new Set([
+      "{{medicamentos}}",
+      "{{posologia}}",
+      "{{observacoes}}",
+      "{{diagnostico}}",
+      "{{tratamento}}"
+    ]);
     
     const placeholders = {
       '{{pet_nome}}': info.pet_nome || '',
@@ -44,7 +56,8 @@ const DocumentPreview = ({ html, css, dados, onClose }) => {
     };
     
     Object.entries(placeholders).forEach(([key, val]) => {
-      result = result.split(key).join(val);
+      const formattedValue = multilineFields.has(key) ? formatMultiline(val) : escapeHtml(val);
+      result = result.split(key).join(formattedValue);
     });
     
     return result;

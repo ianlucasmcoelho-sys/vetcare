@@ -569,7 +569,7 @@ export default function NotasFiscais() {
       {/* MODAL: NOVA EMISSÃO FISCAL */}
       {showNovaNotaModal && (
         <div className="modal-overlay" onClick={() => setShowNovaNotaModal(false)}>
-          <div className="modal-content modal-emissao v-glass-heavy reveal-up" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content modal-emissao v-glass-heavy" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title-group">
                 <TbFileInvoice size={22} className="modal-title-icon" />

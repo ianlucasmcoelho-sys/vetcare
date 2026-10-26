@@ -10,6 +10,21 @@ import { apiGet, apiPost, apiPut, apiDelete } from "../services/api";
 import Pagination from "../components/Pagination";
 import "./TabelaPrecos.css";
 
+const normalizarItemServico = (item) => ({
+  ...item,
+  precoVenda: item.precoVenda ?? item.precovenda ?? item.preco_venda ?? ""
+});
+
+const formatarPrecoVenda = (preco) => {
+  if (preco === null || preco === undefined || String(preco).trim() === "") return "Não informado";
+
+  const texto = String(preco).trim();
+  const valor = Number(texto.includes(",") ? texto.replace(/\./g, "").replace(",", ".") : texto);
+  if (!Number.isFinite(valor)) return "Não informado";
+
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
+};
+
 export default function TabelaPrecos() {
   const [itens, setItens] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,7 +52,7 @@ export default function TabelaPrecos() {
       const response = await apiGet("/servicos");
       if (response && response.ok) {
         const dados = await response.json();
-        setItens(Array.isArray(dados) ? dados : []);
+        setItens(Array.isArray(dados) ? dados.map(normalizarItemServico) : []);
       }
     } catch (error) {
       console.error("Erro ao carregar tabela de preços:", error);
@@ -224,11 +239,20 @@ export default function TabelaPrecos() {
           <>
             <div className="table-responsive">
               <table className="precos-table">
+                <colgroup>
+                  <col className="col-item" />
+                  <col className="col-category" />
+                  <col className="col-unit" />
+                  <col className="col-stock" />
+                  <col className="col-price" />
+                  <col className="col-actions" />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>Item / Serviço</th>
                     <th>Categoria</th>
                     <th>Unidade</th>
+                    <th className="text-center">Estoque</th>
                     <th className="text-right">Preço Venda</th>
                     <th className="text-center">Ações</th>
                   </tr>
@@ -244,7 +268,12 @@ export default function TabelaPrecos() {
                       </td>
                       <td><span className="badge-categoria">{item.categoria}</span></td>
                       <td>{item.unidade || "-"}</td>
-                      <td className="text-right price-cell">R$ {item.precoVenda}</td>
+                      <td className="text-center">
+                        <span className="stock-value">{item.quantidade ?? 0}</span>
+                      </td>
+                      <td className="text-right price-cell">
+                        <span className="price-badge">{formatarPrecoVenda(item.precoVenda)}</span>
+                      </td>
                       <td className="text-center actions-cell">
                         <button onClick={() => abrirEdicao(item)} className="action-icon" title="Editar"><FiEdit2 /></button>
                         <button onClick={() => deletarItem(item.id)} className="action-icon delete-btn" title="Excluir"><FiTrash2 /></button>

@@ -13,7 +13,6 @@
     "start": "npm --prefix backend start",
     "build": "npm ci --prefix backend && npm ci --include=dev --prefix frontend && npm --prefix frontend run build",
     "hostinger:build": "npm ci --prefix backend && npm ci --include=dev --prefix frontend && npm --prefix frontend run build",
-    "seed:demo": "npm --prefix backend run seed:demo",
     "provision:lifetime-admin": "npm --prefix backend run provision:lifetime-admin",
     "audit:production": "npm audit --omit=dev && npm audit --omit=dev --prefix backend && npm audit --omit=dev --prefix frontend"
   },

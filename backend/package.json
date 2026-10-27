@@ -7,8 +7,7 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "provision:lifetime-admin": "node scripts/provisionLifetimeAdmin.js",
-    "seed:demo": "node scripts/populate_demo_profile.js"
+    "provision:lifetime-admin": "node scripts/provisionLifetimeAdmin.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

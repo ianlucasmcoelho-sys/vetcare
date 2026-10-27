@@ -1,3 +1,4 @@
+import { isRetiredDemoAccount } from '../services/demoAccess.js';
 import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'vetcare_secret_key_2024';
 
@@ -20,21 +21,21 @@ export const authMiddleware = async (req, res, next) => {
 
     req.usuario = decoded;
 
-    // --- SaaS Subscription Check ---
-    // Bypass for payment/billing routes so they can actually pay
-    const isBillingRoute = req.originalUrl.includes('/pagamento')
-      || req.originalUrl.includes('/planos')
-      || ['/api/asaas/subscribe', '/api/asaas/status'].some((path) => req.originalUrl.startsWith(path));
-    if (isBillingRoute) {
-      return next();
-    }
-
     const db = await openDb();
-    const clinica = await db.get('SELECT status_assinatura, data_expiracao FROM clinicas WHERE id = ?', [decoded.clinica_id]);
-
+    const clinica = await db.get('SELECT email as clinica_email, status_assinatura, data_expiracao FROM clinicas WHERE id = ?', [decoded.clinica_id]);
     if (!clinica) {
       return res.status(404).json({ error: 'Clínica não encontrada.' });
     }
+    // Check retired demo access before the billing bypass, including old sessions.
+    if (isRetiredDemoAccount({ email: decoded.email, clinica_email: clinica.clinica_email })) {
+      return res.status(401).json({ error: 'Perfil de demonstração descontinuado.' });
+    }
+
+    // Expired paying customers still need access to the billing routes.
+    const isBillingRoute = req.originalUrl.includes('/pagamento')
+      || req.originalUrl.includes('/planos')
+      || ['/api/asaas/subscribe', '/api/asaas/status'].some((path) => req.originalUrl.startsWith(path));
+    if (isBillingRoute) return next();
 
     const { status_assinatura, data_expiracao } = clinica;
 

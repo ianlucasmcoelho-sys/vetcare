@@ -95,33 +95,6 @@ export default function Login() {
     }
   };
 
-  const handleAcessarDemo = async () => {
-    setEmail("demo@vetcare.com");
-    setSenha("demo123");
-    setLoading(true);
-    setErro("");
-    try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "demo@vetcare.com", senha: "demo123" }),
-      });
-      const data = await response.json();
-      if (response.ok && data.success) {
-        localStorage.setItem("token", data.token);
-        const userData = { ...data.usuario, clinica: data.clinica };
-        localStorage.setItem("usuario", JSON.stringify(userData));
-        window.location.href = "/";
-      } else {
-        setErro(data.error || "Falha ao entrar no modo demonstração");
-      }
-    } catch (error) {
-      setErro("Erro ao conectar com o servidor");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="v-auth-page">
       {/* Ambient Background */}
@@ -204,16 +177,6 @@ export default function Login() {
                 )}
               </button>
 
-              <button 
-                type="button" 
-                className="v-btn-pill-demo" 
-                onClick={handleAcessarDemo} 
-                disabled={loading}
-                title="Acesse o perfil pré-populado com dados simulados completos"
-              >
-                <FiZap /> Acessar Perfil Demonstração
-              </button>
-              
               <div className="v-auth-divider">
                 <span></span>
                 <small>ou continue com</small>

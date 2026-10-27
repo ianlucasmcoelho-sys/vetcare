@@ -1,3 +1,4 @@
+import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect } from "react";
 import { 
   FiPlus, FiSearch, FiPrinter, FiEdit2, FiTrash2, 
@@ -20,6 +21,7 @@ export default function Prontuarios() {
   // Estados de Controle
   const [printRecord, setPrintRecord] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  useQuickCreate(() => setShowModal(true), podeEditar);
   const [loading, setLoading] = useState(false);
   const [busca, setBusca] = useState("");
   const [editId, setEditId] = useState(null);

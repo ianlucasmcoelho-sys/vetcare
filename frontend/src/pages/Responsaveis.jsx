@@ -1,3 +1,4 @@
+import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect, useMemo } from "react";
 import {
   FiPlus, FiSearch, FiTrash2, FiEdit3, FiX, FiUser,
@@ -12,6 +13,7 @@ import "./Responsaveis.css";
 export default function Responsaveis() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  useQuickCreate(() => setShowModal(true));
   const [tutores, setTutores] = useState([]);
   const [busca, setBusca] = useState("");
   const [editId, setEditId] = useState(null);

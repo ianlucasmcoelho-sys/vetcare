@@ -1,5 +1,5 @@
 // Only the latest application of each vaccine contributes a next-dose reminder.
-export async function getDashboardVaccines(db, clinicaId, hoje) {
+export async function getDashboardVaccines(db, clinicaId, hoje, { split = false } = {}) {
   const limite = new Date(`${hoje}T12:00:00Z`);
   limite.setUTCDate(limite.getUTCDate() + 30);
   const dataLimite = limite.toISOString().slice(0, 10);
@@ -23,5 +23,12 @@ export async function getDashboardVaccines(db, clinicaId, hoje) {
     db.all(`SELECT v.id, v.animal_id, v.nome_vacina, v.proxima_dose, a.nome AS animal_nome
       ${from} AND ${due} <= ? ORDER BY ${due} ASC, v.id ASC LIMIT 5`, [clinicaId, dataLimite])
   ]);
-  return { vencidas: Number(contagem.vencidas), pendentes: Number(contagem.pendentes), itens };
+  const result = { vencidas: Number(contagem.vencidas), pendentes: Number(contagem.pendentes), itens };
+  if (split) {
+    [result.vencidasItens, result.pendentesItens] = await Promise.all([
+      db.all(`SELECT v.id, v.animal_id, v.nome_vacina, v.proxima_dose, a.nome AS animal_nome ${from} AND ${due} < ? ORDER BY ${due}, v.id LIMIT 5`, [clinicaId, hoje]),
+      db.all(`SELECT v.id, v.animal_id, v.nome_vacina, v.proxima_dose, a.nome AS animal_nome ${from} AND ${due} BETWEEN ? AND ? ORDER BY ${due}, v.id LIMIT 5`, [clinicaId, hoje, dataLimite])
+    ]);
+  }
+  return result;
 }

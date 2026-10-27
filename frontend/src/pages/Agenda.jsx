@@ -1,3 +1,4 @@
+import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect } from "react";
 import { 
   FiPlus, FiCalendar, FiClock, FiX, FiSearch, FiEdit2, 
@@ -11,6 +12,7 @@ import "./Agenda.css";
 
 export default function Agenda() {
   const [showModal, setShowModal] = useState(false);
+  useQuickCreate(() => setShowModal(true));
   const [agendamentos, setAgendamentos] = useState([]);
   const [animais, setAnimais] = useState([]);
   const [tutores, setTutores] = useState([]);

@@ -4,5 +4,5 @@ import './BackToDashboard.css';
 import { FiArrowLeft } from 'react-icons/fi';
 
 export default function BackToDashboard() {
-  return <Link className="back-dashboard" to="/"><FiArrowLeft aria-hidden="true" /> Voltar ao dashboard</Link>;
+  return <Link className="back-dashboard" to="/dashboard"><FiArrowLeft aria-hidden="true" /> Voltar ao dashboard</Link>;
 }

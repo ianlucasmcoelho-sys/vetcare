@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   TbLayoutDashboard,
+  TbHome,
   TbCalendar,
   TbUsers,
   TbPaw,
@@ -43,7 +44,8 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
     {
       title: 'Principal',
       items: [
-        { path: '/', label: 'Dashboard', icon: TbLayoutDashboard },
+        { path: '/', label: 'Início', icon: TbHome },
+        { path: '/dashboard', label: 'Dashboard clínico', icon: TbLayoutDashboard },
         { path: '/agenda', label: 'Agendamentos', icon: TbCalendar },
         { path: '/responsaveis', label: 'Tutores / Clientes', icon: TbUsers },
         { path: '/animais', label: 'Pacientes (Pets)', icon: TbPaw },

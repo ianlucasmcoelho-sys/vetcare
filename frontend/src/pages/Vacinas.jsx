@@ -1,3 +1,4 @@
+import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect, useMemo } from "react";
 import { 
   FiPlus, FiCalendar, FiShield, FiX, FiSearch, FiEdit2, 
@@ -9,6 +10,7 @@ import "./Vacinas.css";
 
 export default function Vacinas() {
   const [showModal, setShowModal] = useState(false);
+  useQuickCreate(() => setShowModal(true));
   const [vacinas, setVacinas] = useState([]);
   const [animais, setAnimais] = useState([]);
   const [loading, setLoading] = useState(false);

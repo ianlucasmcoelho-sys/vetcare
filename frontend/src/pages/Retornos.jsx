@@ -9,7 +9,10 @@ import { apiGet, apiPost, apiPut, apiDelete, apiPatch } from "../services/api";
 import "./Retornos.css";
 
 export default function Retornos() {
-  const [filtro, setFiltro] = useState("Pendentes");
+  const [filtro, setFiltro] = useState(() => {
+    const status = new URLSearchParams(window.location.search).get('status');
+    return status === 'atrasados' ? 'Atrasados' : 'Pendentes';
+  });
   const [busca, setBusca] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);

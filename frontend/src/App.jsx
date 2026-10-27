@@ -5,6 +5,7 @@ const AuthenticatedShell = lazy(() => import("./components/AuthenticatedShell.js
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 const Login = lazyPage("Login");
 const Dashboard = lazyPage("Dashboard");
+const Inicio = lazyPage("Inicio");
 const Responsaveis = lazyPage("Responsaveis");
 const Animais = lazyPage("Animais");
 const Historico = lazyPage("Historico");
@@ -210,7 +211,9 @@ function AppLayout() {
         toggleMobileMenu={toggleMobileMenu} closeMobileMenu={closeMobileMenu} toggleSidebar={toggleSidebar}>
         <Suspense fallback={<div role="status" aria-live="polite" className="route-loading">Carregando...</div>}>
       <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Inicio />} />
+          <Route path="/inicio" element={<Navigate to="/" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/responsaveis" element={<Responsaveis />} />
           <Route path="/perfil-tutor/:id" element={<PerfilTutor />} />
           <Route path="/animais" element={<Animais />} />

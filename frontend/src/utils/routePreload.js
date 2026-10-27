@@ -2,6 +2,7 @@ import { lazy } from "react";
 
 const loaders = {
   Login: () => import("../pages/Login.jsx"),
+  Inicio: () => import("../pages/Inicio.jsx"),
   Dashboard: () => import("../pages/Dashboard.jsx"),
   Responsaveis: () => import("../pages/Responsaveis.jsx"),
   Animais: () => import("../pages/Animais.jsx"),
@@ -48,7 +49,8 @@ const load = (name) => {
 };
 export const lazyPage = name => lazy(() => load(name));
 const routes = {
-  "/": "Dashboard",
+  "/": "Inicio",
+  "/dashboard": "Dashboard",
   "/login": "Login",
   "/cadastro": "CadastroClinica",
   "/recuperar-senha": "RecuperarSenha",

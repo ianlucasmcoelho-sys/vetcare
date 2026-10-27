@@ -1,3 +1,4 @@
+import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,6 +13,7 @@ import "./Animais.css";
 export default function Animais() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  useQuickCreate(() => setShowModal(true));
   const [animais, setAnimais] = useState([]);
   const [responsaveis, setResponsaveis] = useState([]);
   const [busca, setBusca] = useState("");

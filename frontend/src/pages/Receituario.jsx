@@ -1,3 +1,4 @@
+import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -117,6 +118,8 @@ export default function Receituario() {
     });
     setShowModal(true);
   };
+
+  useQuickCreate(abrirNovo, podeEditar);
 
   const abrirEdicao = (receita) => {
     setEditando(receita.id);

@@ -1,9 +1,7 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { lazyPage } from "./utils/routePreload";
-import Sidebar from "./components/Sidebar.jsx";
-import TopBar from "./components/TopBar.jsx";
-import MenuToggle from "./components/MenuToggle.jsx";
+const AuthenticatedShell = lazy(() => import("./components/AuthenticatedShell.jsx"));
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 const Login = lazyPage("Login");
 const Dashboard = lazyPage("Dashboard");
@@ -207,30 +205,9 @@ function AppLayout() {
   }
 
   return (
-    <div className={`layout v-global-mesh-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
-      {/* Global Background Ambience */}
-      <div className="v-dash-mesh">
-        <div className="v-orb-dash v-orb-primary"></div>
-        <div className="v-orb-dash v-orb-secondary"></div>
-      </div>
-
-      <MenuToggle isOpen={mobileMenuOpen} onClick={toggleMobileMenu} />
-      <button
-        type="button"
-        className={`sidebar-overlay ${mobileMenuOpen ? "active" : ""}`} 
-        onClick={closeMobileMenu}
-        aria-label="Fechar menu de navegação"
-        aria-hidden={!mobileMenuOpen}
-        tabIndex={mobileMenuOpen ? 0 : -1}
-      />
-      <Sidebar
-        isCollapsed={sidebarCollapsed}
-        isMobileOpen={mobileMenuOpen}
-        onToggle={toggleSidebar}
-        onLinkClick={closeMobileMenu}
-      />
-      <TopBar isCollapsed={sidebarCollapsed} />
-      <main className="content">
+    <Suspense fallback={<div role="status" className="route-loading">Carregando...</div>}>
+      <AuthenticatedShell sidebarCollapsed={sidebarCollapsed} mobileMenuOpen={mobileMenuOpen}
+        toggleMobileMenu={toggleMobileMenu} closeMobileMenu={closeMobileMenu} toggleSidebar={toggleSidebar}>
         <Suspense fallback={<div role="status" aria-live="polite" className="route-loading">Carregando...</div>}>
       <Routes>
           <Route path="/" element={<Dashboard />} />
@@ -269,8 +246,8 @@ function AppLayout() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-      </main>
-    </div>
+      </AuthenticatedShell>
+    </Suspense>
   );
 }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { 
   FiMail, FiLock, FiEye, FiEyeOff, FiAlertCircle, 
   FiArrowRight, FiSun, FiMoon, FiUser, FiZap, FiShield,
@@ -221,6 +221,7 @@ export default function Login() {
               </div>
 
               <div className="v-google-wrap">
+                <GoogleOAuthProvider clientId="1057629123787-gskt2kvcok51e44dqtin4jkd93ks311q.apps.googleusercontent.com">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() => setErro("Erro ao conectar com o Google")}
@@ -228,6 +229,7 @@ export default function Login() {
                   shape="pill"
                   width="400"
                 />
+                </GoogleOAuthProvider>
               </div>
               
               <button type="button" className="v-btn-pill-secondary" onClick={() => navigate("/cadastro")}>

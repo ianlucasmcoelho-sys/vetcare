@@ -115,11 +115,17 @@ export default function Landing() {
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('v-visible');
+        if (entry.isIntersecting) {
+          entry.target.classList.add('v-visible');
+          observer.unobserve(entry.target);
+        }
       });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.v-reveal').forEach(el => observer.observe(el));
+    document.querySelectorAll('.v-reveal').forEach(el => {
+      if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('v-immediate');
+      else observer.observe(el);
+    });
 
     // Auto-rotate tabs in mockup
     const interval = setInterval(() => {
@@ -178,7 +184,7 @@ export default function Landing() {
 
       {/* HERO */}
       <section className="v-hero-grid">
-        <div className="v-hero-info v-reveal">
+        <div className="v-hero-info">
           <div className="v-hero-tag">
             <FiZap /> <span>Padrão Ouro em Gestão Veterinária</span>
           </div>
@@ -404,7 +410,9 @@ export default function Landing() {
              <div className="v-dark-ui-preview">
                <img 
                  src="/assets/Dashboard.jpg" 
-                 alt="Interface do Vet Care" 
+                 alt="Interface do Vet Care"
+                 loading="lazy"
+                 decoding="async"
                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                />
              </div>

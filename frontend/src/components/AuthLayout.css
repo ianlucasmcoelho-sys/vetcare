@@ -1,0 +1,82 @@
+.vc-auth { --auth-bg:#f4f8f9; --auth-panel:#fff; --auth-text:#15313c; --auth-muted:#607681; --auth-border:#dfE9ec; --auth-tint:#edf8f5; --auth-primary:#087f78; min-height:100dvh; background:var(--auth-bg); color:var(--auth-text); font-family:'Plus Jakarta Sans',sans-serif; display:flex; flex-direction:column; padding:0 32px; box-sizing:border-box; }
+[data-theme='dark'] .vc-auth { --auth-bg:#0b141c; --auth-panel:#121f29; --auth-text:#edf5f6; --auth-muted:#a3b9c2; --auth-border:#2b3c47; --auth-tint:#142d30; --auth-primary:#32d2c0; }
+.vc-auth *, .vc-auth *::before, .vc-auth *::after { box-sizing:border-box; }
+.vc-auth a { color:inherit; }
+.vc-auth button,.vc-auth input { font:inherit; }
+.vc-auth-nav { width:100%; max-width:1160px; margin:0 auto; padding:24px 0; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.vc-auth-brand { display:inline-flex; align-items:center; font-size:24px; font-weight:800; letter-spacing:-1px; text-decoration:none; }
+.vc-auth-brand>span:first-child { display:grid; place-items:center; width:38px; height:38px; border-radius:12px; margin-right:10px; background:#0ca99b; color:white; font-size:23px; }
+.vc-auth-brand-care { color:var(--auth-primary); }
+.vc-auth-nav-actions { display:flex; align-items:center; gap:22px; font-size:13px; }
+.vc-auth-nav-actions>a { display:flex; gap:8px; align-items:center; text-decoration:none; font-weight:600; }
+.vc-auth-theme { width:38px; height:38px; border:1px solid var(--auth-border); background:var(--auth-panel); color:var(--auth-text); border-radius:50%; display:grid; place-items:center; cursor:pointer; }
+.vc-auth-stage { width:100%; max-width:1120px; margin:auto; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); border:1px solid var(--auth-border); border-radius:26px; overflow:hidden; box-shadow:0 20px 65px rgba(25,65,73,.06); }
+.vc-auth-story { background:var(--auth-tint); padding:38px; display:flex; flex-direction:column; gap:30px; position:relative; }
+.vc-auth-story-top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.vc-auth-kicker { display:flex; align-items:center; gap:8px; font-size:10px; letter-spacing:.13em; font-weight:800; color:var(--auth-primary); }
+.vc-auth-kicker>span { width:7px; height:7px; background:currentColor; border-radius:50%; }
+.vc-auth-story-mark { width:40px; height:40px; border:1px solid var(--auth-border); border-radius:13px; display:grid; place-items:center; font-size:22px; color:var(--auth-primary); }
+.vc-auth-story-main h2 { font-size:clamp(30px,3.1vw,43px); line-height:1.15; font-weight:800; letter-spacing:-1.7px; margin:0 0 18px; }
+.vc-auth-story-main em { font-style:normal; color:var(--auth-primary); }
+.vc-auth-story-main>p { font-size:13px; line-height:1.9; color:var(--auth-muted); margin:0; max-width:370px; }
+.vc-auth-feature-list { display:flex; flex-direction:column; gap:21px; }
+.vc-auth-feature { display:flex; gap:13px; align-items:flex-start; }
+.vc-auth-feature>span { flex-shrink:0; width:38px; height:38px; display:grid; place-items:center; border:1px solid var(--auth-border); background:var(--auth-panel); border-radius:12px; font-size:18px; color:var(--auth-primary); }
+.vc-auth-feature h3 { font-size:13px; font-weight:800; margin:1px 0 5px; }
+.vc-auth-feature p { font-size:12px; color:var(--auth-muted); line-height:1.75; margin:0; }
+.vc-auth-story-footer { display:flex; align-items:flex-start; gap:12px; margin-top:auto; padding-top:22px; border-top:1px solid var(--auth-border); }
+.vc-auth-story-footer>svg { margin-top:2px; color:var(--auth-primary); flex-shrink:0; font-size:19px; }
+.vc-auth-story-footer strong { font-size:11px; font-weight:800; }
+.vc-auth-story-footer p { margin:5px 0 0; color:var(--auth-muted); font-size:11px; line-height:1.7; }
+.vc-auth-form-panel { background:var(--auth-panel); padding:38px; display:flex; flex-direction:column; justify-content:center; min-width:0; }
+.vc-auth-form-content { width:100%; max-width:390px; margin:auto; }
+.vc-auth-form-heading { margin-bottom:26px; }
+.vc-auth-form-heading>span { color:var(--auth-primary); font-size:10px; letter-spacing:.12em; font-weight:800; text-transform:uppercase; }
+.vc-auth-form-heading h1 { font-size:29px; line-height:1.25; font-weight:800; letter-spacing:-1px; margin:10px 0 10px; }
+.vc-auth-form-heading p { margin:0; color:var(--auth-muted); font-size:13px; line-height:1.75; }
+.vc-auth-form { display:flex; flex-direction:column; gap:18px; }
+.vc-auth-field { display:flex; flex-direction:column; gap:8px; min-width:0; }
+.vc-auth-field>label { font-weight:700; font-size:12px; color:var(--auth-text); }
+.vc-auth-input { display:flex; align-items:center; position:relative; border:1px solid var(--auth-border); background:var(--auth-bg); border-radius:11px; min-width:0; }
+.vc-auth-input>svg { position:absolute; left:13px; width:16px; color:var(--auth-muted); pointer-events:none; }
+.vc-auth-input input { width:100%; height:46px; border:0; padding:11px 13px 11px 39px; border-radius:11px; color:var(--auth-text); background:transparent; outline:0; font-size:13px; min-width:0; }
+.vc-auth-input input::placeholder { color:var(--auth-muted); opacity:.8; }
+.vc-auth-input:focus-within { border-color:var(--auth-primary); box-shadow:0 0 0 3px rgba(20,184,166,.12); }
+.vc-auth-input:has(button) input { padding-right:44px; }
+.vc-auth-eye { position:absolute; right:6px; width:34px; height:34px; border:0; border-radius:8px; background:transparent; color:var(--auth-muted); display:grid; place-items:center; cursor:pointer; }
+.vc-auth-eye:hover { background:var(--auth-tint); }
+.vc-auth-forgot { display:flex; justify-content:flex-end; margin-top:-5px; }
+.vc-auth-forgot a { color:var(--auth-primary); font-size:11px; font-weight:700; text-decoration:none; }
+.vc-auth .vc-auth-primary { display:flex; justify-content:center; align-items:center; gap:9px; width:100%; min-height:46px; border:0; border-radius:11px; background:#087f78; color:#fff; padding:12px 16px; font-size:14px; font-weight:800; cursor:pointer; text-decoration:none; transition:background .15s; }
+.vc-auth-primary:hover { background:#066c66; }
+.vc-auth-primary:disabled { opacity:.65; cursor:wait; }
+.vc-auth-divider { display:flex; align-items:center; gap:14px; margin:20px 0; color:var(--auth-muted); font-size:10px; }
+.vc-auth-divider::before,.vc-auth-divider::after { content:''; height:1px; flex:1; background:var(--auth-border); }
+.vc-auth-google { width:100%; min-height:44px; display:flex; justify-content:center; overflow:hidden; }
+.vc-auth-switch { font-size:11px; color:var(--auth-muted); text-align:center; margin:22px 0 0; line-height:1.7; }
+.vc-auth-switch a { color:var(--auth-primary); font-weight:800; text-decoration:none; margin-left:5px; }
+.vc-auth-alert { display:flex; align-items:flex-start; gap:9px; border:1px solid #fecaca; background:#fff4f4; color:#a12727; border-radius:10px; padding:12px; font-size:11px; line-height:1.65; }
+.vc-auth-alert>svg { margin-top:2px; flex-shrink:0; }
+.vc-auth-alert.success { border-color:#a7e1d3; background:#effbf6; color:#146b50; }
+.vc-auth-alert.info { background:var(--auth-tint); color:var(--auth-text); border-color:var(--auth-border); }
+.vc-auth-footer { width:100%; max-width:1120px; margin:0 auto; padding:22px 0; display:flex; align-items:center; justify-content:space-between; gap:16px; color:var(--auth-muted); font-size:10px; }
+.vc-auth-footer a { display:flex; align-items:center; gap:7px; text-decoration:none; }
+.vc-auth a:focus-visible,.vc-auth button:focus-visible { outline:3px solid var(--auth-primary); outline-offset:4px; }
+.vc-auth-signup .vc-auth-form-panel { padding:32px 38px; }
+.vc-auth-signup .vc-auth-form-heading { margin-bottom:20px; }
+.vc-auth-signup .vc-auth-form-heading h1 { font-size:26px; }
+.vc-auth-form fieldset { border:0; padding:0; margin:0; min-width:0; }
+.vc-auth-form legend { font-size:10px; color:var(--auth-primary); font-weight:800; letter-spacing:.08em; text-transform:uppercase; margin-bottom:13px; display:flex; align-items:center; gap:7px; }
+.vc-auth-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.vc-auth-full { grid-column:1/-1; }
+.vc-auth-signup .vc-auth-form { gap:23px; }
+.vc-auth-hint { font-size:10px; color:var(--auth-muted); line-height:1.7; margin:8px 0 0; }
+.vc-auth-password-rules { display:flex; flex-wrap:wrap; gap:5px 12px; margin:10px 0 0; padding:0; list-style:none; font-size:9px; color:var(--auth-muted); }
+.vc-auth-password-rules li { display:flex; gap:4px; align-items:center; }
+.vc-auth-password-rules li[data-met='true'] { color:var(--auth-primary); }
+.vc-auth-plan-note { margin:0; font-size:10px; line-height:1.75; color:var(--auth-muted); padding:12px; background:var(--auth-bg); border:1px solid var(--auth-border); border-radius:10px; }
+@media(min-width:1450px) { .vc-auth-stage { max-width:1160px; } .vc-auth-story,.vc-auth-form-panel { padding:46px; } .vc-auth-signup .vc-auth-form-panel { padding:38px 46px; } }
+@media(max-width:850px) { .vc-auth { padding:0 22px; } .vc-auth-story,.vc-auth-form-panel,.vc-auth-signup .vc-auth-form-panel { padding:28px; } .vc-auth-story-main h2 { font-size:32px; } .vc-auth-feature p { font-size:12px; } .vc-auth-story { gap:25px; } }
+@media(max-width:680px) { .vc-auth-grid { grid-template-columns:1fr; } .vc-auth { padding:0 16px; } .vc-auth-nav { padding:18px 0; } .vc-auth-nav-actions { gap:12px; } .vc-auth-nav-actions>a { font-size:11px; } .vc-auth-brand { font-size:21px; } .vc-auth-brand>span:first-child { width:33px; height:33px; font-size:20px; } .vc-auth-stage { grid-template-columns:1fr; border-radius:20px; margin:12px auto; } .vc-auth-story { display:none; } .vc-auth-form-panel,.vc-auth-signup .vc-auth-form-panel { padding:30px 24px; } .vc-auth-form-heading h1 { font-size:26px; } .vc-auth-footer { font-size:9px; flex-wrap:wrap; padding:18px 0; } .vc-auth-form-content { max-width:420px; } }
+@media(max-width:380px) { .vc-auth-form-panel,.vc-auth-signup .vc-auth-form-panel { padding:26px 18px; } .vc-auth-grid { grid-template-columns:1fr; } .vc-auth-nav-actions>a { gap:4px; } }
+@media(prefers-reduced-motion:reduce) { .vc-auth *, .vc-auth *::before,.vc-auth *::after { transition:none!important; animation:none!important; } }

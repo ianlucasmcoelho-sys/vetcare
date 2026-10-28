@@ -17,3 +17,11 @@ O diagnóstico público `/api/asaas/configuration` identifica versão e ambiente
 Notas fiscais temporariamente indisponíveis: o menu abre uma tela de Em breve e as rotas fiscais autenticadas retornam HTTP 503 com FISCAL_MODULE_COMING_SOON. Nenhuma emissão, cancelamento ou alteração fiscal é permitida. Registros históricos preservados. A reativação depende da regularização e configuração fiscal; sem data definida.
 
 Validação do bloqueio fiscal: 38 testes aprovados, build concluído, navegação conferida no navegador e HTTP 503 confirmado nas rotas fiscais locais. Esta atualização precisa ser publicada para aplicar o aviso e o bloqueio no domínio oficial.
+
+A seção Design focado em performance da landing page usa uma captura atual do dashboard clínico com dados fictícios. A imagem dashboard-clinico-20261028.webp tem 1269 × 717 pixels e 57.006 bytes; substitui a referência ao JPG antigo de 103.495 bytes, preservando carregamento sob demanda e a proporção sem cortes.
+
+Landing e acesso revisados: depoimentos, identidades fictícias, contadores de clientes e promessas não comprovadas de receita, economia de tempo, segurança absoluta ou uptime foram substituídos por recursos e etapas reais do produto. O print do dashboard é identificado como ilustrativo. O contato usa equipevetcare@vetcaresistema.com, sem telefone fictício.
+
+Login e cadastro compartilham layout com identidade VetCare, colunas alinhadas, temas claro/escuro, rótulos, visibilidade de senha, estados de erro e adaptação ao celular. O cadastro informa 7 dias de teste e R$ 97/mês após o período, sem prometer gratuidade permanente. A intenção de contratar o plano completo é preservada entre login e cadastro. Os textos de onboarding também foram ajustados aos recursos disponíveis.
+
+Validação mais recente: 39 testes aprovados e build de produção concluído. No navegador local com base de testes: login válido/inválido, mostrar senha, requisitos e confirmação de senha, cadastro de clínica fictícia, onboarding, logout e navegação do plano completo. Layout conferido em desktop e em largura de celular, inclusive no modo escuro. Essas alterações precisam ser publicadas no domínio oficial.

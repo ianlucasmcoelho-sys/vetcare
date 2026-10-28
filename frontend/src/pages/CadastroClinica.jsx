@@ -1,398 +1,55 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { 
-  FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiAlertCircle, 
-  FiPhone, FiSun, FiMoon, FiCheckCircle, FiZap, FiShield, 
-  FiStar, FiArrowRight, FiCheck, FiActivity, FiPackage
-} from "react-icons/fi";
-import { FaBuilding } from "react-icons/fa";
-import { MdOutlinePets, MdOutlineMedicalServices } from "react-icons/md";
-import { API_URL } from "../services/api";
-import "./Login.css";
-import "./CadastroClinica.css";
-
-// Conteúdo dinâmico do painel direito por plano
-const planoPanels = {
-  free: {
-    badge: { label: "Plano Free", color: "rgba(100,116,139,0.12)", text: "#475569" },
-    title: "Comece\nGrátis.",
-    tagline: "Experimente os recursos essenciais por 7 dias, sem cartão de crédito.",
-    features: [
-      { icon: FiCheck, label: "7 dias de acesso gratuito", color: "#14b8a6" },
-      { icon: MdOutlinePets, label: "Agenda, tutores e pacientes", color: "#3b82f6" },
-      { icon: MdOutlineMedicalServices, label: "Prontuário e histórico clínico", color: "#8b5cf6" },
-    ],
-    stats: [
-      { value: "R$ 0", unit: "", label: "Para sempre" },
-      { value: "7", unit: "dias", label: "de teste gratuito" },
-    ],
-    cta: "Conheça o sistema completo",
-  },
-  complete: {
-    badge: { label: "VetCare Completo", color: "rgba(20,184,166,0.12)", text: "#0d9488" },
-    title: "Gestão\nCompleta.",
-    tagline: "Todos os módulos de gestão por R$ 97 ao mês, com cobrança mensal.",
-    features: [
-      { icon: FiStar, label: "Estoque, financeiro e relatórios", color: "#f59e0b" },
-      { icon: FiZap, label: "Internação, exames e CRM", color: "#14b8a6" },
-      { icon: FiActivity, label: "Equipe e comissões", color: "#8b5cf6" },
-    ],
-    stats: [
-      { value: "R$97", unit: "/mês", label: "Preço único" },
-      { value: "∞", unit: "", label: "Recursos completos" },
-    ],
-    cta: "Ver todos os recursos",
-  },
-};
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { FiUser, FiMail, FiLock, FiPhone, FiEye, FiEyeOff, FiAlertCircle, FiCheckCircle, FiArrowRight, FiCheck } from 'react-icons/fi';
+import { TbBuildingHospital } from 'react-icons/tb';
+import AuthLayout from '../components/AuthLayout';
+import { API_URL } from '../services/api';
+import { PASSWORD_RULE, authDestination, selectedAuthPlan } from '../utils/authFlow';
 
 export default function CadastroClinica() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const planoSelected = searchParams.get('plano') || 'free';
-  const panel = planoPanels[planoSelected] || planoPanels.free;
-
-  const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState("");
-  const [sucesso, setSucesso] = useState("");
-  const [showSenha, setShowSenha] = useState(false);
-  const [showConfirmSenha, setShowConfirmSenha] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-
-  const [form, setForm] = useState({
-    clinica_nome: "",
-    clinica_cnpj: "",
-    clinica_telefone: "",
-    clinica_email: "",
-    admin_nome: "",
-    admin_email: "",
-    admin_senha: "",
-    admin_confirm_senha: ""
-  });
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const getPasswordStrength = (pass) => {
-    if (!pass) return { score: 0, text: '', color: '' };
-    if (pass.length < 8) return { score: 1, text: 'Fraca', color: '#EF4444' };
-    const hasUpper = /[A-Z]/.test(pass);
-    const hasLower = /[a-z]/.test(pass);
-    const hasNumber = /\d/.test(pass);
-    const hasSpecial = /[@$!%*?&.]/.test(pass);
-    if (hasUpper && hasLower && hasNumber && hasSpecial && pass.length >= 8) {
-      return { score: 3, text: 'Forte', color: '#10B981' };
-    }
-    return { score: 2, text: 'Média', color: '#F59E0B' };
-  };
-
-  const strength = getPasswordStrength(form.admin_senha);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setErro("");
-    setSucesso("");
-
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
-    if (!passwordRegex.test(form.admin_senha)) {
-      setErro("A senha não atende aos requisitos de segurança.");
-      setLoading(false);
-      return;
-    }
-
-    if (form.admin_senha !== form.admin_confirm_senha) {
-      setErro("As senhas não coincidem");
-      setLoading(false);
-      return;
-    }
-
+  const {search}=useLocation();
+  const complete=selectedAuthPlan(search)==='complete';
+  const [form,setForm]=useState({clinica_nome:'',clinica_cnpj:'',clinica_telefone:'',clinica_email:'',admin_nome:'',admin_email:'',admin_senha:'',admin_confirm_senha:''});
+  const [loading,setLoading]=useState(false),[erro,setErro]=useState(''),[sucesso,setSucesso]=useState(false);
+  const [showSenha,setShowSenha]=useState(false),[showConfirm,setShowConfirm]=useState(false);
+  const busy=useRef(false);
+  const errorRef=useRef(null);
+  useEffect(()=>{if(erro) errorRef.current?.focus();},[erro]);
+  const rules=[['8 ou mais caracteres',form.admin_senha.length>=8],['Maiúscula e minúscula',/[A-Z]/.test(form.admin_senha)&&/[a-z]/.test(form.admin_senha)],['Número',/\d/.test(form.admin_senha)],['Símbolo',/[@$!%*?&.]/.test(form.admin_senha)]];
+  const submit=async event=>{
+    event.preventDefault();if(busy.current||sucesso) return;setErro('');
+    if(!PASSWORD_RULE.test(form.admin_senha)) {setErro('Use ao menos 8 caracteres, com maiúscula, minúscula, número e um dos símbolos: @$!%*?&.');return;}
+    if(form.admin_senha!==form.admin_confirm_senha) {setErro('As senhas não coincidem. Confira a confirmação da senha.');return;}
+    busy.current=true;setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/auth/cadastro-clinica`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setSucesso("Clínica cadastrada com sucesso!");
-        localStorage.setItem("token", data.token);
-        const userData = { ...data.usuario, clinica: data.clinica };
-        localStorage.setItem("usuario", JSON.stringify(userData));
-
-        setTimeout(() => {
-          const plano = searchParams.get('plano') || 'free';
-          if (plano === 'complete') {
-            window.location.href = `/checkout?plano=${plano}`;
-          } else {
-            window.location.href = "/";
-          }
-        }, 1500);
-      } else {
-        setErro(data.error || "Erro ao cadastrar clínica");
-      }
-    } catch (error) {
-      setErro("Erro ao conectar com o servidor");
-    } finally {
-      setLoading(false);
-    }
+      const payload={...form,clinica_nome:form.clinica_nome.trim(),admin_nome:form.admin_nome.trim(),admin_email:form.admin_email.trim(),clinica_email:form.clinica_email.trim()};
+      const response=await fetch(`${API_URL}/auth/cadastro-clinica`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.success) throw new Error(data.error||'Não foi possível criar sua clínica. Confira os dados e tente novamente.');
+      setSucesso(true);localStorage.setItem('token',data.token);localStorage.setItem('usuario',JSON.stringify({...data.usuario,clinica:data.clinica}));
+      window.location.href=authDestination(search);
+    } catch(error) {setErro(error.message==='Failed to fetch'?'Não foi possível conectar ao servidor. Tente novamente.':error.message);}
+    finally {busy.current=false;setLoading(false);}
   };
-
-  return (
-    <div className="v-auth-page v-signup-page">
-      {/* Ambient Background */}
-      <div className="v-auth-ambient">
-        <div className="v-auth-orb v-auth-orb-1"></div>
-        <div className="v-auth-orb v-auth-orb-2"></div>
-      </div>
-
-      {/* Navbar */}
-      <nav className="v-login-nav reveal-top">
-        <div className="v-nav-brand" onClick={() => navigate("/")}>
-          <div className="v-nav-logo-box">
-            <img src="/logo.png" alt="Vet Care Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
-          </div>
-          <span>Vet Care</span>
-        </div>
-        <div className="v-nav-actions">
-          <button className="v-home-link" onClick={() => navigate("/")}>← Voltar ao site</button>
-          <button className="v-theme-toggle-pill" onClick={toggleTheme}>
-            {theme === "light" ? <FiMoon size={16} /> : <FiSun size={16} />}
-          </button>
-        </div>
-      </nav>
-
-      <div className="v-signup-content-split">
-        {/* ===== FORMULÁRIO ===== */}
-        <div className="v-panel-auth reveal-left">
-          <div className="v-auth-card v-signup-card">
-
-            {/* Header */}
-            <div className="v-auth-card-header">
-              <div className="v-auth-logo-badge">
-                <FaBuilding size={22} style={{ color: 'var(--primary)' }} />
-              </div>
-              <h2>Criar Conta</h2>
-              <p>Cadastre sua clínica e revolucione sua gestão</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="v-form-pill v-signup-form">
-              {erro && <div className="v-pill-error"><FiAlertCircle /> {erro}</div>}
-              {sucesso && (
-                <div className="v-pill-success">
-                  <FiCheckCircle /> {sucesso}
-                </div>
-              )}
-
-              {/* Seção Clínica */}
-              <div className="v-signup-section">
-                <div className="v-signup-section-label">
-                  <FaBuilding size={12} />
-                  Dados da Clínica
-                </div>
-                <div className="v-signup-grid">
-                  <div className="v-input-pill-group v-col-full">
-                    <FiZap className="v-pill-icon" />
-                    <input
-                      type="text"
-                      name="clinica_nome"
-                      placeholder="Nome da Clínica / Razão Social"
-                      value={form.clinica_nome}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="v-input-pill-group">
-                    <FiPhone className="v-pill-icon" />
-                    <input
-                      type="tel"
-                      name="clinica_telefone"
-                      placeholder="Telefone"
-                      value={form.clinica_telefone}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="v-input-pill-group">
-                    <FiMail className="v-pill-icon" />
-                    <input
-                      type="email"
-                      name="clinica_email"
-                      placeholder="E-mail Comercial"
-                      value={form.clinica_email}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Seção Admin */}
-              <div className="v-signup-section">
-                <div className="v-signup-section-label">
-                  <FiUser size={12} />
-                  Dados do Administrador
-                </div>
-                <div className="v-signup-grid">
-                  <div className="v-input-pill-group v-col-full">
-                    <FiUser className="v-pill-icon" />
-                    <input
-                      type="text"
-                      name="admin_nome"
-                      placeholder="Nome Completo"
-                      value={form.admin_nome}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="v-input-pill-group v-col-full">
-                    <FiMail className="v-pill-icon" />
-                    <input
-                      type="email"
-                      name="admin_email"
-                      placeholder="E-mail de Acesso"
-                      value={form.admin_email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  {/* Senha com strength meter */}
-                  <div className="v-col-full v-password-wrap">
-                    <div className="v-input-pill-group">
-                      <FiLock className="v-pill-icon" />
-                      <input
-                        type={showSenha ? "text" : "password"}
-                        name="admin_senha"
-                        placeholder="Senha"
-                        value={form.admin_senha}
-                        onChange={handleChange}
-                        required
-                      />
-                      <button type="button" className="v-pill-eye" onClick={() => setShowSenha(!showSenha)}>
-                        {showSenha ? <FiEyeOff /> : <FiEye />}
-                      </button>
-                    </div>
-                    {form.admin_senha && (
-                      <div className="v-strength-meter">
-                        <div className="v-strength-bars">
-                          {[1, 2, 3].map(i => (
-                            <div
-                              key={i}
-                              className="v-strength-bar"
-                              style={{ background: strength.score >= i ? strength.color : 'var(--border-color)' }}
-                            />
-                          ))}
-                          <span className="v-strength-text" style={{ color: strength.color }}>{strength.text}</span>
-                        </div>
-                        <p className="v-strength-hint">Mínimo 8 caracteres com maiúsculas, minúsculas, número e símbolo (@$!%*?&).</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="v-input-pill-group v-col-full">
-                    <FiLock className="v-pill-icon" />
-                    <input
-                      type={showConfirmSenha ? "text" : "password"}
-                      name="admin_confirm_senha"
-                      placeholder="Confirmar Senha"
-                      value={form.admin_confirm_senha}
-                      onChange={handleChange}
-                      required
-                    />
-                    <button type="button" className="v-pill-eye" onClick={() => setShowConfirmSenha(!showConfirmSenha)}>
-                      {showConfirmSenha ? <FiEyeOff /> : <FiEye />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Submit */}
-              <button
-                type="submit"
-                className="v-btn-pill-primary-3d"
-                disabled={loading || sucesso !== ""}
-              >
-                {loading ? (
-                  <span className="v-btn-loading"><span className="v-spinner"></span> Criando conta...</span>
-                ) : sucesso !== "" ? (
-                  <span className="v-btn-loading"><FiCheckCircle /> Redirecionando...</span>
-                ) : (
-                  <>Criar minha Clínica <FiArrowRight /></>
-                )}
-              </button>
-
-              <button type="button" className="v-btn-pill-secondary" onClick={() => navigate("/login")}>
-                Já tenho uma conta
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* ===== PAINEL VISUAL ===== */}
-        <div className="v-panel-intro reveal-right">
-          <div className="v-intro-scene">
-
-            {/* Plan Badge */}
-            <div className="v-signup-plan-badge" style={{ background: panel.badge.color, color: panel.badge.text }}>
-              {panel.badge.label}
-            </div>
-
-            {/* Title */}
-            <h1 className="v-intro-title-3d" style={{ whiteSpace: 'pre-line' }}>
-              {panel.title}
-            </h1>
-
-            <p className="v-intro-tagline">{panel.tagline}</p>
-
-            {/* Stats Row */}
-            <div className="v-signup-stats-row">
-              {panel.stats.map((stat, i) => (
-                <div key={i} className="v-signup-stat">
-                  <div className="v-signup-stat-number">
-                    {stat.value}<span>{stat.unit}</span>
-                  </div>
-                  <div className="v-signup-stat-label">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Feature List */}
-            <div className="v-intro-features-list">
-              {panel.features.map((feat, i) => (
-                <div key={i} className="v-intro-feature-item">
-                  <div className="v-feature-dot" style={{ background: feat.color }}></div>
-                  <span>{feat.label}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Trust badges */}
-            <div className="v-intro-badges">
-              <div className="v-mini-badge"><FiShield size={12} /> Dados Seguros</div>
-              <div className="v-mini-badge"><FiZap size={12} /> Setup em 2min</div>
-              <div className="v-mini-badge"><FiActivity size={12} /> 99.9% Uptime</div>
-            </div>
-
-            {/* CTA link */}
-            <button className="v-signup-back-link" onClick={() => navigate("/")}>
-              {panel.cta} →
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="v-login-bottom-bar">
-        <span>© 2026 Vet Care • Tecnologia Brasileira</span>
-      </div>
-    </div>
-  );
+  const field=(name,label,Icon,options={})=><div className={`vc-auth-field ${options.full?'vc-auth-full':''}`} key={name}><label htmlFor={`signup-${name}`}>{label}</label><div className="vc-auth-input"><Icon aria-hidden="true"/><input id={`signup-${name}`} name={name} type={options.type||'text'} autoComplete={options.autoComplete} placeholder={options.placeholder||''} value={form[name]} onChange={e=>setForm({...form,[name]:e.target.value})} required={options.required||false} disabled={loading||sucesso} maxLength={options.maxLength||160}/></div></div>;
+  const password=(name,label,visible,toggle)=><div className="vc-auth-field"><label htmlFor={`signup-${name}`}>{label}</label><div className="vc-auth-input"><FiLock aria-hidden="true"/><input id={`signup-${name}`} name={name} type={visible?'text':'password'} autoComplete="new-password" value={form[name]} onChange={e=>setForm({...form,[name]:e.target.value})} aria-describedby={name==='admin_senha'?'signup-password-hint':undefined} required disabled={loading||sucesso} maxLength={128}/><button type="button" className="vc-auth-eye" aria-label={`${visible?'Ocultar':'Mostrar'} ${name==='admin_senha'?'senha':'confirmação de senha'}`} aria-pressed={visible} onClick={toggle}>{visible?<FiEyeOff/>:<FiEye/>}</button></div></div>;
+  return <AuthLayout signup complete={complete}><div className="vc-auth-form-content">
+    <header className="vc-auth-form-heading"><span>{complete?'VETCARE COMPLETO':'COMECE PELO TESTE GRATUITO'}</span><h1>Crie o espaço da sua clínica</h1><p>Preencha os dados abaixo para começar.</p></header>
+    <form className="vc-auth-form" onSubmit={submit} aria-busy={loading}>
+      {erro && <div className="vc-auth-alert" role="alert" tabIndex={-1} ref={errorRef}><FiAlertCircle aria-hidden="true"/>{erro}</div>}
+      {sucesso && <div className="vc-auth-alert success" role="status"><FiCheckCircle aria-hidden="true"/>Clínica criada. Preparando seu acesso…</div>}
+      <fieldset><legend><TbBuildingHospital aria-hidden="true"/>Dados da clínica</legend><div className="vc-auth-grid">
+        {field('clinica_nome','Nome da clínica',TbBuildingHospital,{required:true,full:true,autoComplete:'organization',placeholder:'Como sua clínica se chama?'})}
+        {field('clinica_telefone','Telefone (opcional)',FiPhone,{type:'tel',autoComplete:'tel',placeholder:'DDD + número',maxLength:25})}
+        {field('clinica_email','E-mail comercial (opcional)',FiMail,{type:'email',autoComplete:'email',placeholder:'E-mail da clínica'})}
+      </div></fieldset>
+      <fieldset><legend><FiUser aria-hidden="true"/>Seu acesso de administrador</legend><div className="vc-auth-grid">
+        {field('admin_nome','Seu nome completo',FiUser,{required:true,full:true,autoComplete:'name',placeholder:'Nome e sobrenome'})}
+        {field('admin_email','E-mail de acesso',FiMail,{required:true,full:true,type:'email',autoComplete:'username',placeholder:'voce@clinica.com.br'})}
+        {password('admin_senha','Crie uma senha',showSenha,()=>setShowSenha(s=>!s))}
+        {password('admin_confirm_senha','Confirme sua senha',showConfirm,()=>setShowConfirm(s=>!s))}
+      </div><p className="vc-auth-hint" id="signup-password-hint">Use maiúscula, minúscula, número e um símbolo: @$!%*?&.</p><ul className="vc-auth-password-rules" aria-label="Requisitos da senha">{rules.map(([label,met])=><li key={label} data-met={met}><FiCheck aria-hidden="true"/>{label}</li>)}</ul></fieldset>
+      <div><p className="vc-auth-plan-note">{complete?'Após o cadastro, você será direcionado ao pagamento do VetCare Completo por R$ 97/mês. Criar a conta não realiza cobrança.':'Teste gratuito por 7 dias, sem cartão. Após esse período, o VetCare Completo custa R$ 97/mês para continuar usando o sistema.'}</p><button type="submit" className="vc-auth-primary" disabled={loading||sucesso} style={{marginTop:16}}>{sucesso?'Preparando acesso…':loading?'Criando sua clínica…':complete?'Criar conta e continuar':'Criar minha clínica'}<FiArrowRight aria-hidden="true"/></button><p className="vc-auth-switch">Já usa o VetCare?<Link to={complete?'/login?plano=complete':'/login'}>Entrar na minha conta</Link></p></div>
+    </form>
+  </div></AuthLayout>;
 }

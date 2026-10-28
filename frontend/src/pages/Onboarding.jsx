@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TbStethoscope, TbLayoutDashboard, TbUsers, TbCheck } from "react-icons/tb";
-import { FiScissors } from "react-icons/fi";
 import { apiPost } from "../services/api";
 import "./Onboarding.css";
 
@@ -53,7 +52,7 @@ export default function Onboarding({ usuario }) {
               Olá, <strong>{usuario?.nome?.split(' ')[0]}</strong>! Estamos muito felizes em ter a <strong>{usuario?.clinica?.nome || 'sua clínica'}</strong> conosco.
             </p>
             <p className="onboarding-text">
-              Preparamos um sistema completo para facilitar o dia a dia da sua clínica, desde a recepção até o financeiro. Vamos fazer um tour rápido de 1 minuto?
+              Conheça os principais recursos para organizar os cadastros e os atendimentos da sua clínica.
             </p>
             <div className="onboarding-actions center">
               <button className="v-btn-primary-glow large-btn" onClick={nextStep}>
@@ -71,8 +70,8 @@ export default function Onboarding({ usuario }) {
             <div className="features-grid">
               <div className="feature-card">
                 <div className="feature-icon"><TbLayoutDashboard size={32} /></div>
-                <h4>Prontuário Inteligente</h4>
-                <p>Grave a consulta por voz e nossa IA digita tudo para você magicamente.</p>
+                <h4>Prontuário clínico</h4>
+                <p>Registre consultas e consulte o histórico dos seus pacientes.</p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon"><TbUsers size={32} /></div>
@@ -81,8 +80,8 @@ export default function Onboarding({ usuario }) {
               </div>
               {isComplete && (
                 <div className="feature-card highlight">
-                  <div className="feature-icon"><FiScissors size={32} /></div>
-                  <h4>Centro Estético & Petshop</h4>
+                  <div className="feature-icon"><TbUsers size={32} /></div>
+                  <h4>Equipe clínica</h4>
                   <p>Acompanhe a equipe clínica e organize as comissões dos profissionais.</p>
                 </div>
               )}
@@ -102,10 +101,10 @@ export default function Onboarding({ usuario }) {
             </div>
             <h2 className="onboarding-title">Tudo Pronto!</h2>
             <p className="onboarding-subtitle">
-              Sua clínica já está configurada e pronta para voar alto.
+              O cadastro da sua clínica foi concluído. Agora você pode começar a organizar sua rotina.
             </p>
             <p className="onboarding-text">
-              <strong>Dica de ouro:</strong> Assim que entrar, comece cadastrando o seu primeiro Paciente para poder testar o Prontuário por Voz. É a nossa função favorita!
+              <strong>Por onde começar:</strong> cadastre um tutor e seu animal. No perfil do paciente, use os atalhos para agendamentos e registros clínicos.
             </p>
             <div className="onboarding-actions center" style={{ marginTop: '30px' }}>
               <button className="v-btn-primary-glow large-btn bounce-hover" onClick={finalizarOnboarding} disabled={loading}>

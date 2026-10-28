@@ -1,55 +1,27 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  FiArrowRight, FiZap, FiClock, 
-  FiTrendingUp, FiHome, FiClipboard, FiPackage, 
-  FiDollarSign, FiSearch, FiLayers, FiShield,
-  FiCheck, FiStar, FiHeart, FiActivity,
-  FiUsers, FiCalendar, FiPieChart,
-  FiChevronDown, FiChevronUp, FiX, FiHelpCircle, FiPhone, FiCheckCircle,
-  FiSun, FiMoon
+import {
+  FiArrowRight, FiZap, FiHome, FiClipboard, FiPackage, FiDollarSign,
+  FiLayers, FiShield, FiCheck, FiStar, FiHeart, FiActivity, FiUsers,
+  FiCalendar, FiPieChart, FiChevronDown, FiChevronUp, FiX,
+  FiHelpCircle, FiSun, FiMoon, FiMail
 } from "react-icons/fi";
 import { MdOutlinePets, MdOutlineMedicalServices } from "react-icons/md";
-import { FaWhatsapp } from "react-icons/fa";
+import { TbPaw } from "react-icons/tb";
 import "./Landing.css";
 import "./StarsBackground.css";
 
-// Fake dashboard data for the hero mockup
-const mockAppointments = [
-  { pet: "Thor", tutor: "Carlos M.", hora: "09:00", tipo: "Consulta", status: "confirmado" },
-  { pet: "Luna", tutor: "Ana P.", hora: "10:30", tipo: "Vacinação", status: "confirmado" },
-  { pet: "Bob", tutor: "Pedro R.", hora: "11:00", tipo: "Retorno", status: "pendente" },
-  { pet: "Mel", tutor: "Sofia A.", hora: "14:00", tipo: "Retorno", status: "confirmado" },
-];
-
-const testimonials = [
-  {
-    nome: "Dra. Juliana Mendes",
-    crmv: "CRMV-SP 34.891",
-    clinica: "Clínica Pet Saúde (São Paulo - SP)",
-    texto: "A emissão de receitas inteligentes e o histórico clínico digital poupam quase 2 horas do meu dia. A interface moderna é um diferencial que até os tutores reparam.",
-    foto: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=150&q=80"
-  },
-  {
-    nome: "Dr. Lucas Tavares",
-    crmv: "CRMV-PR 18.240",
-    clinica: "Hospital VetLife (Curitiba - PR)",
-    texto: "A gestão de internações e o controle de insumos acabaram com as perdas por validade. O sistema é muito estável e rápido tanto no notebook quanto no celular.",
-    foto: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=150&q=80"
-  },
-  {
-    nome: "Renata Vasconcelos",
-    crmv: "Gestora Comercial",
-    clinica: "Bicho Chic Pet & Estética (Belo Horizonte - MG)",
-    texto: "A gestão de pacientes, agenda e prontuário digital deixou nossa rotina muito mais organizada.",
-    foto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80"
-  }
+// Product workflow: actual capabilities, without invented customer metrics.
+const workflow = [
+  { icon: FiUsers, title: 'Cadastre tutor e paciente', text: 'Registre o tutor e siga para o cadastro do animal, mantendo o vínculo entre eles.', tag: 'CADASTRO CONECTADO' },
+  { icon: FiCalendar, title: 'Organize o atendimento', text: 'Consulte a agenda e use os atalhos do perfil do paciente para iniciar os próximos registros.', tag: 'ROTINA CLÍNICA' },
+  { icon: FiClipboard, title: 'Continue o acompanhamento', text: 'Reúna consultas, vacinas, exames e retornos para consultar o histórico de cada paciente.', tag: 'HISTÓRICO DO PACIENTE' }
 ];
 
 const faqs = [
   {
     pergunta: "Preciso instalar algum aplicativo ou programa no meu computador?",
-    resposta: "Não! O VetCare funciona 100% em nuvem. Você pode acessar de qualquer computador, notebook, tablet ou celular pelo navegador web, sem necessidade de servidores locais ou instalações complexas."
+    resposta: "O VetCare pode ser acessado pelo navegador no computador, notebook, tablet ou celular, sem instalar um programa para usar o sistema."
   },
   {
     pergunta: "O que está incluído no plano gratuito?",
@@ -65,17 +37,16 @@ const faqs = [
   },
   {
     pergunta: "Os dados dos meus pacientes e da clínica estão seguros?",
-    resposta: "Sim, utilizamos criptografia de ponta a ponta, isolamento estrito de dados por clínica e rotinas automáticas de backup diário, mantendo conformidade total com a LGPD e sigilo profissional veterinário."
+    resposta: "O acesso exige autenticação e os registros são associados à clínica. Sua equipe utiliza contas de acesso para trabalhar com os dados. Consulte nossa política de privacidade e fale com a equipe se precisar de informações sobre o tratamento dos dados."
   },
   {
     pergunta: "Vocês oferecem suporte caso eu tenha dúvidas?",
-    resposta: "Com certeza! Oferecemos atendimento humanizado via WhatsApp e e-mail para ajudar você na configuração inicial, dúvidas de uso e suporte contínuo."
+    resposta: "Com certeza! Você pode entrar em contato pelo e-mail equipevetcare@vetcaresistema.com para tirar dúvidas de uso e de configuração."
   }
 ];
 
 export default function Landing() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(0);
   const [openFaq, setOpenFaq] = useState(0);
   const [activeModal, setActiveModal] = useState(null);
   const sceneRef = useRef(null);
@@ -93,9 +64,8 @@ export default function Landing() {
     setTheme(prev => (prev === "dark" ? "light" : "dark"));
   };
 
-  const handleOpenWhatsApp = () => {
-    const mensagem = encodeURIComponent("Olá! Gostaria de tirar dúvidas sobre o sistema VetCare.");
-    window.open(`https://wa.me/5511999999999?text=${mensagem}`, "_blank");
+  const handleOpenContact = () => {
+    window.location.href = 'mailto:equipevetcare@vetcaresistema.com?subject=D%C3%BAvidas%20sobre%20o%20VetCare';
   };
 
   useEffect(() => {
@@ -127,16 +97,10 @@ export default function Landing() {
       else observer.observe(el);
     });
 
-    // Auto-rotate tabs in mockup
-    const interval = setInterval(() => {
-      setActiveTab(prev => (prev + 1) % 3);
-    }, 2500);
-
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       if (rAF) cancelAnimationFrame(rAF);
       observer.disconnect();
-      clearInterval(interval);
     };
   }, []);
 
@@ -158,20 +122,20 @@ export default function Landing() {
       <nav className="v-top-nav v-glass">
         <div className="v-brand">
           <div className="v-logo-3d-wrap">
-            <img src="/logo.png" alt="Vet Care Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <TbPaw aria-hidden="true" size={25} />
           </div>
-          <span className="v-logo-text">Vet Care</span>
+          <span className="v-logo-text">VetCare</span>
         </div>
         <div className="v-nav-links">
           <a href="#funcionalidades">Funcionalidades</a>
-          <a href="#depoimentos">Depoimentos</a>
+          <a href="#rotina">Na prática</a>
           <a href="#planos" className="v-nav-link-highlight">Planos</a>
           <a href="#faq">Dúvidas</a>
         </div>
         <div className="v-nav-cta">
-          <button 
-            className="v-theme-toggle-pill" 
-            onClick={toggleTheme} 
+          <button
+            className="v-theme-toggle-pill"
+            onClick={toggleTheme}
             title={theme === "dark" ? "Alternar para Modo Claro" : "Alternar para Modo Cosmos Escuro"}
             aria-label="Alternar tema"
           >
@@ -193,7 +157,7 @@ export default function Landing() {
             <span className="v-gradient-text-3d">alta performance.</span>
           </h1>
           <p className="v-hero-lead">
-            O ecossistema Vet Care integra prontuário digital inteligente, 
+            O ecossistema VetCare integra prontuário digital inteligente,
             agenda domiciliar e controle financeiro em uma interface fluida e moderna.
           </p>
           <div className="v-hero-btns">
@@ -202,156 +166,45 @@ export default function Landing() {
             </button>
             <div className="v-trust-row">
               <div className="v-trust-badges">
-                <div className="v-trust-badge" title="Segurança Avançada"><FiShield size={15} /><span>Seguro</span></div>
-                <div className="v-trust-badge" title="Alta Velocidade"><FiZap size={15} /><span>Rápido</span></div>
-                <div className="v-trust-badge" title="Disponível 24/7"><FiActivity size={15} /><span>24/7</span></div>
+                <div className="v-trust-badge" title="Acesso com sua conta"><FiShield size={15} /><span>Sua conta</span></div>
+                <div className="v-trust-badge" title="Módulos conectados"><FiZap size={15} /><span>Integrado</span></div>
+                <div className="v-trust-badge" title="Acesso pelo navegador"><FiActivity size={15} /><span>Online</span></div>
               </div>
-              <span className="v-trust-text">Tecnologia em nuvem <strong>sem interrupções.</strong></span>
+              <span className="v-trust-text">Acesse pelo navegador, <strong>sem instalar programas.</strong></span>
             </div>
           </div>
         </div>
 
-        {/* HERO VISUAL — Rich Dashboard Mockup */}
         <div className="v-hero-visual-3d">
           <div className="v-scene-3d" ref={sceneRef}>
-            {/* Main App Window */}
-            <div className="v-app-mockup v-glass-heavy">
-              {/* Window Chrome */}
-              <div className="v-mockup-chrome">
-                <div className="v-chrome-dots">
-                  <span className="v-dot v-dot-red"></span>
-                  <span className="v-dot v-dot-yellow"></span>
-                  <span className="v-dot v-dot-green"></span>
-                </div>
-                <div className="v-chrome-tabs">
-                  {["Agenda", "Prontuário", "Financeiro"].map((tab, i) => (
-                    <button key={tab} className={`v-chrome-tab ${activeTab === i ? 'v-tab-active' : ''}`}
-                      onClick={() => setActiveTab(i)}>{tab}</button>
-                  ))}
-                </div>
+            <div className="v-product-overview">
+              <div className="v-product-overview-header"><span><TbPaw />VetCare</span><small>ROTINA DA CLÍNICA</small></div>
+              <h2>Cada etapa do cuidado,<br/><span>no mesmo lugar.</span></h2>
+              <div className="v-product-resource-grid">
+                {[{Icon:FiCalendar,title:'Agenda',description:'Horários e profissionais'},{Icon:MdOutlinePets,title:'Pacientes',description:'Cadastro e responsáveis'},{Icon:FiClipboard,title:'Prontuários',description:'Consultas e histórico'},{Icon:FiPackage,title:'Gestão',description:'Financeiro e estoque'}].map(({Icon,title,description})=><div key={title}><span><Icon aria-hidden="true"/></span><h3>{title}</h3><p>{description}</p></div>)}
               </div>
-
-              {/* Dashboard Content */}
-              <div className="v-mockup-body">
-                {/* Stats Row */}
-                <div className="v-mockup-stats">
-                  <div className="v-stat-mini">
-                    <div className="v-stat-mini-icon" style={{ background: 'rgba(20, 184, 166, 0.12)', color: '#14b8a6' }}><FiUsers size={14}/></div>
-                    <div><strong>248</strong><small>Tutores</small></div>
-                  </div>
-                  <div className="v-stat-mini">
-                    <div className="v-stat-mini-icon" style={{ background: 'rgba(59, 130, 246, 0.12)', color: '#3b82f6' }}><MdOutlinePets size={14}/></div>
-                    <div><strong>391</strong><small>Pacientes</small></div>
-                  </div>
-                  <div className="v-stat-mini">
-                    <div className="v-stat-mini-icon" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10b981' }}><FiTrendingUp size={14}/></div>
-                    <div><strong>R$15.4k</strong><small>Mês</small></div>
-                  </div>
-                  <div className="v-stat-mini">
-                    <div className="v-stat-mini-icon" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b' }}><FiCalendar size={14}/></div>
-                    <div><strong>12</strong><small>Hoje</small></div>
-                  </div>
-                </div>
-
-                {/* Appointments List */}
-                <div className="v-mockup-section-label">Agenda de Hoje</div>
-                <div className="v-mockup-list">
-                  {mockAppointments.map((ap, i) => (
-                    <div key={i} className="v-mockup-row">
-                      <div className="v-mockup-avatar"><MdOutlinePets size={12}/></div>
-                      <div className="v-mockup-row-info">
-                        <strong>{ap.pet}</strong>
-                        <small>{ap.tutor} • {ap.tipo}</small>
-                      </div>
-                      <div className="v-mockup-row-time">{ap.hora}</div>
-                      <div className={`v-mockup-badge ${ap.status === 'confirmado' ? 'v-badge-ok' : 'v-badge-pending'}`}>
-                        {ap.status}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Mini Chart Bar */}
-                <div className="v-mockup-section-label" style={{ marginTop: '0.75rem' }}>Faturamento Semanal</div>
-                <div className="v-mini-chart">
-                  {[45, 70, 55, 90, 65, 80, 72].map((h, i) => (
-                    <div key={i} className="v-mini-bar-wrap">
-                      <div className="v-mini-bar" style={{ height: `${h}%` }}></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Floating Data Layers */}
-            <div className="v-layer v-l-finance">
-               <FiTrendingUp className="v-icon-green" />
-               <div>
-                  <strong>+18% MoM</strong>
-                  <small>Crescimento da Receita</small>
-               </div>
-            </div>
-
-            <div className="v-layer v-l-agenda">
-               <FiHome className="v-icon-teal" />
-               <div>
-                  <strong>Agenda Domiciliar</strong>
-                  <small>3 visitas para hoje</small>
-               </div>
-            </div>
-
-            <div className="v-layer v-l-records">
-               <MdOutlineMedicalServices className="v-icon-blue" />
-               <div>
-                  <strong>Prontuário Digital</strong>
-                  <small>Atualizado em tempo real</small>
-               </div>
+              <div className="v-product-overview-flow"><span>Tutor</span><FiArrowRight/><span>Paciente</span><FiArrowRight/><span>Atendimento</span></div>
+              <p className="v-product-overview-note">Recursos para organizar o trabalho da sua equipe.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* STATS SECTION — substituiu "feito com amor" genérico */}
       <section className="v-stats-section v-reveal">
         <div className="v-stats-inner">
-          <div className="v-stats-header">
-            <div className="v-section-label">IMPACTO REAL</div>
-            <h2 className="v-stats-title">Feito com amor, para quem cuida com amor.</h2>
-            <p>Entendemos que seu foco deve ser totalmente nos animais. Nós cuidamos do resto.</p>
+          <div className="v-stats-header"><div className="v-section-label">O QUE VOCÊ ENCONTRA</div><h2 className="v-stats-title">Ferramentas para a rotina veterinária.</h2><p>Conheça os recursos e avalie como eles se encaixam na sua clínica.</p></div>
+          <div className="v-capability-grid">
+            {[{Icon:FiCalendar,title:'Agenda da equipe',text:'Visualize dias, horários e compromissos.'},{Icon:MdOutlinePets,title:'Pacientes e tutores',text:'Mantenha os cadastros vinculados.'},{Icon:FiClipboard,title:'Histórico clínico',text:'Consulte os registros de cada paciente.'},{Icon:FiPieChart,title:'Gestão da clínica',text:'Acompanhe financeiro, estoque e relatórios.'}].map(({Icon,title,text})=><article key={title}><Icon aria-hidden="true"/><h3>{title}</h3><p>{text}</p></article>)}
           </div>
-          <div className="v-stats-grid">
-            <div className="v-stat-card v-reveal">
-              <div className="v-stat-icon"><FiUsers /></div>
-              <div className="v-stat-number">2.400<span>+</span></div>
-              <div className="v-stat-label">Atendimentos Registrados</div>
-            </div>
-            <div className="v-stat-card v-reveal">
-              <div className="v-stat-icon"><FiActivity /></div>
-              <div className="v-stat-number">99.9<span>%</span></div>
-              <div className="v-stat-label">Uptime do Sistema</div>
-            </div>
-            <div className="v-stat-card v-reveal">
-              <div className="v-stat-icon"><FiClock /></div>
-              <div className="v-stat-number">4h<span>/dia</span></div>
-              <div className="v-stat-label">Economizadas por Clínica</div>
-            </div>
-            <div className="v-stat-card v-reveal">
-              <div className="v-stat-icon"><FiShield /></div>
-              <div className="v-stat-number">100<span>%</span></div>
-              <div className="v-stat-label">Dados Protegidos e Seguros</div>
-            </div>
-          </div>
-          <button className="v-btn-secondary" onClick={() => navigate("/cadastro")}>
-            Transformar minha rotina <FiArrowRight />
-          </button>
+          <button className="v-btn-secondary" onClick={()=>navigate('/cadastro')}>Conhecer com o teste gratuito<FiArrowRight/></button>
         </div>
       </section>
 
       {/* FEATURES SECTION */}
       <section className="v-infra-section" id="funcionalidades">
         <div className="v-section-label v-reveal">INFRAESTRUTURA DO SISTEMA</div>
-        <h2 className="v-section-title v-reveal">O que o Vet Care oferece:</h2>
-        
+        <h2 className="v-section-title v-reveal">O que o VetCare oferece:</h2>
+
         <div className="v-features-3d-grid">
           <div className="v-card-3d v-reveal">
             <div className="v-card-3d-inner">
@@ -397,66 +250,35 @@ export default function Landing() {
           <div className="v-interface-text">
             <h2>Design focado em performance.</h2>
             <p>
-              Interface otimizada para o fluxo de trabalho veterinário. 
+              Interface otimizada para o fluxo de trabalho veterinário.
               Menos cliques, mais saúde para seus pacientes.
             </p>
             <div className="v-interface-features">
               <span><FiLayers /> Modo Escuro Nativo</span>
-              <span><FiShield /> Dados 100% Protegidos</span>
-              <span><FiZap /> Carregamento em 0.2s</span>
+              <span><FiShield /> Acesso com sua conta</span>
+              <span><FiZap /> Módulos conectados à rotina</span>
             </div>
           </div>
           <div className="v-interface-visual">
              <div className="v-dark-ui-preview">
-               <img 
-                 src="/assets/Dashboard.jpg" 
-                 alt="Interface do Vet Care"
+               <img
+                 src="/assets/dashboard-clinico-20261028.webp"
+                 alt="Dashboard clínico atual do VetCare com indicadores de pacientes, consultas e equipe, usando dados fictícios"
+                 width="1269"
+                 height="717"
                  loading="lazy"
                  decoding="async"
-                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                />
              </div>
+             <p className="v-interface-caption">Captura ilustrativa do sistema com dados fictícios.</p>
           </div>
         </div>
       </section>
 
-      {/* TESTIMONIALS / PROVA SOCIAL */}
-      <section className="v-testimonials-section v-reveal" id="depoimentos">
-        <div className="v-section-header">
-          <div className="v-section-label">PROVA SOCIAL</div>
-          <h2 className="v-section-title">
-            Aprovado por quem <span className="v-gradient-text-3d">cuida de vidas</span>
-          </h2>
-          <p className="v-section-subtitle">
-            Veja o que médicos veterinários e gestores de clínicas dizem sobre a experiência Vet Care.
-          </p>
-        </div>
-
-        <div className="v-testimonials-grid">
-          {testimonials.map((item, idx) => (
-            <div key={idx} className="v-testimonial-card v-glass-panel">
-              <div className="v-testimonial-stars">
-                {[...Array(5)].map((_, i) => (
-                  <FiStar key={i} className="v-star-icon" />
-                ))}
-              </div>
-              <p className="v-testimonial-quote">"{item.texto}"</p>
-              <div className="v-testimonial-author">
-                <img 
-                  src={item.foto} 
-                  alt={item.nome} 
-                  className="v-testimonial-avatar"
-                  loading="lazy"
-                />
-                <div className="v-testimonial-info">
-                  <strong>{item.nome}</strong>
-                  <span>{item.crmv}</span>
-                  <small>{item.clinica}</small>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      <section className="v-workflow-section v-reveal" id="rotina">
+        <div className="v-section-header"><div className="v-section-label">NA PRÁTICA</div><h2 className="v-section-title">Do primeiro cadastro ao <span className="v-gradient-text-3d">próximo atendimento.</span></h2><p className="v-section-subtitle">Um fluxo de trabalho que você pode conhecer durante o teste gratuito.</p></div>
+        <div className="v-workflow-grid">{workflow.map(({icon:Icon,title,text,tag},index)=><article className="v-workflow-card" key={title}><div className="v-workflow-card-top"><span><Icon aria-hidden="true"/></span><small>ETAPA {index+1}</small></div><h3>{title}</h3><p>{text}</p><span className="v-workflow-card-tag">{tag}</span></article>)}</div>
+        <div className="v-workflow-cta"><p>Veja o fluxo com os cadastros e a rotina da sua própria clínica.</p><button className="v-btn-secondary" onClick={()=>navigate('/cadastro')}>Experimentar por 7 dias<FiArrowRight/></button></div>
       </section>
 
       {/* PRICING SECTION */}
@@ -494,11 +316,11 @@ export default function Landing() {
 
           {/* Plano pago único */}
           <div className="v-plano-card v-plano-premium v-glass-panel">
-            <div className="v-premium-badge">TODOS OS RECURSOS</div>
+            <div className="v-premium-badge">GESTÃO CLÍNICA E ADMINISTRATIVA</div>
             <div className="v-premium-glow"></div>
             <div className="v-plano-icon-wrapper v-premium-icon"><FiStar /></div>
             <h2>VetCare Completo</h2>
-            <p className="v-plano-desc">Todos os módulos de gestão para clínicas veterinárias e pet shops, em uma assinatura simples.</p>
+            <p className="v-plano-desc">Recursos clínicos e administrativos em uma assinatura mensal. Notas fiscais estão em preparação.</p>
             <div className="v-plano-price-wrap">
               <div className="v-plano-price">R$ 97<span>/mês</span></div>
               <div className="v-plano-price-line v-price-line-premium"></div>
@@ -533,8 +355,8 @@ export default function Landing() {
           {faqs.map((faq, index) => {
             const isOpen = openFaq === index;
             return (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`v-faq-item v-glass-panel ${isOpen ? "v-faq-open" : ""}`}
                 onClick={() => setOpenFaq(isOpen ? null : index)}
               >
@@ -559,8 +381,8 @@ export default function Landing() {
       <footer className="v-footer-3d">
         <div className="v-footer-content">
           <div className="v-footer-brand">
-            <img src="/logo.png" alt="Vet Care" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-            <span>Vet Care</span>
+            <img src="/logo.png" alt="VetCare" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+            <span>VetCare</span>
           </div>
           <div className="v-footer-links">
             <button type="button" className="v-footer-link-btn" onClick={() => setActiveModal('privacidade')}>Privacidade</button>
@@ -569,19 +391,19 @@ export default function Landing() {
           </div>
         </div>
         <div className="v-footer-bottom">
-          &copy; {new Date().getFullYear()} Vet Care Sistemas - Tecnologia de Elite para Medicina Veterinária.
+          &copy; {new Date().getFullYear()} VetCare Sistemas - Gestão para a rotina veterinária.
         </div>
       </footer>
 
-      {/* Floating WhatsApp CTA */}
-      <button 
-        type="button" 
-        className="v-whatsapp-float" 
-        onClick={handleOpenWhatsApp} 
-        aria-label="Falar conosco no WhatsApp"
-        title="Falar no WhatsApp"
+      {/* Floating email contact */}
+      <button
+        type="button"
+        className="v-whatsapp-float"
+        onClick={handleOpenContact}
+        aria-label="Entrar em contato por e-mail"
+        title="Falar por e-mail"
       >
-        <FaWhatsapp className="v-whatsapp-icon" />
+        <FiMail className="v-whatsapp-icon" />
         <span className="v-whatsapp-tooltip">Dúvidas? Fale com a gente!</span>
       </button>
 
@@ -592,12 +414,12 @@ export default function Landing() {
             <div className="v-legal-modal-header">
               <h3>
                 {activeModal === 'privacidade' && "Política de Privacidade"}
-                {activeModal === 'termos' && "Termos de Uso do Vet Care"}
+                {activeModal === 'termos' && "Termos de Uso do VetCare"}
                 {activeModal === 'contato' && "Contato & Suporte Especializado"}
               </h3>
-              <button 
-                type="button" 
-                className="v-modal-close-btn" 
+              <button
+                type="button"
+                className="v-modal-close-btn"
                 onClick={() => setActiveModal(null)}
                 aria-label="Fechar"
               >
@@ -607,14 +429,14 @@ export default function Landing() {
             <div className="v-legal-modal-body">
               {activeModal === 'privacidade' && (
                 <>
-                  <p><strong>1. Coleta e Finalidade dos Dados:</strong> O Vet Care coleta apenas as informações estritamente necessárias para a operação da clínica, prontuário médico-veterinário dos pacientes e faturamento.</p>
+                  <p><strong>1. Coleta e Finalidade dos Dados:</strong> O VetCare coleta apenas as informações estritamente necessárias para a operação da clínica, prontuário médico-veterinário dos pacientes e faturamento.</p>
                   <p><strong>2. Proteção e Sigilo:</strong> Os dados armazenados são isolados por clínica (arquitetura multi-tenant) e protegidos. Suas informações e as de seus clientes nunca serão comercializadas com terceiros.</p>
                   <p><strong>3. Conformidade com a LGPD:</strong> Você tem o direito de solicitar a exportação ou exclusão definitiva das suas bases de dados a qualquer momento através do nosso canal de suporte.</p>
                 </>
               )}
               {activeModal === 'termos' && (
                 <>
-                  <p><strong>1. Licença de Uso:</strong> O Vet Care é uma plataforma SaaS (Software como Serviço) disponibilizada mediante assinatura mensal ou teste gratuito autorizado.</p>
+                  <p><strong>1. Licença de Uso:</strong> O VetCare é uma plataforma SaaS (Software como Serviço) disponibilizada mediante assinatura mensal ou teste gratuito autorizado.</p>
                   <p><strong>2. Responsabilidade Médica:</strong> O sistema fornece ferramentas de prontuário, prescrições e controle clínico, mas a responsabilidade técnica e diagnóstica sobre qualquer conduta médica veterinária permanece integralmente com o médico veterinário registrado no CRMV.</p>
                     <p><strong>3. Cancelamento:</strong> Não exigimos contrato de fidelidade. Para interromper as próximas cobranças, solicite o cancelamento ao atendimento antes do próximo vencimento.</p>
                 </>
@@ -623,18 +445,11 @@ export default function Landing() {
                 <div className="v-modal-contact-content">
                   <p>Nosso time de atendimento está pronto para atender sua clínica:</p>
                   <div className="v-contact-badge-list">
-                    <div className="v-contact-badge" onClick={handleOpenWhatsApp} style={{ cursor: 'pointer' }}>
-                      <FaWhatsapp style={{ color: '#22c55e', fontSize: '1.4rem' }} />
-                      <div>
-                        <strong>WhatsApp Comercial & Suporte</strong>
-                        <span>(11) 99999-9999 • Atendimento Rápido</span>
-                      </div>
-                    </div>
                     <div className="v-contact-badge">
                       <FiHelpCircle style={{ color: '#3b82f6', fontSize: '1.4rem' }} />
                       <div>
                         <strong>E-mail de Suporte</strong>
-                        <span>suporte@vetcare.com.br</span>
+                        <span>equipevetcare@vetcaresistema.com</span>
                       </div>
                     </div>
                   </div>

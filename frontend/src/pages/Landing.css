@@ -977,7 +977,7 @@ html {
 }
 
 .v-dark-ui-preview {
-  width: 100%; height: 380px;
+  width: 100%; aspect-ratio: 1269 / 717;
   background: #0f172a;
   border-radius: 20px;
   box-shadow: 20px 20px 60px rgba(0,0,0,0.2);
@@ -985,7 +985,8 @@ html {
 }
 
 .v-dark-ui-preview img {
-  width: 100%; height: 100%; object-fit: cover;
+  display: block;
+  width: 100%; height: 100%; object-fit: contain;
 }
 
 /* ===================== PRICING ===================== */
@@ -1758,3 +1759,45 @@ html {
   .v-landing-page *, .v-landing-page *::before, .v-landing-page *::after { animation: none !important; transition: none !important; }
   .v-landing-page .v-reveal { opacity: 1; transform: none; }
 }
+
+/* Product capabilities and workflow replace unverified testimonials and metrics. */
+.v-product-overview { background:rgba(255,255,255,.94); padding:30px; border:1px solid rgba(14,116,105,.15); border-radius:26px; box-shadow:0 30px 75px rgba(25,80,76,.12); }
+.v-product-overview-header { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:30px; }
+.v-product-overview-header>span { display:flex; align-items:center; gap:9px; color:#0d8177; font-weight:800; font-size:17px; }
+.v-product-overview-header small { letter-spacing:.11em; font-size:9px; font-weight:700; color:#627680; }
+.v-product-overview h2 { font-size:clamp(23px,2.2vw,32px); line-height:1.25; letter-spacing:-1px; margin:0 0 24px; }
+.v-product-overview h2>span { color:#087f78; }
+.v-product-resource-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+.v-product-resource-grid>div { border:1px solid #e0ece9; border-radius:16px; padding:18px; background:#f7fbfa; }
+.v-product-resource-grid>div>span { display:grid; place-items:center; width:32px; height:32px; border-radius:10px; background:#e4f5ef; color:#087f78; margin-bottom:12px; }
+.v-product-resource-grid h3 { font-size:13px; margin:0 0 5px; }
+.v-product-resource-grid p { font-size:10px; color:#627680; margin:0; line-height:1.6; }
+.v-product-overview-flow { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:18px 0; margin-top:12px; color:#087f78; font-size:11px; font-weight:700; }
+.v-product-overview-note { color:#627680; font-size:10px; margin:0; border-top:1px solid #e0ece9; padding-top:15px; line-height:1.7; }
+.v-capability-grid { width:100%; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:20px; margin:36px 0; text-align:left; }
+.v-capability-grid article { border:1px solid rgba(14,116,105,.12); padding:26px; border-radius:20px; background:rgba(255,255,255,.72); }
+.v-capability-grid article>svg { color:#087f78; font-size:26px; margin-bottom:18px; }
+.v-capability-grid h3 { font-size:15px; margin:0 0 10px; }
+.v-capability-grid p { font-size:12px; line-height:1.8; color:var(--text-muted); margin:0; }
+.v-workflow-section { padding:6rem 8% 4rem; position:relative; z-index:5; scroll-margin-top:100px; }
+.v-workflow-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; max-width:1150px; margin:0 auto; }
+.v-workflow-card { padding:30px; border:1px solid rgba(14,116,105,.12); border-radius:24px; background:rgba(255,255,255,.8); display:flex; flex-direction:column; }
+.v-workflow-card-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; gap:12px; }
+.v-workflow-card-top>span { width:45px; height:45px; border-radius:14px; background:#e8f7f2; color:#087f78; display:grid; place-items:center; font-size:22px; }
+.v-workflow-card-top>small { font-size:10px; font-weight:700; letter-spacing:.1em; color:var(--text-muted); }
+.v-workflow-card h3 { font-size:19px; line-height:1.4; margin:0 0 15px; letter-spacing:-.5px; }
+.v-workflow-card>p { color:var(--text-muted); font-size:13px; line-height:1.9; margin:0 0 28px; }
+.v-workflow-card-tag { display:block; margin-top:auto; padding-top:18px; border-top:1px solid rgba(14,116,105,.12); font-size:9px; font-weight:800; letter-spacing:.08em; color:#087f78; }
+.v-workflow-cta { text-align:center; margin:32px 0 0; }
+.v-workflow-cta p { color:var(--text-muted); font-size:13px; margin:0 0 18px; }
+.v-interface-caption { text-align:center; margin:12px 0 0; font-size:10px; color:var(--text-muted); }
+.v-logo-3d-wrap { display:grid; place-items:center; color:#087f78; }
+[data-theme='dark'] .v-product-overview { background:#10242d; border-color:#29414a; }
+[data-theme='dark'] .v-product-resource-grid>div,[data-theme='dark'] .v-capability-grid article,[data-theme='dark'] .v-workflow-card { background:#11232d; border-color:#29414a; }
+[data-theme='dark'] .v-product-resource-grid h3,[data-theme='dark'] .v-product-overview h2 { color:#eef8f8; }
+[data-theme='dark'] .v-product-overview-header>span,[data-theme='dark'] .v-product-overview h2>span,[data-theme='dark'] .v-product-overview-flow,[data-theme='dark'] .v-workflow-card-tag { color:#5bdfca; }
+[data-theme='dark'] .v-product-overview-header small,[data-theme='dark'] .v-product-resource-grid p,[data-theme='dark'] .v-product-overview-note { color:#a1bac4; }
+[data-theme='dark'] .v-product-overview-note { border-color:#29414a; }
+@media(max-width:1050px) { .v-capability-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .v-workflow-card { padding:23px; } .v-product-overview { padding:24px; } }
+@media(max-width:760px) { .v-workflow-grid { grid-template-columns:1fr; } .v-workflow-section { padding:4rem 6%; } .v-workflow-card-top { margin-bottom:20px; } .v-capability-grid { gap:12px; } .v-capability-grid article { padding:20px; } }
+@media(max-width:420px) { .v-capability-grid { grid-template-columns:1fr; } .v-product-resource-grid>div { padding:14px; } .v-product-overview-header small { font-size:8px; } .v-product-overview { padding:20px; } }

@@ -15,6 +15,14 @@
 @keyframes ov-spin { to { transform: rotate(360deg); } }
 .clinic-overview .ov-home-grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: 24px; align-items: start; }
 .clinic-overview .ov-column { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.clinic-overview.ov-home { width: 100%; }
+.clinic-overview.ov-home .ov-home-grid { grid-template-columns: minmax(0, .96fr) minmax(0, 1.04fr); grid-template-areas: "top-left top-right" "section-headings section-headings" "bottom-left bottom-right"; gap: 20px; }
+.clinic-overview.ov-home .ov-column { gap: 14px; }
+.clinic-overview.ov-home .ov-home-top-left { grid-area: top-left; }
+.clinic-overview.ov-home .ov-home-top-right { grid-area: top-right; }
+.clinic-overview.ov-home .ov-home-bottom-left { grid-area: bottom-left; }
+.clinic-overview.ov-home .ov-home-bottom-right { grid-area: bottom-right; }
+.clinic-overview.ov-home .ov-home-section-headings { grid-area: section-headings; display: grid; grid-template-columns: minmax(0, .96fr) minmax(0, 1.04fr); align-items: center; gap: 20px; }
 .clinic-overview .ov-welcome { padding: 27px 26px 0; background: linear-gradient(125deg, #e8f7f4, #f2f8fc); border: 1px solid #b8e0d9; border-radius: 16px; overflow: hidden; }
 .clinic-overview .ov-welcome h2 { font-size: 27px; line-height: 1.2; margin: 13px 0 8px; color: var(--text-primary); }
 .clinic-overview .ov-welcome > p { color: var(--text-secondary); font-size: 13px; }
@@ -47,6 +55,8 @@
 .clinic-overview .ov-expand-row button { border: 0; background: transparent; color: var(--primary-dark); font-size: 11px; font-weight: 600; padding: 7px 0 7px 10px; }
 .clinic-overview .ov-notice { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
 .clinic-overview .ov-notice summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 57px; padding: 14px 17px; cursor: pointer; }
+.clinic-overview.ov-home .ov-notice summary { min-height: 52px; transition: background-color 140ms ease; }
+.clinic-overview.ov-home .ov-notice:not([open]) summary:hover { background-color: var(--bg-hover); }
 .clinic-overview .ov-notice summary::-webkit-details-marker { display: none; }
 .clinic-overview .ov-notice-title, .clinic-overview .ov-notice-end { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; }
 .clinic-overview .ov-notice-title svg { color: var(--text-muted); font-size: 17px; flex-shrink: 0; }
@@ -134,6 +144,7 @@
 [data-theme='dark'] .clinic-overview .ov-welcome { background: linear-gradient(125deg, #102e30, #142433); border-color: #23504a; }
 [data-theme='dark'] .clinic-overview :is(.ov-welcome-stats strong, .ov-welcome-footer a) { color: #5eead4; }
 [data-theme='dark'] .clinic-overview .ov-tone-danger summary, [data-theme='dark'] .clinic-overview .ov-tone-danger .ov-count { color: #fca5a5; }
-@media (max-width: 1150px) { .clinic-overview .ov-home-grid, .clinic-overview .ov-clinical-grid { grid-template-columns: 1fr; } .clinic-overview .ov-clinical-grid > .ov-column:first-child { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .clinic-overview .ov-clinical-grid > .ov-column:first-child > :last-child { grid-column: 1 / -1; } }
+@media (max-width: 900px) { .clinic-overview .ov-home-grid, .clinic-overview .ov-clinical-grid { grid-template-columns: 1fr; } .clinic-overview .ov-clinical-grid > .ov-column:first-child { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .clinic-overview .ov-clinical-grid > .ov-column:first-child > :last-child { grid-column: 1 / -1; } }
+@media (max-width: 900px) { .clinic-overview.ov-home .ov-home-grid { grid-template-areas: "top-left" "top-right" "section-headings" "bottom-left" "bottom-right"; } .clinic-overview.ov-home .ov-home-section-headings { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .clinic-overview .ov-home-grid, .clinic-overview .ov-clinical-grid { gap: 16px; } .clinic-overview .ov-page-header { margin-bottom: 20px; } .clinic-overview .ov-header-actions { width: 100%; } .clinic-overview .ov-header-actions > a { flex: 1; } .clinic-overview .ov-welcome { padding: 22px 18px 0; } .clinic-overview .ov-quick-actions a { padding: 10px; font-size: 11px; gap: 7px; } .clinic-overview .ov-quick-plus { display: none; } .clinic-overview .ov-notice-title { font-size: 11px; } .clinic-overview .ov-clinical-grid > .ov-column:first-child { display: flex; } .clinic-overview .ov-live-dot { width: 100%; margin: 6px 0 0; } .clinic-overview .ov-metric { padding: 13px 12px 0; } .clinic-overview .ov-metric-heading h2 { font-size: 10px; } .clinic-overview .ov-metric-footer { font-size: 9px; } .clinic-overview .ov-metric-footer > span { width: 100%; } .clinic-overview .ov-metric-arrow { display: none; } .clinic-overview .ov-priorities { grid-template-columns: 1fr; } .clinic-overview .ov-finance { grid-template-columns: 1fr; } .clinic-overview .ov-panel { padding: 16px; } .clinic-overview .ov-recent-grid { grid-template-columns: 1fr; gap: 15px; } .clinic-overview .ov-skeleton-grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .clinic-overview * { animation: none !important; transition: none !important; } }

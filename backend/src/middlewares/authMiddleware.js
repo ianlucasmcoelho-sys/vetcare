@@ -32,9 +32,8 @@ export const authMiddleware = async (req, res, next) => {
     }
 
     // Expired paying customers still need access to the billing routes.
-    const isBillingRoute = req.originalUrl.includes('/pagamento')
-      || req.originalUrl.includes('/planos')
-      || ['/api/asaas/subscribe', '/api/asaas/status'].some((path) => req.originalUrl.startsWith(path));
+    const billingPath = req.originalUrl.split('?')[0].replace(/\/+$/, '');
+    const isBillingRoute = ['/api/asaas/subscribe', '/api/asaas/status', '/api/asaas/checkout', '/api/pagamento/checkout', '/api/pagamento/mock-webhook-success'].includes(billingPath);
     if (isBillingRoute) return next();
 
     const { status_assinatura, data_expiracao } = clinica;

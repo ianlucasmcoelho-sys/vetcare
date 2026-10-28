@@ -2,15 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { FiCheckCircle, FiShield, FiStar } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import '../Global.css';
+import { getBillingStatus, syncBilling } from '../services/billing';
+import BackToDashboard from '../components/BackToDashboard';
 
 export default function Assinatura() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [billingError,setBillingError] = useState('');
+  const [checking,setChecking] = useState(true);
 
   useEffect(() => {
     const usuarioStr = localStorage.getItem('usuario');
     if (usuarioStr) {
       setUser(JSON.parse(usuarioStr));
+      getBillingStatus().then(status=>{
+        syncBilling(status);
+        setUser(JSON.parse(localStorage.getItem('usuario')));
+      }).catch(error=>setBillingError(error.message)).finally(()=>setChecking(false));
     } else {
       navigate('/login');
     }
@@ -20,10 +28,9 @@ export default function Assinatura() {
 
   const status = (user.clinica?.status_assinatura || 'trial').toLowerCase();
   const dataExpiracao = user.clinica?.data_expiracao ? new Date(user.clinica.data_expiracao) : null;
-  const isTrialValido = status === 'trial' && (!dataExpiracao || new Date() <= dataExpiracao);
-  const isFree = user.clinica?.plano_id === 'free' || status === 'free' || status === 'trial';
+  const isFree = ['free','trial'].includes(status) && dataExpiracao && dataExpiracao > new Date();
   const isVitalicio = status === 'vitalicio';
-  const isActive = ['active', 'ativo', 'ativa', 'lifetime', 'vitalicio'].includes(status) || isTrialValido || isFree;
+  const isActive = isVitalicio || (['active','ativo','ativa'].includes(status) && dataExpiracao && dataExpiracao > new Date());
 
   return (
     <div className="v-page-container" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -34,8 +41,11 @@ export default function Assinatura() {
       </div>
 
       <div className="v-page-header" style={{ position: 'relative', zIndex: 1 }}>
+        <BackToDashboard />
         <h1 className="v-page-title">Meu Plano</h1>
-        <p className="v-page-subtitle">Gerencie o status da sua assinatura OuroPet</p>
+        <p className="v-page-subtitle">Gerencie o status da sua assinatura VetCare</p>
+        {checking && <p role="status">Atualizando assinatura…</p>}
+        {billingError && <p role="alert">{billingError}</p>}
       </div>
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: '600px', margin: '0 auto', marginTop: '40px' }}>
@@ -64,6 +74,7 @@ export default function Assinatura() {
               <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginBottom: '30px' }}>
                 Você tem acesso ilimitado a todas as ferramentas do sistema.
               </p>
+              {!isVitalicio && dataExpiracao && <p>Acesso pago até {dataExpiracao.toLocaleDateString('pt-BR')}.</p>}
 
               <div style={{ background: 'var(--bg-primary)', padding: '20px', borderRadius: '16px', display: 'flex', justifyContent: 'space-around', alignItems: 'center', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>

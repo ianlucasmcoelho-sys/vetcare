@@ -1,5 +1,6 @@
 import pg from 'pg';
 import path from 'path';
+import { migrateSandboxBilling } from './services/billingEnvironment.js';
 
 let pgPoolInstance = null;
 let sqliteDbPromise = null;
@@ -184,6 +185,30 @@ export async function initDb() {
       telefone TEXT,
       endereco TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS billing_checkouts (
+      clinica_id INTEGER PRIMARY KEY REFERENCES clinicas(id),
+      state TEXT NOT NULL DEFAULT 'ready',
+      reference TEXT
+    );
+    CREATE TABLE IF NOT EXISTS billing_payments (
+      payment_id TEXT PRIMARY KEY,
+      clinica_id INTEGER NOT NULL REFERENCES clinicas(id),
+      subscription_id TEXT NOT NULL,
+      status TEXT NOT NULL,
+      period_end TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS billing_environment_archive (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clinica_id INTEGER NOT NULL REFERENCES clinicas(id),
+      environment TEXT NOT NULL,
+      customer_id TEXT,
+      subscription_id TEXT,
+      status_assinatura TEXT,
+      plano_id TEXT,
+      data_expiracao TEXT,
+      archived_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS usuarios (
@@ -638,6 +663,8 @@ export async function initDb() {
     `ALTER TABLE clinicas ADD COLUMN plano_id TEXT DEFAULT 'free'`,
     `ALTER TABLE clinicas ADD COLUMN asaas_customer_id TEXT`,
     `ALTER TABLE clinicas ADD COLUMN asaas_subscription_id TEXT`,
+    `ALTER TABLE clinicas ADD COLUMN asaas_environment TEXT NOT NULL DEFAULT 'sandbox'`,
+    `ALTER TABLE billing_payments ADD COLUMN environment TEXT NOT NULL DEFAULT 'sandbox'`,
     'ALTER TABLE animais ADD COLUMN obito INTEGER DEFAULT 0',
     'ALTER TABLE animais ADD COLUMN data_obito TEXT',
     'ALTER TABLE servicos ADD COLUMN codigoBarras TEXT',
@@ -655,6 +682,12 @@ export async function initDb() {
   // Reset tokens store epoch milliseconds, which exceed PostgreSQL INTEGER capacity.
   if (process.env.DATABASE_URL) {
     await db.exec('ALTER TABLE password_reset_tokens ALTER COLUMN expires_at TYPE BIGINT');
+  }
+
+  if (process.env.ASAAS_API_URL?.replace(/\/$/,'') === 'https://api.asaas.com/v3'
+    && process.env.ASAAS_API_KEY?.startsWith('$aact_prod_') && process.env.ASAAS_WEBHOOK_TOKEN) {
+    const migrated = await runTransaction(tx=>migrateSandboxBilling(tx,'production'));
+    if (migrated) console.log(`Assinaturas Sandbox arquivadas para produção: ${migrated}. Dados clínicos preservados.`);
   }
 
   // Contas Free antigas recebem sete dias de transição a partir desta migração.

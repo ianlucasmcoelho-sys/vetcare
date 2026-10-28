@@ -1,97 +1,37 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
-dotenv.config();
 
-const API_KEY = process.env.ASAAS_API_KEY;
-const API_URL = process.env.ASAAS_API_URL || 'https://sandbox.asaas.com/api/v3';
-
-const asaasApi = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'access_token': API_KEY,
-    'Content-Type': 'application/json'
-  }
-});
-
-/**
- * Cria um cliente no Asaas
- * @param {Object} data { name, cpfCnpj, email, postalCode, addressNumber }
- */
-export async function criarCliente(data) {
-  try {
-    const response = await asaasApi.post('/customers', data);
-    return response.data;
-  } catch (error) {
-    console.error('Erro ao criar cliente Asaas:', JSON.stringify(error.response?.data, null, 2) || error.message);
-    throw error;
-  }
+export function billingConfiguration(env = process.env) {
+  const url = (env.ASAAS_API_URL || 'https://api-sandbox.asaas.com/v3').replace(/\/$/, '');
+  const sandbox = url === 'https://api-sandbox.asaas.com/v3';
+  const production = url === 'https://api.asaas.com/v3';
+  const keyEnvironment = env.ASAAS_API_KEY?.startsWith('$aact_hmlg_') ? 'sandbox' : env.ASAAS_API_KEY?.startsWith('$aact_prod_') ? 'production' : null;
+  const matchingKey = !keyEnvironment || (sandbox && keyEnvironment === 'sandbox') || (production && keyEnvironment === 'production');
+  const validSecret = value => Boolean(value && !/sua_chave|defina_|exemplo|\.\.\./i.test(value));
+  return { configured: (sandbox || production) && matchingKey && validSecret(env.ASAAS_API_KEY) && validSecret(env.ASAAS_WEBHOOK_TOKEN), sandbox, url };
 }
 
-/**
- * Cria uma assinatura no Asaas
- * @param {String} customerId ID do cliente no Asaas
- * @param {Number} value Valor 
- * @param {String} billingType 'PIX' ou 'CREDIT_CARD'
- * @param {String} cycle 'MONTHLY', 'QUARTERLY', 'SEMIANNUALLY', 'YEARLY'
- * @param {Object} creditCard Dados do cartão { holderName, number, expiryMonth, expiryYear, ccv }
- * @param {Object} creditCardHolderInfo { name, email, cpfCnpj, postalCode, addressNumber, addressComplement, phone, mobilePhone }
- */
-export async function criarAssinatura(customerId, value, billingType = 'PIX', cycle = 'MONTHLY', creditCard = null, creditCardHolderInfo = null) {
-  try {
-    const hoje = new Date();
-    // Vencimento para hoje (caso pague agora) ou amanhã
-    hoje.setDate(hoje.getDate() + 1);
-    const dueDate = hoje.toISOString().split('T')[0];
-
-    const payload = {
-      customer: customerId,
-      billingType: billingType,
-      value: value,
-      nextDueDate: dueDate,
-      cycle: cycle,
-      description: 'Assinatura Sistema OuroPet'
-    };
-
-    if (billingType === 'CREDIT_CARD' && creditCard && creditCardHolderInfo) {
-      payload.creditCard = creditCard;
-      payload.creditCardHolderInfo = creditCardHolderInfo;
+// Axios errors contain secrets and card data; never log or return their configuration.
+export function createAsaasGateway(env = process.env) {
+  const config = billingConfiguration(env);
+  const api = axios.create({ baseURL:config.url, timeout:65000, headers:{access_token:env.ASAAS_API_KEY,'Content-Type':'application/json','User-Agent':'VetCare/1.0'} });
+  const request = async (method, path, data, params) => {
+    try { return (await api.request({method,url:path,data,params})).data; }
+    catch (cause) {
+      const error = new Error('Não foi possível comunicar com o serviço de pagamentos.');
+      error.httpStatus = cause.response?.status === 400 ? 400 : 502;
+      error.uncertain = !cause.response || cause.response.status >= 500;
+      if (cause.response?.status === 400) error.message = 'Pagamento recusado ou dados inválidos. Confira os dados do pagador e do cartão.';
+      if ([401,403].includes(cause.response?.status)) error.message = 'O serviço de pagamentos precisa ser configurado pelo administrador do sistema.';
+      throw error;
     }
-
-    const response = await asaasApi.post('/subscriptions', payload);
-    return response.data;
-  } catch (error) {
-    console.error('Erro ao criar assinatura Asaas:', error.response?.data || error.message);
-    throw error;
-  }
-}
-
-/**
- * Pega o QRCode do Pix para uma cobrança específica gerada pela assinatura
- * @param {String} paymentId ID da cobrança (payment) não da assinatura
- */
-export async function getPixQrCode(paymentId) {
-  try {
-    const response = await asaasApi.get(`/payments/${paymentId}/pixQrCode`);
-    return response.data;
-  } catch (error) {
-    console.error('Erro ao buscar QRCode Pix:', error.response?.data || error.message);
-    throw error;
-  }
-}
-
-/**
- * Busca a primeira cobrança pendente de uma assinatura
- * @param {String} subscriptionId 
- */
-export async function getPagamentoDaAssinatura(subscriptionId) {
-  try {
-    const response = await asaasApi.get(`/payments?subscription=${subscriptionId}&status=PENDING`);
-    if (response.data.data.length > 0) {
-      return response.data.data[0];
-    }
-    return null;
-  } catch (error) {
-    console.error('Erro ao buscar pagamento da assinatura:', error.response?.data || error.message);
-    throw error;
-  }
+  };
+  return {
+    configured:config.configured, sandbox:config.sandbox,
+    createCustomer:data=>request('POST','/customers',data),
+    createSubscription:data=>request('POST','/subscriptions',data),
+    getSubscription:id=>request('GET',`/subscriptions/${encodeURIComponent(id)}`),
+    listPayments:id=>request('GET',`/subscriptions/${encodeURIComponent(id)}/payments`,undefined,{limit:100}),
+    getPayment:id=>request('GET',`/payments/${encodeURIComponent(id)}`),
+    getPix:id=>request('GET',`/payments/${encodeURIComponent(id)}/pixQrCode`)
+  };
 }

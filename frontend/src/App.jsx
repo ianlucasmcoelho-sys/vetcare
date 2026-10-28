@@ -81,6 +81,12 @@ function RequiredFieldMessages() {
 }
 
 function AppLayout() {
+  const [,refreshBilling] = useState(0);
+  useEffect(()=>{
+    const refresh=()=>refreshBilling(value=>value+1);
+    window.addEventListener('billing-updated',refresh);
+    return ()=>window.removeEventListener('billing-updated',refresh);
+  },[]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try {
@@ -179,7 +185,7 @@ function AppLayout() {
   const needsOnboarding = usuario?.clinica?.onboarding_concluido === 0;
   const isOnboardingPage = location.pathname === "/onboarding";
 
-  const isPlanosPage = location.pathname === "/planos" || location.pathname === "/checkout" || location.pathname === "/pagamento-sucesso";
+  const isPlanosPage = location.pathname === "/planos" || location.pathname === "/checkout" || location.pathname === "/pagamento-sucesso" || location.pathname === "/assinatura";
   const isFullScreenPage = isPlanosPage || isOnboardingPage;
 
   // Bloqueio de Acesso: Redireciona para /planos se a assinatura estiver vencida ou expirada
@@ -198,6 +204,7 @@ function AppLayout() {
         <Route path="/planos" element={<Planos />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/pagamento-sucesso" element={<PagamentoSucesso />} />
+        <Route path="/assinatura" element={<Assinatura />} />
         <Route path="/onboarding" element={<Onboarding usuario={usuario} />} />
       </Routes>
       </Suspense>

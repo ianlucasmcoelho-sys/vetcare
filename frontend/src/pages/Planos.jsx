@@ -89,7 +89,7 @@ const Planos = () => {
               <li><FiCheck className="v-check-icon v-premium-check" /> Todos os recursos do Free</li>
               <li><FiCheck className="v-check-icon v-premium-check" /> Estoque, internação e exames</li>
               <li><FiCheck className="v-check-icon v-premium-check" /> Financeiro, relatórios e comissões</li>
-              <li><FiCheck className="v-check-icon v-premium-check" /> CRM e gestão de banho e tosa</li>
+              <li><FiCheck className="v-check-icon v-premium-check" /> CRM e acompanhamento de pacientes</li>
               <li><FiCheck className="v-check-icon v-premium-check" /> Cancele quando quiser</li>
             </ul>
 

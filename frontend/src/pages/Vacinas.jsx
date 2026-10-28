@@ -1,3 +1,4 @@
+import { loadPatientContext } from '../services/patientContext';
 import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect, useMemo } from "react";
 import { 
@@ -10,7 +11,6 @@ import "./Vacinas.css";
 
 export default function Vacinas() {
   const [showModal, setShowModal] = useState(false);
-  useQuickCreate(() => setShowModal(true));
   const [vacinas, setVacinas] = useState([]);
   const [animais, setAnimais] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,6 +25,8 @@ export default function Vacinas() {
     nome_vacina: "", data_aplicacao: "", proxima_dose: "",
     lote: "", fabricante: "", animal_id: "", observacoes: ""
   });
+
+  useQuickCreate(async context => { const {animal} = await loadPatientContext(context); resetForm(); if (animal) setForm(previous => ({...previous, animal_id: String(animal.id)})); setShowModal(true); });
 
   const carregarDados = async () => {
     try {

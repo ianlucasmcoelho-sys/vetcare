@@ -318,6 +318,13 @@ export async function initDb() {
       FOREIGN KEY (animal_id) REFERENCES animais(id)
     );
 
+    CREATE TABLE IF NOT EXISTS agenda_expediente (
+      clinica_id INTEGER PRIMARY KEY REFERENCES clinicas(id),
+      inicio TEXT DEFAULT '08:00', fim TEXT DEFAULT '18:00',
+      pausa_inicio TEXT DEFAULT '12:00', pausa_fim TEXT DEFAULT '13:00',
+      intervalo INTEGER DEFAULT 30, dias_semana TEXT DEFAULT '[1,2,3,4,5]'
+    );
+
     CREATE TABLE IF NOT EXISTS vacinas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       clinica_id INTEGER,
@@ -553,20 +560,6 @@ export async function initDb() {
       FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     );
 
-    CREATE TABLE IF NOT EXISTS banho_tosa (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      clinica_id INTEGER NOT NULL,
-      animal_id INTEGER NOT NULL,
-      data TEXT NOT NULL,
-      horario TEXT NOT NULL,
-      pacote_mensal INTEGER DEFAULT 0,
-      status TEXT DEFAULT 'Aguardando',
-      observacoes TEXT,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (clinica_id) REFERENCES clinicas(id),
-      FOREIGN KEY (animal_id) REFERENCES animais(id) ON DELETE CASCADE
-    );
 
     CREATE TABLE IF NOT EXISTS configuracoes_whatsapp (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -637,6 +630,8 @@ export async function initDb() {
 
   // Migrações legadas e idempotentes: somente coluna já existente é ignorada.
   const migrations = [
+    'ALTER TABLE agendamentos ADD COLUMN veterinario_id INTEGER REFERENCES usuarios(id)',
+    'ALTER TABLE agendamentos ADD COLUMN duracao_minutos INTEGER DEFAULT 30',
     `ALTER TABLE clinicas ADD COLUMN status_assinatura TEXT DEFAULT 'trial'`,
     `ALTER TABLE clinicas ADD COLUMN onboarding_concluido INTEGER DEFAULT 0`,
     `ALTER TABLE clinicas ADD COLUMN data_expiracao TEXT`,
@@ -675,10 +670,10 @@ export async function initDb() {
     CREATE INDEX IF NOT EXISTS idx_animais_clinica ON animais(clinica_id);
     CREATE INDEX IF NOT EXISTS idx_responsaveis_clinica ON responsaveis(clinica_id);
     CREATE INDEX IF NOT EXISTS idx_agendamentos_clinica ON agendamentos(clinica_id);
+    CREATE INDEX IF NOT EXISTS idx_agendamentos_profissional_data ON agendamentos(clinica_id, data, veterinario_id);
     CREATE INDEX IF NOT EXISTS idx_prontuarios_clinica ON prontuarios(clinica_id);
     CREATE INDEX IF NOT EXISTS idx_financeiro_clinica ON financeiro(clinica_id);
     CREATE INDEX IF NOT EXISTS idx_vacinas_clinica ON vacinas(clinica_id);
-    CREATE INDEX IF NOT EXISTS idx_banhotosa_clinica ON banho_tosa(clinica_id);
     CREATE INDEX IF NOT EXISTS idx_notas_fiscais_clinica ON notas_fiscais(clinica_id);
     CREATE INDEX IF NOT EXISTS idx_notas_fiscais_data ON notas_fiscais(data_emissao);
   `);

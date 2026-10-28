@@ -59,7 +59,7 @@ db.serialize(() => {
   finStmt.run([clinicaId, 'despesa', 'Material de Limpeza', 150.00, hoje]);
   finStmt.run([clinicaId, 'despesa', 'Fornecedor Medicamentos', 450.00, hoje]);
   finStmt.run([clinicaId, 'despesa', 'Conta de Luz', 300.00, hoje]);
-  finStmt.run([clinicaId, 'receita', 'Banho e Tosa', 90.00, hoje]);
+  finStmt.run([clinicaId, 'receita', 'Consulta de rotina', 90.00, hoje]);
   finStmt.finalize();
 });
 

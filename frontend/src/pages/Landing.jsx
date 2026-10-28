@@ -19,7 +19,7 @@ const mockAppointments = [
   { pet: "Thor", tutor: "Carlos M.", hora: "09:00", tipo: "Consulta", status: "confirmado" },
   { pet: "Luna", tutor: "Ana P.", hora: "10:30", tipo: "Vacinação", status: "confirmado" },
   { pet: "Bob", tutor: "Pedro R.", hora: "11:00", tipo: "Retorno", status: "pendente" },
-  { pet: "Mel", tutor: "Sofia A.", hora: "14:00", tipo: "Banho", status: "confirmado" },
+  { pet: "Mel", tutor: "Sofia A.", hora: "14:00", tipo: "Retorno", status: "confirmado" },
 ];
 
 const testimonials = [
@@ -57,7 +57,7 @@ const faqs = [
   },
   {
     pergunta: "O que recebo ao assinar o plano completo?",
-    resposta: "Por R$ 97 por mês, você libera os módulos avançados de estoque, internação, exames, financeiro, relatórios, CRM, comissões e gestão de banho e tosa."
+    resposta: "Por R$ 97 por mês, você libera os módulos avançados de estoque, internação, exames, financeiro, relatórios, CRM e comissões."
   },
   {
     pergunta: "Como faço para cancelar a assinatura?",
@@ -507,7 +507,7 @@ export default function Landing() {
               <li><FiCheck className="v-check-icon" /> Tudo do plano Free</li>
               <li><FiCheck className="v-check-icon" /> Estoque, internação e exames</li>
               <li><FiCheck className="v-check-icon" /> Financeiro, relatórios e comissões</li>
-              <li><FiCheck className="v-check-icon" /> CRM e gestão de banho e tosa</li>
+              <li><FiCheck className="v-check-icon" /> CRM e acompanhamento de pacientes</li>
               <li><FiCheck className="v-check-icon" /> Cobrança mensal sem fidelidade</li>
             </ul>
             <button className="v-btn-plano-primary-3d" onClick={() => navigate("/cadastro?plano=complete")}>

@@ -1,3 +1,4 @@
+import { loadPatientContext } from '../services/patientContext';
 import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect } from "react";
 import { 
@@ -21,7 +22,6 @@ export default function Prontuarios() {
   // Estados de Controle
   const [printRecord, setPrintRecord] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  useQuickCreate(() => setShowModal(true), podeEditar);
   const [loading, setLoading] = useState(false);
   const [busca, setBusca] = useState("");
   const [editId, setEditId] = useState(null);
@@ -58,6 +58,8 @@ export default function Prontuarios() {
     prescricoes: "",
     observacoes: ""
   });
+
+  useQuickCreate(async context => { const {animal, tutor} = await loadPatientContext(context); if (animal) setForm(previous => ({...previous, animal_id: String(animal.id), pet_nome: animal.nome, tutor_nome: tutor?.nome || ''})); setShowModal(true); }, podeEditar);
 
   const carregarDados = async () => {
     try {

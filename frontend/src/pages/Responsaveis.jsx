@@ -14,6 +14,7 @@ export default function Responsaveis() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   useQuickCreate(() => setShowModal(true));
+  const [savedTutor, setSavedTutor] = useState(null);
   const [tutores, setTutores] = useState([]);
   const [busca, setBusca] = useState("");
   const [editId, setEditId] = useState(null);
@@ -68,6 +69,8 @@ export default function Responsaveis() {
         : await apiPost("/responsaveis", form);
 
       if (res && res.ok) {
+        const saved = await res.json();
+        if (!editId && saved.id) setSavedTutor({ id: saved.id, nome: form.nome });
         fecharModal();
         carregarDados();
       } else if (res) {
@@ -175,6 +178,8 @@ export default function Responsaveis() {
 
   return (
     <div className="responsaveis-container reveal-fade">
+      {savedTutor && <div className="modal-overlay"><section className="modal-content tutor-next-step" role="dialog" aria-modal="true" aria-labelledby="tutor-next-title"><div className="modal-header"><h2 id="tutor-next-title">Tutor cadastrado!</h2><button className="modal-close" aria-label="Fechar sugestão" onClick={() => setSavedTutor(null)}><FiX /></button></div><div className="tutor-next-body"><FiUser /><p><strong>{savedTutor.nome}</strong> já está cadastrado. Deseja cadastrar o animal dele agora?</p><span>O tutor já virá selecionado no próximo formulário.</span></div><div className="modal-footer"><button className="btn-secondary" onClick={() => setSavedTutor(null)}>Agora não</button><button className="btn-primary" autoFocus onClick={() => navigate(`/animais?novo=1&tutor_id=${savedTutor.id}`)}>Cadastrar animal</button></div></section></div>}
+
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Gestão de Tutores</h1>

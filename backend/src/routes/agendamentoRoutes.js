@@ -2,6 +2,7 @@
 import express from 'express';
 import {
   getAllAgendamentos,
+  getScheduleProfessionals, getScheduleAvailability, getScheduleSettings, updateScheduleSettings,
   getAgendamentoById,
   getAgendamentosByData,
   getAgendamentosByPeriodo,
@@ -14,11 +15,16 @@ import {
   updateAgendamentoStatus,
   deleteAgendamento
 } from '../controllers/agendamentoController.js';
-import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { authMiddleware, adminMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 router.use(authMiddleware);
+
+router.get('/profissionais', getScheduleProfessionals);
+router.get('/disponibilidade', getScheduleAvailability);
+router.get('/expediente', getScheduleSettings);
+router.put('/expediente', adminMiddleware, updateScheduleSettings);
 
 // Rotas de agendamentos
 router.get('/', getAllAgendamentos);

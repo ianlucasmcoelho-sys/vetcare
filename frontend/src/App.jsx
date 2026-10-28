@@ -38,7 +38,6 @@ const Checkout = lazyPage("Checkout");
 const PagamentoSucesso = lazyPage("PagamentoSucesso");
 const Onboarding = lazyPage("Onboarding");
 const Comissoes = lazyPage("Comissoes");
-const BanhoTosa = lazyPage("BanhoTosa");
 const Assinatura = lazyPage("Assinatura");
 const NotasFiscais = lazyPage("NotasFiscais");
 import "./App.css";
@@ -244,7 +243,6 @@ function AppLayout() {
           <Route path="/crm" element={isFreePlan ? <Navigate to="/planos" /> : <Retencao />} />
           <Route path="/automacoes" element={<Navigate to="/" replace />} />
           <Route path="/relatorios" element={isFreePlan ? <Navigate to="/planos" /> : <Relatorios />} />
-          <Route path="/banhotosa" element={isFreePlan ? <Navigate to="/planos" /> : <BanhoTosa />} />
           
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

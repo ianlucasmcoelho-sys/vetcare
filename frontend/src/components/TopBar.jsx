@@ -38,7 +38,6 @@ const ROUTE_MAP = {
   '/retornos': { title: 'Retornos Clínicos', category: 'Atendimento' },
   '/receituario': { title: 'Receituário Médico', category: 'Atendimento' },
   '/documentos': { title: 'Documentos & Atestados', category: 'Atendimento' },
-  '/banhotosa': { title: 'Banho & Tosa', category: 'Estética' },
   '/financeiro': { title: 'Fluxo Financeiro', category: 'Gestão' },
   '/orcamentos': { title: 'Orçamentos', category: 'Gestão' },
   '/estoque': { title: 'Controle de Estoque', category: 'Gestão' },
@@ -77,7 +76,7 @@ export default function TopBar({ isDarkMode, onToggleTheme, isCollapsed }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const searchContainerRef = useRef(null);
 
-  const currentRoute = ROUTE_MAP[location.pathname] || { title: 'VetCare', category: 'Sistema' };
+  const currentRoute = ROUTE_MAP[location.pathname] || (location.pathname.startsWith('/perfil-animal/') ? {title:'Perfil do paciente',category:'Atendimento'} : { title: 'VetCare', category: 'Sistema' });
 
   // Pegar dados do usuário do localStorage
   const usuarioStr = localStorage.getItem("usuario");

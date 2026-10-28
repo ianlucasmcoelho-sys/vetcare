@@ -1,3 +1,4 @@
+import { saveAppointment, dayAvailability, readSchedule, saveSchedule } from '../services/appointmentSchedule.js';
 // backend/src/controllers/agendamentoController.js
 import { openDb, runTransaction } from '../db.js';
 
@@ -160,132 +161,41 @@ export const getAgendamentosByStatus = async (req, res) => {
 // Criar novo agendamento com transação e proteção SaaS
 export const createAgendamento = async (req, res) => {
   try {
-    const {
-      animal_id,
-      data,
-      horario,
-      tipo_servico,
-      status,
-      domiciliar,
-      observacoes
-    } = req.body;
-    const clinica_id = req.usuario.clinica_id;
-
-    if (!animal_id || !data || !horario) {
-      return res.status(400).json({ error: 'Campos obrigatórios: animal_id, data e horario' });
-    }
-
-    const result = await runTransaction(async (db) => {
-      const animal = await db.get('SELECT id FROM animais WHERE id = ? AND clinica_id = ?', [animal_id, clinica_id]);
-      if (!animal) throw new Error('Animal não encontrado ou sem permissão para esta clínica');
-
-      const conflito = await db.get(`
-        SELECT id FROM agendamentos 
-        WHERE data = ? AND horario = ? AND clinica_id = ? AND status NOT IN ('Cancelado', 'Concluído')
-      `, [data, horario, clinica_id]);
-      
-      if (conflito) throw new Error('Horário já ocupado nesta clínica');
-
-      const insResult = await db.run(
-        `INSERT INTO agendamentos (
-          clinica_id, animal_id, data, horario, tipo_servico, status, domiciliar, observacoes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [clinica_id, animal_id, data, horario, tipo_servico || 'Consulta', status || 'Agendado', domiciliar ? 1 : 0, observacoes || null]
-      );
-      
-      return insResult.lastID;
-    });
-
-    const db = await openDb();
-    const novoAgendamento = await db.get(`
-      SELECT a.*, an.nome as animal_nome, r.nome as tutor_nome, r.celular as tutor_celular
-      FROM agendamentos a
-      LEFT JOIN animais an ON a.animal_id = an.id
-      LEFT JOIN responsaveis r ON an.responsavel_id = r.id
-      WHERE a.id = ? AND a.clinica_id = ?
-    `, [result, clinica_id]);
-
-    res.status(201).json({ success: true, ...novoAgendamento });
-  } catch (error) {
-    console.error('❌ Erro ao criar agendamento:', error.message);
-    res.status(error.message.includes('não encontrado') ? 404 : (error.message.includes('ocupado') ? 409 : 500))
-       .json({ error: error.message });
-  }
+    const result = await runTransaction(db => saveAppointment(db, req.usuario.clinica_id, req.body));
+    res.status(201).json({ success: true, ...result });
+  } catch (error) { res.status(error.httpStatus || 500).json({ error: error.httpStatus ? error.message : 'Não foi possível criar o agendamento.' }); }
 };
 
-// Atualizar agendamento
 export const updateAgendamento = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { animal_id, data, horario, tipo_servico, status, domiciliar, observacoes } = req.body;
-    const clinica_id = req.usuario.clinica_id;
-
-    await runTransaction(async (db) => {
-      const existe = await db.get('SELECT id FROM agendamentos WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
-      if (!existe) throw new Error('Agendamento não encontrado');
-
-      if (animal_id) {
-        const animal = await db.get('SELECT id FROM animais WHERE id = ? AND clinica_id = ?', [animal_id, clinica_id]);
-        if (!animal) throw new Error('Animal não permitido');
-      }
-
-      if (data && horario) {
-        const conflito = await db.get(`
-          SELECT id FROM agendamentos WHERE data = ? AND horario = ? AND clinica_id = ? AND id != ? AND status NOT IN ('Cancelado', 'Concluído')
-        `, [data, horario, clinica_id, id]);
-        if (conflito) throw new Error('Horário ocupado');
-      }
-
-      await db.run(
-        `UPDATE agendamentos SET
-          animal_id = COALESCE(?, animal_id),
-          data = COALESCE(?, data),
-          horario = COALESCE(?, horario),
-          tipo_servico = COALESCE(?, tipo_servico),
-          status = COALESCE(?, status),
-          domiciliar = COALESCE(?, domiciliar),
-          observacoes = ?,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = ? AND clinica_id = ?`,
-        [animal_id, data, horario, tipo_servico, status, domiciliar !== undefined ? (domiciliar ? 1 : 0) : null, observacoes || null, id, clinica_id]
-      );
-    });
-
-    const db = await openDb();
-    const atualizado = await db.get('SELECT * FROM agendamentos WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
-    res.json({ success: true, ...atualizado });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    const result = await runTransaction(db => saveAppointment(db, req.usuario.clinica_id, req.body, req.params.id));
+    res.json({ success: true, ...result });
+  } catch (error) { res.status(error.httpStatus || 500).json({ error: error.httpStatus ? error.message : 'Não foi possível atualizar o agendamento.' }); }
 };
 
-// Atualizar status do agendamento
 export const updateAgendamentoStatus = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { status } = req.body;
-    const clinica_id = req.usuario.clinica_id;
+    if (!req.body.status) return res.status(400).json({error:'Informe o status.'});
+    const result = await runTransaction(db => saveAppointment(db, req.usuario.clinica_id, { status: req.body.status }, req.params.id));
+    res.json({ success: true, ...result });
+  } catch (error) { res.status(error.httpStatus || 500).json({ error: error.httpStatus ? error.message : 'Não foi possível atualizar o status.' }); }
+};
 
-    const statusValidos = ['Agendado', 'Confirmado', 'Concluído', 'Cancelado'];
-    if (!status || !statusValidos.includes(status)) {
-      return res.status(400).json({ error: 'Status inválido' });
-    }
-
-    const db = await openDb();
-    const existe = await db.get('SELECT id FROM agendamentos WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
-    if (!existe) return res.status(404).json({ error: 'Agendamento não encontrado' });
-
-    await db.run(
-      `UPDATE agendamentos SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND clinica_id = ?`,
-      [status, id, clinica_id]
-    );
-
-    const agendamentoAtualizado = await db.get('SELECT * FROM agendamentos WHERE id = ? AND clinica_id = ?', [id, clinica_id]);
-    res.json({ success: true, ...agendamentoAtualizado });
-  } catch (error) {
-    console.error('Erro ao atualizar status do agendamento:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
-  }
+export const getScheduleProfessionals = async (req, res) => {
+  try { res.json(await (await openDb()).all("SELECT id, nome, perfil FROM usuarios WHERE clinica_id = ? AND ativo = 1 AND perfil IN ('admin', 'veterinario') ORDER BY nome", [req.usuario.clinica_id])); }
+  catch { res.status(500).json({error:'Não foi possível consultar os profissionais.'}); }
+};
+export const getScheduleAvailability = async (req, res) => {
+  try { res.json(await dayAvailability(await openDb(), req.usuario.clinica_id, req.query)); }
+  catch(error) { res.status(error.httpStatus || 500).json({error:error.httpStatus ? error.message : 'Não foi possível consultar a disponibilidade.'}); }
+};
+export const getScheduleSettings = async (req, res) => {
+  try { res.json(await readSchedule(await openDb(), req.usuario.clinica_id)); }
+  catch { res.status(500).json({error:'Não foi possível consultar o expediente.'}); }
+};
+export const updateScheduleSettings = async (req, res) => {
+  try { res.json(await runTransaction(db => saveSchedule(db, req.usuario.clinica_id, req.body))); }
+  catch(error) { res.status(error.httpStatus || 500).json({error:error.httpStatus ? error.message : 'Não foi possível salvar o expediente.'}); }
 };
 
 // Deletar agendamento

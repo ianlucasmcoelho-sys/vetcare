@@ -35,7 +35,7 @@ const planoPanels = {
     features: [
       { icon: FiStar, label: "Estoque, financeiro e relatórios", color: "#f59e0b" },
       { icon: FiZap, label: "Internação, exames e CRM", color: "#14b8a6" },
-      { icon: FiActivity, label: "Comissões e banho & tosa", color: "#8b5cf6" },
+      { icon: FiActivity, label: "Equipe e comissões", color: "#8b5cf6" },
     ],
     stats: [
       { value: "R$97", unit: "/mês", label: "Preço único" },

@@ -1,0 +1,70 @@
+.appointment-calendar { margin: 22px 0; padding: 24px; border: 1px solid var(--border-color); border-radius: 18px; background: var(--bg-card); color: var(--text-primary); }
+.appointment-calendar button, .schedule-settings-dialog button { font: inherit; cursor: pointer; }
+.appointment-calendar :is(button,select):focus-visible, .schedule-settings-dialog :is(button,input,select):focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.appointment-calendar .schedule-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+.appointment-calendar .schedule-header > div > span { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--primary-dark); }
+.appointment-calendar h2 { display: flex; align-items: center; gap: 9px; margin: 8px 0 0; font-size: 21px; color: var(--text-primary); }
+.appointment-calendar h2 svg { color: var(--primary); }
+.appointment-calendar .schedule-header-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.appointment-calendar .schedule-header-actions button, .appointment-calendar .schedule-today, .schedule-settings-dialog button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 38px; padding: 9px 12px; border: 1px solid var(--border-color); border-radius: 9px; background: var(--bg-card); color: var(--text-primary); font-size: 12px; }
+.appointment-calendar .schedule-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+.appointment-calendar .schedule-filters label, .schedule-settings-dialog form > label, .schedule-settings-grid label { display: flex; flex-direction: column; gap: 8px; font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+.appointment-calendar select, .schedule-settings-dialog select, .schedule-settings-dialog input[type='time'] { box-sizing: border-box; width: 100%; min-width: 0; padding: 11px 12px; background: var(--bg-input,var(--bg-card)); border: 1px solid var(--border-color); border-radius: 9px; color: var(--text-primary); font: inherit; font-size: 13px; }
+.appointment-calendar .schedule-layout { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1fr); gap: 25px; align-items: start; }
+.appointment-calendar .schedule-month { border: 1px solid var(--border-color); border-radius: 12px; padding: 17px; }
+.appointment-calendar .schedule-month-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 17px; }
+.appointment-calendar .schedule-month-heading h3 { font-size: 16px; color: var(--text-primary); text-transform: capitalize; margin: 0; }
+.appointment-calendar .schedule-month-heading button { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-card); color: var(--text-primary); }
+.appointment-calendar .schedule-weekdays, .appointment-calendar .schedule-days { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 4px; }
+.appointment-calendar .schedule-weekdays span { color: var(--text-muted); text-align: center; font-size: 10px; padding: 6px 0 10px; }
+.appointment-calendar .schedule-days button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 0; min-height: 55px; padding: 7px 1px; border: 1px solid transparent; border-radius: 8px; background: var(--bg-card); color: var(--text-primary); }
+.appointment-calendar .schedule-days button strong { font-size: 13px; font-weight: 600; }
+.appointment-calendar .schedule-days button > span { max-width: 100%; font-size: 8px; color: var(--primary-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.appointment-calendar .schedule-days button:hover { background: var(--bg-hover); }
+.appointment-calendar .schedule-days button.outside-month { opacity: .4; }
+.appointment-calendar .schedule-days button.closed { background: var(--bg-hover); color: var(--text-muted); }
+.appointment-calendar .schedule-days button.today { border-color: var(--primary); }
+.appointment-calendar .schedule-days button.selected { color: white; background: var(--primary-dark); border-color: var(--primary-dark); opacity: 1; }
+.appointment-calendar .schedule-days button.selected > span { color: white; }
+.appointment-calendar .schedule-today { width: 100%; margin-top: 15px; color: var(--primary-dark); }
+.appointment-calendar .schedule-help { margin: 13px 0; font-size: 11px; color: var(--text-muted); line-height: 1.7; }
+.appointment-calendar .schedule-day-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.appointment-calendar .schedule-day-heading span { color: var(--primary-dark); font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+.appointment-calendar .schedule-day-heading h3 { margin: 7px 0; font-size: 16px; color: var(--text-primary); text-transform: capitalize; }
+.appointment-calendar .schedule-day-heading > svg { color: var(--primary); font-size: 23px; }
+.appointment-calendar .schedule-slots { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 7px; }
+.appointment-calendar .schedule-slots button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 52px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-hover); color: var(--text-muted); }
+.appointment-calendar .schedule-slots button strong { font-size: 12px; font-weight: 600; }
+.appointment-calendar .schedule-slots button span { font-size: 9px; }
+.appointment-calendar .schedule-slots button.free { border-color: rgba(20,184,166,.4); background: rgba(20,184,166,.06); color: var(--primary-dark); }
+.appointment-calendar .schedule-slots button.free:hover { border-color: var(--primary); background: rgba(20,184,166,.15); }
+.appointment-calendar .schedule-slots button:disabled { cursor: not-allowed; opacity: .6; }
+.appointment-calendar .schedule-appointments-title { color: var(--text-primary); font-size: 12px; margin: 24px 0 9px; }
+.appointment-calendar .schedule-appointments { list-style: none; padding: 0; margin: 0; }
+.appointment-calendar .schedule-appointments li + li { border-top: 1px solid var(--border-color); }
+.appointment-calendar .schedule-appointments button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 0; border: 0; background: transparent; color: var(--text-primary); text-align: left; }
+.appointment-calendar .schedule-appointments time { color: var(--primary-dark); font-size: 12px; font-weight: 600; }
+.appointment-calendar .schedule-appointments button > div { flex: 1; min-width: 0; }
+.appointment-calendar .schedule-appointments strong { display: block; font-size: 12px; }
+.appointment-calendar .schedule-appointments div > span { display: block; font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+.appointment-calendar .schedule-appointments button > span { padding: 4px 6px; background: var(--bg-hover); color: var(--text-muted); font-size: 9px; border-radius: 5px; }
+.appointment-calendar .schedule-empty { padding: 17px 0; color: var(--text-muted); font-size: 12px; line-height: 1.7; }
+.schedule-error { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 12px; border: 1px solid rgba(239,68,68,.3); border-radius: 9px; background: rgba(239,68,68,.06); color: var(--text-primary); font-size: 12px; margin: 12px 0; }
+.schedule-error button { padding: 5px 9px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-card); color: var(--text-primary); }
+.schedule-settings-overlay { position: fixed; inset: 0; z-index: 2200; display: grid; place-items: center; padding: 18px; background: rgba(15,23,42,.55); }
+.schedule-settings-dialog { width: min(100%,550px); max-height: 92dvh; overflow: auto; border-radius: 16px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); box-shadow: var(--shadow-xl); }
+.schedule-settings-dialog > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 20px; border-bottom: 1px solid var(--border-color); }
+.schedule-settings-dialog h2 { font-size: 18px; margin: 0; color: var(--text-primary); }
+.schedule-settings-dialog form { padding: 20px; }
+.schedule-settings-dialog form > p { margin: 0 0 20px; color: var(--text-muted); font-size: 12px; line-height: 1.8; }
+.schedule-settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.schedule-settings-dialog small { display: block; color: var(--text-muted); font-size: 11px; margin: 12px 0; }
+.schedule-settings-dialog .schedule-interval { margin: 18px 0; }
+.schedule-settings-dialog fieldset { display: flex; flex-wrap: wrap; gap: 13px; padding: 15px 12px; border: 1px solid var(--border-color); border-radius: 9px; }
+.schedule-settings-dialog legend { font-size: 12px; color: var(--text-secondary); padding: 0 7px; }
+.schedule-settings-dialog fieldset label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
+.schedule-settings-dialog footer { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 22px; }
+.schedule-settings-dialog button.primary { background: var(--primary); border-color: var(--primary); color: white; }
+.agenda-container .schedule-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-card); color: var(--text-primary); font: inherit; font-size: 12px; cursor: pointer; }
+@media (max-width:1100px) { .appointment-calendar .schedule-layout { grid-template-columns: 1fr; } }
+@media (max-width:600px) { .appointment-calendar { padding: 15px; } .appointment-calendar .schedule-filters { grid-template-columns: 1fr; } .appointment-calendar .schedule-month { padding: 10px; } .appointment-calendar .schedule-days button { min-height: 50px; } .appointment-calendar .schedule-slots { grid-template-columns: repeat(3,minmax(0,1fr)); } .appointment-calendar .schedule-header-actions { width: 100%; } .appointment-calendar .schedule-header-actions button { flex: 1; } }

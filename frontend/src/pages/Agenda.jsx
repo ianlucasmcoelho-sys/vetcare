@@ -1,9 +1,11 @@
+import AppointmentCalendar from '../components/AppointmentCalendar';
+import { loadPatientContext } from '../services/patientContext';
 import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect } from "react";
 import { 
   FiPlus, FiCalendar, FiClock, FiX, FiSearch, FiEdit2, 
   FiTrash2, FiCheckCircle, FiXCircle, FiFilter, FiUser,
-  FiInfo, FiAlertCircle, FiRefreshCw, FiHome, FiScissors
+  FiInfo, FiAlertCircle, FiRefreshCw, FiHome
 } from "react-icons/fi";
 import { MdOutlinePets, MdOutlineMedicalServices, MdOutlineVaccines } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
@@ -12,7 +14,10 @@ import "./Agenda.css";
 
 export default function Agenda() {
   const [showModal, setShowModal] = useState(false);
-  useQuickCreate(() => setShowModal(true));
+  const [rescheduleId, setRescheduleId] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [calendarVersion, setCalendarVersion] = useState(0);
+  const [professionals, setProfessionals] = useState([]);
   const [agendamentos, setAgendamentos] = useState([]);
   const [animais, setAnimais] = useState([]);
   const [tutores, setTutores] = useState([]);
@@ -21,15 +26,7 @@ export default function Agenda() {
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [editId, setEditId] = useState(null);
 
-  const usuarioStr = localStorage.getItem("usuario");
-  const usuario = usuarioStr ? JSON.parse(usuarioStr) : null;
-  const plano = usuario?.clinica?.plano_id || 'free';
-  const isApenasClinica = plano === 'clinica';
-
   const tiposServico = ["Consulta", "Vacina", "Retorno", "Cirurgia", "Exame", "Emergência"];
-  if (!isApenasClinica) {
-    tiposServico.push("Banho e Tosa");
-  }
 
   const statusOptions = ["Agendado", "Confirmado", "Concluído", "Cancelado"];
 
@@ -37,11 +34,20 @@ export default function Agenda() {
     animal_id: "",
     data: "",
     horario: "",
+    veterinario_id: "", duracao_minutos: 30,
     tipo_servico: "Consulta",
     status: "Agendado",
     domiciliar: false,
     observacoes: ""
   });
+
+  useQuickCreate(async context => {
+    const { animal } = await loadPatientContext(context);
+    resetForm();
+    setForm(previous => ({...previous, animal_id: animal ? String(animal.id) : '', data: context.data || '', horario: context.horario || '', veterinario_id: context.veterinario_id || '', duracao_minutos: context.duracao_minutos || 30}));
+    setShowModal(true);
+  });
+  useEffect(() => { apiGet('/agendamentos/profissionais').then(async response => { if(response?.ok)setProfessionals(await response.json()); }).catch(() => {}); }, []);
 
   const carregarDados = async () => {
     try {
@@ -86,6 +92,7 @@ export default function Agenda() {
         setShowModal(false);
         resetForm();
         carregarDados();
+        setCalendarVersion(value => value + 1);
       } else if (response) {
         const error = await response.json();
         alert(error.error || "Erro ao realizar agendamento.");
@@ -100,7 +107,7 @@ export default function Agenda() {
   const atualizarStatus = async (id, novoStatus) => {
     try {
       const response = await apiPatch(`/agendamentos/${id}/status`, { status: novoStatus });
-      if (response && response.ok) carregarDados();
+      if (response && response.ok) { carregarDados(); setCalendarVersion(value => value + 1); }
     } catch (error) { console.error("Erro ao atualizar status:", error); }
   };
 
@@ -108,7 +115,7 @@ export default function Agenda() {
     if (window.confirm("Deseja excluir este agendamento?")) {
       try {
         const response = await apiDelete(`/agendamentos/${id}`);
-        if (response && response.ok) carregarDados();
+        if (response && response.ok) { carregarDados(); setCalendarVersion(value => value + 1); }
       } catch (error) { console.error("Erro ao deletar:", error); }
     }
   };
@@ -128,18 +135,22 @@ export default function Agenda() {
   };
 
   const resetForm = () => {
+    setRescheduleId(null);
     setForm({
-      animal_id: "", data: "", horario: "",
+      animal_id: "", data: "", horario: "", veterinario_id: "", duracao_minutos: 30,
       tipo_servico: "Consulta", status: "Agendado", domiciliar: false, observacoes: ""
     });
     setEditId(null);
   };
 
   const abrirEdicao = (agendamento) => {
+    setRescheduleId(null);
     setForm({
       animal_id: agendamento.animal_id,
       data: agendamento.data,
-      horario: agendamento.horario,
+      veterinario_id: agendamento.veterinario_id || "",
+      duracao_minutos: agendamento.duracao_minutos || 30,
+      horario: agendamento.horario ? agendamento.horario.split(':').slice(0,2).map(part => part.padStart(2,'0')).join(':') : '',
       tipo_servico: agendamento.tipo_servico,
       status: agendamento.status,
       domiciliar: agendamento.domiciliar === 1 || agendamento.domiciliar === true,
@@ -173,7 +184,7 @@ export default function Agenda() {
       "Cirurgia": <FiInfo size={14} />,
       "Exame": <FiSearch size={14} />,
       "Emergência": <FiAlertCircle size={14} />,
-      "Banho e Tosa": <FiScissors size={14} />
+
     };
     return icons[tipo] || <MdOutlineMedicalServices size={14} />;
   };
@@ -204,6 +215,7 @@ export default function Agenda() {
           <p className="page-subtitle">Gerencie os horários e atendimentos</p>
         </div>
         <div className="header-actions">
+          <button className="btn-outline schedule-toggle" onClick={() => { resetForm(); setShowCalendar(value => !value); }}><FiCalendar />{showCalendar ? "Ver lista de agendamentos" : "Ver agenda completa"}</button>
           <button className="v-btn-primary-glow" onClick={() => { resetForm(); setShowModal(true); }}>
             <FiPlus size={18} />
             <span>Novo Agendamento</span>
@@ -211,6 +223,8 @@ export default function Agenda() {
         </div>
       </div>
 
+      {showCalendar && <AppointmentCalendar initialDate={form.data} initialProfessional={form.veterinario_id} initialDuration={form.duracao_minutos} refreshKey={calendarVersion} onClose={() => { setShowCalendar(false); setRescheduleId(null); }} onEdit={abrirEdicao} onBook={slot => { setEditId(rescheduleId); setRescheduleId(null); setForm(previous => ({...previous,...slot})); setShowModal(true); }} />}
+      {!showCalendar && <>
       <div className="agenda-card v-glass-panel reveal-up" style={{animationDelay: '0.1s'}}>
         <div className="filters-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
           <div className="search-wrapper">
@@ -296,6 +310,8 @@ export default function Agenda() {
         )}
       </div>
 
+      </>}
+
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -324,10 +340,13 @@ export default function Agenda() {
                     <label className="input-label">HORÁRIO *</label>
                     <input type="time" name="horario" className="form-input" required value={form.horario} onChange={handleChange} />
                   </div>
+                  <div className="input-group"><label className="input-label">PROFISSIONAL</label><select name="veterinario_id" className="form-input" value={form.veterinario_id} onChange={handleChange}><option value="">Agenda da clínica (sem profissional)</option>{professionals.map(person => <option key={person.id} value={person.id}>{person.nome}</option>)}</select></div>
+                  <div className="input-group"><label className="input-label">DURAÇÃO (MINUTOS)</label><input type="number" name="duracao_minutos" className="form-input" min="5" max="240" step="5" required value={form.duracao_minutos} onChange={handleChange}/></div>
+                  <div className="input-group full-width"><button type="button" className="btn-outline schedule-toggle" onClick={() => {setRescheduleId(editId);setShowModal(false);setShowCalendar(true);}}><FiCalendar />Escolher horário na agenda completa</button></div>
                   <div className="input-group">
                     <label className="input-label">TIPO</label>
                     <select name="tipo_servico" className="form-input" value={form.tipo_servico} onChange={handleChange}>
-                      {tiposServico.map(tipo => <option key={tipo} value={tipo}>{tipo}</option>)}
+                      {!tiposServico.includes(form.tipo_servico) && <option value={form.tipo_servico}>Serviço anterior (descontinuado)</option>}{tiposServico.map(tipo => <option key={tipo} value={tipo}>{tipo}</option>)}
                     </select>
                   </div>
                   {editId && (

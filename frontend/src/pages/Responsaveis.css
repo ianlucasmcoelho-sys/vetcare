@@ -294,3 +294,9 @@
   .responsaveis-container .tutor-card-badge { top: 0.625rem; right: 0.625rem; }
   .responsaveis-container .tutor-avatar { width: 2.75rem; height: 2.75rem; flex: 0 0 auto; }
 }
+
+.responsaveis-container .tutor-next-step { max-width: 500px; }
+.responsaveis-container .tutor-next-body { padding: 25px; text-align: center; }
+.responsaveis-container .tutor-next-body > svg { color: var(--primary-dark); font-size: 34px; margin-bottom: 12px; }
+.responsaveis-container .tutor-next-body p { color: var(--text-primary); font-size: 15px; line-height: 1.8; margin: 0 0 10px; }
+.responsaveis-container .tutor-next-body span { color: var(--text-muted); font-size: 12px; }

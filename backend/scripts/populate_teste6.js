@@ -51,7 +51,7 @@ async function populate() {
   await db.run(`INSERT INTO financeiro (clinica_id, tipo, descricao, valor, data) VALUES (?, ?, ?, ?, ?)`, [clinicaId, 'despesa', 'Material de Limpeza', 150.00, hoje]);
   await db.run(`INSERT INTO financeiro (clinica_id, tipo, descricao, valor, data) VALUES (?, ?, ?, ?, ?)`, [clinicaId, 'despesa', 'Fornecedor Medicamentos', 450.00, hoje]);
   await db.run(`INSERT INTO financeiro (clinica_id, tipo, descricao, valor, data) VALUES (?, ?, ?, ?, ?)`, [clinicaId, 'despesa', 'Conta de Luz', 300.00, hoje]);
-  await db.run(`INSERT INTO financeiro (clinica_id, tipo, descricao, valor, data) VALUES (?, ?, ?, ?, ?)`, [clinicaId, 'receita', 'Banho e Tosa', 90.00, hoje]);
+  await db.run(`INSERT INTO financeiro (clinica_id, tipo, descricao, valor, data) VALUES (?, ?, ?, ?, ?)`, [clinicaId, 'receita', 'Consulta de rotina', 90.00, hoje]);
 
   console.log('Tudo mockado com sucesso!');
 }

@@ -594,7 +594,7 @@ export default function NotasFiscais() {
                     <TbFileInvoice size={20} />
                     <div>
                       <strong>NFS-e (Nota de Serviço)</strong>
-                      <small>Consultas, cirurgias, exames, vacinas, banho e tosa</small>
+                      <small>Consultas, cirurgias, exames e vacinas</small>
                     </div>
                   </button>
                   <button

@@ -83,7 +83,7 @@ export default function Onboarding({ usuario }) {
                 <div className="feature-card highlight">
                   <div className="feature-icon"><FiScissors size={32} /></div>
                   <h4>Centro Estético & Petshop</h4>
-                  <p>Kanban interativo do Banho & Tosa e gestão automática de comissões.</p>
+                  <p>Acompanhe a equipe clínica e organize as comissões dos profissionais.</p>
                 </div>
               )}
             </div>

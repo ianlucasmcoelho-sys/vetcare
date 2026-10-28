@@ -35,7 +35,6 @@ import orcamentoRoutes from './routes/orcamentoRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import comissoesRoutes from './routes/comissoesRoutes.js';
-import banhoTosaRoutes from './routes/banhoTosaRoutes.js';
 import asaasRoutes from './routes/asaasRoutes.js';
 import notaFiscalRoutes from './routes/notaFiscalRoutes.js';
 import { handleStripeWebhook } from './controllers/stripeWebhook.js';
@@ -157,7 +156,6 @@ app.use('/api/orcamentos', orcamentoRoutes);
 app.use('/api/pagamento', paymentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/comissoes', comissoesRoutes);
-app.use('/api/banhotosa', banhoTosaRoutes);
 app.use('/api/asaas', asaasRoutes);
 app.use('/api/notas-fiscais', notaFiscalRoutes);
 

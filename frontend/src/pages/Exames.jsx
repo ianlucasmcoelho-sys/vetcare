@@ -1,3 +1,5 @@
+import useQuickCreate from '../hooks/useQuickCreate';
+import { loadPatientContext } from '../services/patientContext';
 import React, { useState, useEffect } from "react";
 import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiFileText, FiCheckCircle, FiClock, FiX } from "react-icons/fi";
 import { apiGet, apiPost, apiPut, apiDelete } from "../services/api";
@@ -18,6 +20,8 @@ export default function Exames() {
     resultado: "",
     status: "pendente"
   });
+
+  useQuickCreate(async context => { const {animal} = await loadPatientContext(context); if (animal) setFormData(previous => ({...previous, animal_id: String(animal.id)})); setShowModal(true); });
 
   const carregarDados = async () => {
     setLoading(true);
@@ -40,10 +44,10 @@ export default function Exames() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editingExame) {
-        await apiPut(`/exames/${editingExame.id}`, formData);
-      } else {
-        await apiPost("/exames", formData);
+      const response = editingExame ? await apiPut(`/exames/${editingExame.id}`, formData) : await apiPost("/exames", formData);
+      if (!response?.ok) {
+        const error = response ? await response.json() : {};
+        throw new Error(error.error || 'Não foi possível salvar o exame.');
       }
       setShowModal(false);
       setEditingExame(null);
@@ -51,6 +55,7 @@ export default function Exames() {
       carregarDados();
     } catch (err) {
       console.error("Erro ao salvar exame:", err);
+      alert(err.message || "Não foi possível salvar o exame.");
     }
   };
 

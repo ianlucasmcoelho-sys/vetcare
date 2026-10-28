@@ -14,7 +14,6 @@ import {
   TbPrescription,
   TbFileCertificate,
   TbFileInvoice,
-  TbScissors,
   TbReceiptTax,
   TbReceipt,
   TbPackage,
@@ -61,12 +60,6 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
         { path: '/retornos', label: 'Retornos Clínicos', icon: TbRefresh },
         { path: '/receituario', label: 'Receituário', icon: TbPrescription },
         { path: '/documentos', label: 'Documentos & Atestados', icon: TbFileCertificate },
-      ]
-    },
-    {
-      title: 'Estética & Bem-Estar',
-      items: [
-        { path: '/banhotosa', label: 'Banho & Tosa', icon: TbScissors, premium: isPlanoGratuito },
       ]
     },
     {

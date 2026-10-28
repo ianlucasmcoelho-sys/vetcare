@@ -1,3 +1,4 @@
+import { loadPatientContext } from '../services/patientContext';
 import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -102,12 +103,13 @@ export default function Receituario() {
     });
   };
 
-  const abrirNovo = () => {
+  const abrirNovo = async (context = {}) => {
+    const { animal, tutor } = await loadPatientContext(context);
     setEditando(null);
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     setFormData({
-      animal_id: "",
-      tutor_id: "",
+      animal_id: animal ? String(animal.id) : "",
+      tutor_id: tutor ? String(tutor.id) : "",
       data_emissao: new Date().toISOString().split('T')[0],
       medicamentos: "",
       posologia: "",

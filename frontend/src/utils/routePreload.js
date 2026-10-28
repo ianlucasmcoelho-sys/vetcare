@@ -36,7 +36,6 @@ const loaders = {
   PagamentoSucesso: () => import("../pages/PagamentoSucesso.jsx"),
   Onboarding: () => import("../pages/Onboarding.jsx"),
   Comissoes: () => import("../pages/Comissoes.jsx"),
-  BanhoTosa: () => import("../pages/BanhoTosa.jsx"),
   Assinatura: () => import("../pages/Assinatura.jsx"),
   NotasFiscais: () => import("../pages/NotasFiscais.jsx"),
 };
@@ -84,7 +83,6 @@ const routes = {
   "/comissoes": "Comissoes",
   "/crm": "Retencao",
   "/relatorios": "Relatorios",
-  "/banhotosa": "BanhoTosa",
 };
 export function preloadRoute(path) {
   const name = routes[path];

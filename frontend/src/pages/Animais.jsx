@@ -13,7 +13,6 @@ import "./Animais.css";
 export default function Animais() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  useQuickCreate(() => setShowModal(true));
   const [animais, setAnimais] = useState([]);
   const [responsaveis, setResponsaveis] = useState([]);
   const [busca, setBusca] = useState("");
@@ -45,6 +44,7 @@ export default function Animais() {
   };
 
   const [form, setForm] = useState(initialForm);
+  useQuickCreate(context => { setEditId(null); setForm({ ...initialForm, responsavel_id: context.tutor_id || '' }); setShowModal(true); });
 
   const carregarAnimais = async () => {
     try {

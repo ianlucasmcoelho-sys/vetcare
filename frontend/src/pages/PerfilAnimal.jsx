@@ -1,8 +1,10 @@
+import { Link } from 'react-router-dom';
+import { usePermission } from '../hooks/usePermission';
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
   FiArrowLeft, FiUser, FiCalendar, FiPackage, FiEdit2, FiTrash2, 
-  FiClock, FiAlertCircle, FiInfo, FiX, FiPrinter, FiDownload, FiActivity
+  FiClock, FiFileText, FiAlertCircle, FiInfo, FiX, FiPrinter, FiDownload, FiActivity
 } from "react-icons/fi";
 import { MdOutlinePets, MdOutlineVaccines, MdOutlineMedicalServices } from "react-icons/md";
 import { TbFlask } from "react-icons/tb";
@@ -13,6 +15,7 @@ import MedicalRecordPreview from "../components/MedicalRecordPreview";
 export default function PerfilAnimal() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { can } = usePermission();
   const [animal, setAnimal] = useState(null);
   const [tutor, setTutor] = useState(null);
   const [prontuarios, setProntuarios] = useState([]);
@@ -163,6 +166,14 @@ export default function PerfilAnimal() {
           </div>
         </div>
       </div>
+
+      {!animal.obito && <section className="patient-quick-actions" aria-labelledby="patient-actions-title"><div><h2 id="patient-actions-title">O que vamos fazer por {animal.nome}?</h2><p>Comece um atendimento com os dados do paciente já preenchidos.</p></div><div className="patient-action-grid">
+        {can('editarAgenda') && <Link to={`/agenda?novo=1&animal_id=${animal.id}`}><FiCalendar /><strong>Agendar consulta</strong></Link>}
+        {can('editarProntuarios') && <Link to={`/historico?novo=1&animal_id=${animal.id}`}><MdOutlineMedicalServices /><strong>Novo atendimento</strong></Link>}
+        <Link to={`/exames?novo=1&animal_id=${animal.id}`}><TbFlask /><strong>Solicitar exame</strong></Link>
+        {can('editarVacinas') && <Link to={`/vacinas?novo=1&animal_id=${animal.id}`}><MdOutlineVaccines /><strong>Registrar vacina</strong></Link>}
+        {can('editarReceituario') && <Link to={`/receituario?novo=1&animal_id=${animal.id}`}><FiFileText /><strong>Nova prescrição</strong></Link>}
+      </div></section>}
 
       <div className="perfil-stats-row">
         <div className="stat-card">

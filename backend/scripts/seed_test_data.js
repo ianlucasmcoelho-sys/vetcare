@@ -71,7 +71,7 @@ async function seed() {
       ['Compra Medicamentos', 'Estoque', 500.00, 'saida', '2026-05-01'],
       ['Aluguel Maio', 'Aluguel/Contas', 2000.00, 'saida', '2026-05-05'],
       ['Venda Bravecto', 'Produtos', 180.00, 'entrada', '2026-05-14'],
-      ['Banho e Tosa Mel', 'Serviços', 80.00, 'entrada', '2026-04-20'],
+      ['Consulta de rotina Mel', 'Serviços', 80.00, 'entrada', '2026-04-20'],
       ['Salários Abril', 'Salários', 3500.00, 'saida', '2026-04-05']
     ];
     for (const tr of transacoes) {

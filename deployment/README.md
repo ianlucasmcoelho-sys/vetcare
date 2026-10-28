@@ -13,3 +13,7 @@ A transição de Sandbox para produção arquiva os vínculos de teste e exclui 
 Validação: 37 testes aprovados e build de produção concluído. Pix e cartão aprovados no Sandbox foram confirmados pelo usuário. Em 28/10/2026, o domínio https://vetcaresistema.com respondeu com billingVersion 2, configured true e environment production. O webhook de produção foi ativado e o webhook Sandbox do domínio foi desativado. Nenhuma cobrança real foi criada automaticamente durante a configuração; a primeira transação real ainda precisa ser validada.
 
 O diagnóstico público `/api/asaas/configuration` identifica versão e ambiente sem expor segredos ou dados de clientes. Webhook público: https://vetcaresistema.com/api/asaas/webhook. E-mail de alertas: equipevetcare@vetcaresistema.com.
+
+Notas fiscais temporariamente indisponíveis: o menu abre uma tela de Em breve e as rotas fiscais autenticadas retornam HTTP 503 com FISCAL_MODULE_COMING_SOON. Nenhuma emissão, cancelamento ou alteração fiscal é permitida. Registros históricos preservados. A reativação depende da regularização e configuração fiscal; sem data definida.
+
+Validação do bloqueio fiscal: 38 testes aprovados, build concluído, navegação conferida no navegador e HTTP 503 confirmado nas rotas fiscais locais. Esta atualização precisa ser publicada para aplicar o aviso e o bloqueio no domínio oficial.

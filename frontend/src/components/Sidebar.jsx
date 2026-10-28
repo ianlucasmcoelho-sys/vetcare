@@ -67,7 +67,7 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
       items: [
         { path: '/financeiro', label: 'Financeiro / Caixa', icon: TbReceiptTax, premium: isPlanoGratuito },
         { path: '/orcamentos', label: 'Orçamentos', icon: TbReceipt },
-        { path: '/notas-fiscais', label: 'Notas Fiscais', icon: TbFileInvoice, premium: isPlanoGratuito },
+        { path: '/notas-fiscais', label: 'Notas Fiscais', icon: TbFileInvoice },
         { path: '/estoque', label: 'Controle de Estoque', icon: TbPackage, premium: isPlanoGratuito },
         { path: '/tabela-precos', label: 'Tabela de Preços', icon: TbTags },
         { path: '/comissoes', label: 'Comissões', icon: TbReportMoney, premium: isPlanoGratuito },

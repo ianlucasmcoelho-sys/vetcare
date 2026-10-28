@@ -239,7 +239,7 @@ function AppLayout() {
           <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/templates" element={<TemplateManager />} />
           <Route path="/orcamentos" element={<Orcamentos />} />
-          <Route path="/notas-fiscais" element={isFreePlan ? <Navigate to="/planos" /> : <NotasFiscais />} />
+          <Route path="/notas-fiscais" element={<NotasFiscais />} />
 
           {/* Premium / Blocked Features for Vet Clínica */}
           <Route path="/internacao" element={isFreePlan ? <Navigate to="/planos" /> : <Internacao />} />

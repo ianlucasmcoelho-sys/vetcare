@@ -40,6 +40,7 @@ const ROUTE_MAP = {
   '/documentos': { title: 'Documentos & Atestados', category: 'Atendimento' },
   '/financeiro': { title: 'Fluxo Financeiro', category: 'Gestão' },
   '/orcamentos': { title: 'Orçamentos', category: 'Gestão' },
+  '/notas-fiscais': { title: 'Notas Fiscais', category: 'Gestão' },
   '/estoque': { title: 'Controle de Estoque', category: 'Gestão' },
   '/servicos': { title: 'Controle de Estoque', category: 'Gestão' },
   '/tabela-precos': { title: 'Tabela de Preços', category: 'Gestão' },

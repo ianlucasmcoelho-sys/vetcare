@@ -1,30 +1,16 @@
-// backend/src/routes/notaFiscalRoutes.js
 import express from 'express';
-import {
-  listarNotas,
-  obterStats,
-  obterNotaPorId,
-  emitirNota,
-  cancelarNota,
-  obterConfiguracoesFiscais,
-  atualizarConfiguracoesFiscais
-} from '../controllers/notaFiscalController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
-import { requirePremiumFeature } from '../middlewares/subscriptionMiddleware.js';
 
-const router = express.Router();
-
-router.use(authMiddleware, requirePremiumFeature);
-
-// Métricas e Parâmetros Fiscais
-router.get('/stats', obterStats);
-router.get('/configuracoes', obterConfiguracoesFiscais);
-router.put('/configuracoes', atualizarConfiguracoesFiscais);
-
-// Listagem e Emissão
-router.get('/', listarNotas);
-router.post('/', emitirNota);
-router.get('/:id', obterNotaPorId);
-router.post('/:id/cancelar', cancelarNota);
-
-export default router;
+// Keep the historical records and implementation, but expose no fiscal operation
+// until the issuer's registration, provider and fiscal configuration are ready.
+export function createFiscalRouter(authenticate = authMiddleware) {
+  const router = express.Router();
+  router.use(authenticate);
+  router.use((_req,res)=>res.status(503).json({
+    code:'FISCAL_MODULE_COMING_SOON',
+    error:'Notas fiscais em breve',
+    message:'O módulo de notas fiscais está temporariamente indisponível enquanto concluímos a regularização e a configuração fiscal.'
+  }));
+  return router;
+}
+export default createFiscalRouter();

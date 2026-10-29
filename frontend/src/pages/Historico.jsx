@@ -1,3 +1,5 @@
+import { formatDate, localDateInput } from "../utils/date";
+import { recordBelongsToPatient } from '../utils/patientRecords';
 import { loadPatientContext } from '../services/patientContext';
 import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect } from "react";
@@ -48,7 +50,7 @@ export default function Prontuarios() {
     tutor_nome: "",
     veterinario: "",
     veterinario_id: "",
-    data_visita: new Date().toISOString().split('T')[0],
+    data_visita: localDateInput(),
     peso: "",
     temperatura: "",
     proxima_visita: "",
@@ -64,17 +66,19 @@ export default function Prontuarios() {
   const carregarDados = async () => {
     try {
       setLoading(true);
-      const [prontRes, animaisRes] = await Promise.all([
+      const [prontRes, animaisRes, tutorsRes] = await Promise.all([
         apiGet("/prontuarios"),
-        apiGet("/animais")
+        apiGet("/animais"),
+        apiGet("/responsaveis")
       ]);
 
       if (prontRes.ok) setProntuarios(await prontRes.json());
-      if (animaisRes.ok) setAnimais(await animaisRes.json());
+      const tutors = tutorsRes?.ok ? await tutorsRes.json() : [];
+      if (animaisRes.ok) setAnimais((await animaisRes.json()).map(animal => ({...animal, tutor_nome: tutors.find(tutor => String(tutor.id) === String(animal.responsavel_id))?.nome || ''})));
 
       // Carregar veterinários (Admin/Recepcionista geralmente têm acesso)
       try {
-        const usersRes = await apiGet("/auth/usuarios");
+        const usersRes = await apiGet("/agendamentos/profissionais");
         if (usersRes && usersRes.ok) {
           const usersData = await usersRes.json();
           setVeterinarios(usersData.filter(u => u.perfil === 'veterinario' || u.perfil === 'admin'));
@@ -99,8 +103,8 @@ export default function Prontuarios() {
   }, [busca]);
 
   // Handlers de Seleção e Busca
-  const handlePetSelect = async (petNome) => {
-    const animal = animais.find(a => a.nome === petNome);
+  const handlePetSelect = async (patientId) => {
+    const animal = animais.find(a => String(a.id) === String(patientId));
     if (animal) {
       setForm(prev => ({ 
         ...prev, 
@@ -117,7 +121,7 @@ export default function Prontuarios() {
         }
       }
     } else {
-      setForm(prev => ({ ...prev, pet_nome: petNome, animal_id: "" }));
+      setForm(prev => ({ ...prev, pet_nome: '', tutor_nome: '', animal_id: "" }));
     }
   };
 
@@ -165,7 +169,7 @@ export default function Prontuarios() {
   const fecharModal = () => {
     setForm({
       animal_id: "", pet_nome: "", tutor_nome: "", veterinario: "", veterinario_id: "",
-      data_visita: new Date().toISOString().split('T')[0],
+      data_visita: localDateInput(),
       peso: "", temperatura: "", proxima_visita: "",
       sintomas: "", diagnostico: "", tratamento: "", prescricoes: "", observacoes: ""
     });
@@ -324,8 +328,7 @@ export default function Prontuarios() {
 
   // Agrupar animais que possuem prontuário
   const animaisComProntuario = animais.filter(a => 
-    prontuarios.some(p => p.animal_id === a.id) || 
-    prontuarios.some(p => p.pet_nome?.toLowerCase() === a.nome?.toLowerCase())
+    prontuarios.some(p => recordBelongsToPatient(p, a))
   );
 
   const listaAnimaisFiltrada = animaisComProntuario.filter(a =>
@@ -334,7 +337,7 @@ export default function Prontuarios() {
 
   // Lógica de Paginação (Geral ou por Animal)
   const dadosParaExibir = animalSelecionado 
-    ? prontuariosFiltrados.filter(p => p.animal_id === animalSelecionado.id || p.pet_nome?.toLowerCase() === animalSelecionado.nome?.toLowerCase())
+    ? prontuariosFiltrados.filter(p => recordBelongsToPatient(p, animalSelecionado))
     : listaAnimaisFiltrada;
 
   const totalPages = Math.ceil(dadosParaExibir.length / itemsPerPage);
@@ -397,7 +400,7 @@ export default function Prontuarios() {
           // LISTA DE ANIMAIS (PADRÃO DO SISTEMA)
           <div className="animais-grid">
             {itensExibidos.map(animal => (
-              <div key={animal.id} className="animal-card-item" onClick={() => setAnimalSelecionado(animal)} style={{ cursor: 'pointer' }}>
+              <div key={animal.id} className="animal-card-item" role="button" tabIndex={0} onClick={() => setAnimalSelecionado(animal)} onKeyDown={event => { if (['Enter', ' '].includes(event.key)) { event.preventDefault(); setAnimalSelecionado(animal); } }} style={{ cursor: 'pointer' }}>
                 <div className="animal-card-header">
                   <div className="animal-avatar">
                     <MdOutlinePets />
@@ -411,13 +414,13 @@ export default function Prontuarios() {
                   <div className="info-row">
                     <FiActivity size={14} />
                     <span className="info-label">Atendimentos:</span>
-                    <span className="info-value">{prontuarios.filter(p => p.animal_id === animal.id || p.pet_nome?.toLowerCase() === animal.nome?.toLowerCase()).length} registros</span>
+                    <span className="info-value">{prontuarios.filter(p => recordBelongsToPatient(p, animal)).length} registros</span>
                   </div>
                   <div className="info-row">
                     <FiCalendar size={14} />
                     <span className="info-label">Última Visita:</span>
                     <span className="info-value">
-                      {prontuarios.filter(p => p.animal_id === animal.id || p.pet_nome?.toLowerCase() === animal.nome?.toLowerCase()).sort((a,b) => new Date(b.data_visita) - new Date(a.data_visita))[0]?.data_visita || "N/A"}
+                      {formatDate(prontuarios.filter(p => recordBelongsToPatient(p, animal)).sort((a,b) => new Date(b.data_visita) - new Date(a.data_visita))[0]?.data_visita)}
                     </span>
                   </div>
                 </div>
@@ -434,7 +437,7 @@ export default function Prontuarios() {
               <div key={p.id} className="prontuario-card-item fade-in">
                 <div className="prontuario-card-header">
                   <div className="prontuario-info">
-                    <h3 className="prontuario-nome">Visita em {new Date(p.data_visita).toLocaleDateString()}</h3>
+                    <h3 className="prontuario-nome">Visita em {formatDate(p.data_visita)}</h3>
                     <div className="prontuario-tags">
                       <span className="tag-tutor"><FiUser size={12} /> Dr(a). {p.veterinario}</span>
                     </div>
@@ -513,16 +516,15 @@ export default function Prontuarios() {
                   <div className="form-grid">
                     <div className="input-group">
                       <label>NOME DO PET *</label>
-                      <input 
-                        list="pets-list"
-                        placeholder="Pesquisar ou digitar nome"
-                        value={form.pet_nome} 
+                      <select
+                        aria-label="Paciente do prontuário"
+                        value={form.animal_id || ''}
                         onChange={e => handlePetSelect(e.target.value)} 
                         required 
-                      />
-                      <datalist id="pets-list">
-                        {animais.map(a => <option key={a.id} value={a.nome} />)}
-                      </datalist>
+                      >
+                        <option value="">Selecione um paciente</option>
+                        {animais.map(a => <option key={a.id} value={a.id}>{a.nome} · {a.tutor_nome || 'Tutor não informado'} · #{a.id}</option>)}
+                      </select>
                     </div>
 
                     <div className="input-group">

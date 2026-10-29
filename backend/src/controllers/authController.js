@@ -1,4 +1,5 @@
 import { isRetiredDemoAccount } from '../services/demoAccess.js';
+import { currentSessionUser } from '../services/sessionUser.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { createHash, randomBytes } from 'node:crypto';
@@ -11,14 +12,15 @@ const googleClient = new OAuth2Client('1057629123787-gskt2kvcok51e44dqtin4jkd93k
 
 export const login = async (req, res) => {
   try {
-    const { email, senha } = req.body;
+    const { senha } = req.body;
+    const email = req.body.email.trim().toLowerCase();
     const db = await openDb();
     
     const usuario = await db.get(`
       SELECT u.*, c.nome as clinica_nome, c.email as clinica_email, c.status_assinatura, c.data_expiracao, c.plano_id, c.onboarding_concluido
       FROM usuarios u
       LEFT JOIN clinicas c ON u.clinica_id = c.id
-      WHERE u.email = ? AND u.ativo = 1
+      WHERE LOWER(u.email) = ? AND u.ativo = 1
     `, [email]);
 
     if (!usuario || isRetiredDemoAccount(usuario)) {
@@ -72,11 +74,13 @@ export const verificarToken = async (req, res) => {
     }
     const decoded = jwt.verify(token, JWT_SECRET);
     const db = await openDb();
+    const user = await currentSessionUser(db, decoded);
+    if (!user) return res.status(401).json({ error: 'Sessão revogada. Faça login novamente.' });
     const clinica = await db.get('SELECT email as clinica_email FROM clinicas WHERE id = ?', [decoded.clinica_id]);
-    if (isRetiredDemoAccount({ email: decoded.email, clinica_email: clinica?.clinica_email })) {
+    if (!clinica || isRetiredDemoAccount({ email: user.email, clinica_email: clinica?.clinica_email })) {
       return res.status(401).json({ error: 'Token inválido' });
     }
-    res.json({ valid: true, usuario: decoded });
+    res.json({ valid: true, usuario: user });
   } catch (error) {
     res.status(401).json({ error: 'Token inválido' });
   }
@@ -172,20 +176,22 @@ export const googleLogin = async (req, res) => {
 
 export const criarUsuario = async (req, res) => {
   try {
-    const { nome, email, senha, perfil } = req.body;
+    const { senha, perfil } = req.body;
+    const nome = typeof req.body.nome === 'string' ? req.body.nome.trim() : '';
+    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
     const db = await openDb();
     
-    const existe = await db.get('SELECT id FROM usuarios WHERE email = ? AND clinica_id = ?', [email, req.usuario.clinica_id]);
+    const existe = await db.get('SELECT id FROM usuarios WHERE LOWER(email) = ?', [email]);
     if (existe) {
-      return res.status(400).json({ error: 'E-mail já cadastrado nesta clínica' });
+      return res.status(400).json({ error: 'Este e-mail já possui uma conta.' });
     }
 
-    if (!nome || !email || !senha) {
+    if (!nome || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || typeof senha !== 'string') {
       return res.status(400).json({ error: 'Nome, e-mail e senha são obrigatórios' });
     }
 
-    if (senha.length < 6) {
-      return res.status(400).json({ error: 'A senha deve ter no mínimo 6 caracteres' });
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/.test(senha)) {
+      return res.status(400).json({ error: 'Use ao menos 8 caracteres, com maiúscula, minúscula, número e símbolo.' });
     }
 
     const perfisValidos = ['admin', 'veterinario', 'recepcionista'];
@@ -239,14 +245,26 @@ export const atualizarUsuario = async (req, res) => {
     
     const db = await openDb();
     
-    if (parseInt(id) === req.usuario.id && perfil !== 'admin') {
-      return res.status(403).json({ error: 'Você não pode rebaixar seu próprio perfil' });
+    const existing = await db.get('SELECT * FROM usuarios WHERE id = ? AND clinica_id = ?', [id, req.usuario.clinica_id]);
+    if (!existing) return res.status(404).json({ error: 'Usuário não encontrado.' });
+    const finalRole = perfil ?? existing.perfil;
+    const finalActive = ativo ?? existing.ativo;
+    if (!['admin', 'veterinario', 'recepcionista'].includes(finalRole) || ![0, 1, false, true].includes(finalActive)) {
+      return res.status(400).json({ error: 'Perfil ou situação do usuário inválidos.' });
     }
+    if (typeof nome !== 'string' || !nome.trim() || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      return res.status(400).json({ error: 'Informe nome e e-mail válidos.' });
+    }
+    if (Number(id) === Number(req.usuario.id) && (finalRole !== 'admin' || !finalActive)) {
+      return res.status(403).json({ error: 'Você não pode desativar ou rebaixar seu próprio acesso.' });
+    }
+    const duplicate = await db.get('SELECT id FROM usuarios WHERE LOWER(email) = ? AND id <> ?', [email.trim().toLowerCase(), id]);
+    if (duplicate) return res.status(400).json({ error: 'Este e-mail já possui uma conta.' });
     
     await db.run(
       `UPDATE usuarios SET nome = ?, email = ?, perfil = ?, ativo = ?, updated_at = CURRENT_TIMESTAMP 
        WHERE id = ? AND clinica_id = ?`,
-      [nome, email, perfil, ativo, id, req.usuario.clinica_id]
+      [nome.trim(), email.trim().toLowerCase(), finalRole, Number(finalActive), id, req.usuario.clinica_id]
     );
 
     res.json({ success: true });
@@ -330,7 +348,7 @@ export const alterarSenha = async (req, res) => {
 
     const senhaValida = await bcrypt.compare(senhaAtual, usuario.senha);
     if (!senhaValida) {
-      return res.status(401).json({ error: 'Senha atual incorreta' });
+      return res.status(400).json({ error: 'Senha atual incorreta' });
     }
 
     const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
@@ -345,33 +363,46 @@ export const alterarSenha = async (req, res) => {
 
 export const cadastroClinica = async (req, res) => {
   try {
-    const { clinica_nome, clinica_cnpj, clinica_telefone, clinica_email, admin_nome, admin_email, admin_senha } = req.body;
+    const { clinica_cnpj, clinica_telefone, admin_senha } = req.body;
+    const normalize = value => typeof value === 'string' ? value.trim() : '';
+    const clinica_nome = normalize(req.body.clinica_nome);
+    const admin_nome = normalize(req.body.admin_nome);
+    const admin_email = normalize(req.body.admin_email).toLowerCase();
+    const clinica_email = normalize(req.body.clinica_email).toLowerCase();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!clinica_nome || !admin_nome || !emailPattern.test(admin_email) || (clinica_email && !emailPattern.test(clinica_email))) {
+      return res.status(400).json({ error: 'Informe o nome da clínica, o nome do administrador e e-mails válidos.' });
+    }
     
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
-    if (!passwordRegex.test(admin_senha)) {
+    if (typeof admin_senha !== 'string' || !passwordRegex.test(admin_senha)) {
       return res.status(400).json({ error: 'Senha fraca. Deve ter no mínimo 8 caracteres, maiúscula, minúscula, número e símbolo.' });
     }
 
     const db = await openDb();
 
-    const adminExistente = await db.get('SELECT id FROM usuarios WHERE email = ?', [admin_email]);
+    const adminExistente = await db.get('SELECT id FROM usuarios WHERE LOWER(email) = ?', [admin_email]);
     if (adminExistente) {
       return res.status(400).json({ error: 'E-mail do administrador já cadastrado' });
     }
 
     const trialExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-    const clinicaResult = await db.run(
+    const senhaHash = await bcrypt.hash(admin_senha, 10);
+    const { clinicaId, userId } = await runTransaction(async transaction => {
+    const clinicaResult = await transaction.run(
       `INSERT INTO clinicas (nome, cnpj, telefone, email, status_assinatura, data_expiracao, plano_id) VALUES (?, ?, ?, ?, 'trial', ?, 'free')`,
       [clinica_nome, clinica_cnpj, clinica_telefone, clinica_email, trialExpiresAt]
     );
     const clinicaId = clinicaResult.lastID;
 
-    const senhaHash = await bcrypt.hash(admin_senha, 10);
-    const userResult = await db.run(
+    const userResult = await transaction.run(
       `INSERT INTO usuarios (clinica_id, nome, email, senha, perfil) VALUES (?, ?, ?, ?, 'admin')`,
       [clinicaId, admin_nome, admin_email, senhaHash]
     );
     const userId = userResult.lastID;
+    await transaction.run('INSERT INTO configuracoes (clinica_id, nome_clinica, telefone, email) VALUES (?, ?, ?, ?)', [clinicaId, clinica_nome, clinica_telefone || null, clinica_email || null]);
+    return { clinicaId, userId };
+    });
 
       const token = jwt.sign(
       { id: userId, email: admin_email, nome: admin_nome, perfil: 'admin', clinica_id: clinicaId },

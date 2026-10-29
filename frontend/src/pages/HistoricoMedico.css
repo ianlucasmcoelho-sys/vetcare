@@ -1,5 +1,23 @@
 /* HistoricoMedico.css - Versão Padronizada "Clean & Tech" */
 
+.prontuario-container .animais-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 18px; margin-top: 20px; }
+.prontuario-container .animal-card-item { min-width: 0; border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-card); overflow: hidden; }
+.prontuario-container .animal-card-item:hover, .prontuario-container .animal-card-item:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.prontuario-container .animal-card-header { display: flex; align-items: center; gap: 12px; padding: 20px; border-bottom: 1px solid var(--border-color); }
+.prontuario-container .animal-avatar { width: 46px; height: 46px; flex-shrink: 0; display: grid; place-items: center; font-size: 24px; border-radius: 12px; color: var(--primary-dark); background: rgba(20,184,166,.1); }
+.prontuario-container .animal-info { min-width: 0; overflow-wrap: anywhere; }
+.prontuario-container .animal-nome { margin: 0 0 5px; font-size: 17px; }
+.prontuario-container .badge-categoria { color: var(--text-muted); font-size: 12px; }
+.prontuario-container .animal-card-body { padding: 18px 20px; display: grid; gap: 12px; }
+.prontuario-container .info-row { display: flex; align-items: center; gap: 8px; font-size: 12px; flex-wrap: wrap; }
+.prontuario-container .info-row svg { color: var(--primary-dark); flex-shrink: 0; }
+.prontuario-container .info-label { color: var(--text-muted); }
+.prontuario-container .info-value { margin-left: auto; font-weight: 600; }
+.prontuario-container .animal-card-footer { padding: 14px 20px; border-top: 1px solid var(--border-color); background: var(--bg-hover); }
+.prontuario-container .search-wrapper { position: relative; display: flex; align-items: center; }
+.prontuario-container .search-wrapper .search-icon { position: absolute; left: 14px; color: var(--text-muted); }
+.prontuario-container .search-wrapper .search-input { width: 100%; box-sizing: border-box; padding: 13px 14px 13px 42px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-card); color: var(--text-primary); }
+
 .prontuario-container {
   padding: 2rem 3rem;
   background: transparent;

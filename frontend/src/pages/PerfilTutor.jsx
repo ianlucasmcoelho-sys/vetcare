@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
@@ -388,7 +389,7 @@ export default function PerfilTutor() {
                     <div className="animal-card-body">
                       {animal.microchip && <div className="animal-microchip"><FiPackage size={12} /><span>Microchip: {animal.microchip}</span></div>}
                       {animal.nascimento ? (
-                        <div className="animal-nascimento"><FiCalendar size={12} /><span>Nascimento: {animal.nascimento}</span></div>
+                        <div className="animal-nascimento"><FiCalendar size={12} /><span>Nascimento: {formatDate(animal.nascimento)}</span></div>
                       ) : animal.idade !== null && animal.idade !== undefined ? (
                         <div className="animal-nascimento"><FiCalendar size={12} /><span>Idade: {animal.idade} {animal.idade_unidade || "anos"}</span></div>
                       ) : null}
@@ -442,8 +443,8 @@ export default function PerfilTutor() {
                       </div>
                       <div className="vacina-body">
                         <div className="vacina-info"><MdOutlineVaccines size={14} /><span>{vacina.nome_vacina}</span></div>
-                        <div className="vacina-info"><FiCalendar size={14} /><span>Aplicação: {vacina.data_aplicacao}</span></div>
-                        {vacina.proxima_dose && <div className={`vacina-info ${vencida ? "warning" : ""}`}><FiAlertCircle size={14} /><span>Próxima dose: {vacina.proxima_dose}</span></div>}
+                        <div className="vacina-info"><FiCalendar size={14} /><span>Aplicação: {formatDate(vacina.data_aplicacao)}</span></div>
+                        {vacina.proxima_dose && <div className={`vacina-info ${vencida ? "warning" : ""}`}><FiAlertCircle size={14} /><span>Próxima dose: {formatDate(vacina.proxima_dose)}</span></div>}
                       </div>
                     </div>
                   );

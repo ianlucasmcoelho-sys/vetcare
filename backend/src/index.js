@@ -237,7 +237,7 @@ app.use((err, req, res, next) => {
   console.error('❌ [Erro Crítico]:', err.stack);
   const isProduction = process.env.NODE_ENV === 'production';
   const status = err.code === 'LIMIT_FILE_SIZE' ? 413 : (err.status || 500);
-  const safeError = err.code === 'LIMIT_FILE_SIZE' ? 'O arquivo deve ter no máximo 15 MB.' : (err.message || 'Erro interno do servidor');
+  const safeError = err.code === 'LIMIT_FILE_SIZE' ? 'O arquivo excede o tamanho permitido para este envio.' : (err.message || 'Erro interno do servidor');
   res.status(status).json({
     error: isProduction && status >= 500 ? 'Erro interno do servidor' : safeError,
     ...(isProduction ? {} : { stack: err.stack, path: req.path })

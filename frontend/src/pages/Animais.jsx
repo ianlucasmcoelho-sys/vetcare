@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/date";
 import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -288,7 +289,7 @@ export default function Animais() {
                         <span className="info-label">{animal.nascimento ? "Nascimento:" : "Idade:"}</span>
                         <span className="info-value">
                           {animal.nascimento
-                            ? animal.nascimento
+                            ? formatDate(animal.nascimento)
                             : animal.idade !== null && animal.idade !== undefined
                               ? `${animal.idade} ${animal.idade_unidade || "anos"}`
                               : "Não informado"}

@@ -1,3 +1,4 @@
+import { allowWrites } from '../middlewares/roleMiddleware.js';
 // backend/src/routes/receituarioRoutes.js
 import express from 'express';
 import {
@@ -16,6 +17,7 @@ import { authMiddleware } from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.use(authMiddleware);
+router.use(allowWrites('admin', 'veterinario'));
 
 router.get('/', getAllReceitas);
 router.get('/stats', getReceitasStats);

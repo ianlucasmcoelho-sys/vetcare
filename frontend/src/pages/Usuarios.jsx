@@ -4,6 +4,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from "../services/api";
 import { usePermission } from "../hooks/usePermission";
 import { useToast } from "../hooks/useToast";
 import "./Usuarios.css";
+import { PASSWORD_RULE } from '../utils/authFlow';
 
 export default function Usuarios() {
   const { can, isAdmin } = usePermission();
@@ -38,6 +39,7 @@ export default function Usuarios() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!editId && !PASSWORD_RULE.test(form.senha)) { showToast('Use ao menos 8 caracteres, com maiúscula, minúscula, número e símbolo.', 'error'); return; }
     setLoading(true);
     const url = editId ? `/auth/usuarios/${editId}` : "/auth/usuarios";
     const res = editId ? await apiPut(url, form) : await apiPost(url, form);
@@ -46,7 +48,8 @@ export default function Usuarios() {
       fecharModal();
       carregarUsuarios();
     } else {
-      showToast("Erro ao salvar", "error");
+      const error = res ? await res.json().catch(() => ({})) : {};
+      showToast(error.error || "Erro ao salvar", "error");
     }
     setLoading(false);
   };
@@ -64,7 +67,7 @@ export default function Usuarios() {
   };
 
   const abrirEdicao = (usuario) => {
-    setForm({ nome: usuario.nome, email: usuario.email, senha: "", perfil: usuario.perfil });
+    setForm({ nome: usuario.nome, email: usuario.email, perfil: usuario.perfil, ativo: usuario.ativo });
     setEditId(usuario.id);
     setShowModal(true);
   };
@@ -125,7 +128,7 @@ export default function Usuarios() {
                   <span className={`perfil-badge perfil-${user.perfil}`}>{getPerfilLabel(user.perfil)}</span>
                 </div>
                 <div className="usuario-actions">
-                  <button onClick={() => toggleAtivo(user.id, user.ativo)} className="toggle-btn"><FiPower /> {user.ativo ? "Desativar" : "Ativar"}</button>
+                  {user.id !== usuarioLogado?.id && <button onClick={() => toggleAtivo(user.id, user.ativo)} className="toggle-btn"><FiPower /> {user.ativo ? "Desativar" : "Ativar"}</button>}
                   <button onClick={() => abrirEdicao(user)} className="edit-btn"><FiEdit2 /></button>
                   {user.id !== usuarioLogado?.id && <button onClick={() => deletarUsuario(user.id)} className="delete-btn"><FiTrash2 /></button>}
                 </div>
@@ -154,8 +157,8 @@ export default function Usuarios() {
                   <input type="email" name="email" value={form.email} onChange={handleChange} required placeholder="email@exemplo.com" />
                 </div>
                 <div className="form-group">
-                  <label>{editId ? "Nova senha" : "Senha"}</label>
-                  <input type="password" name="senha" value={form.senha} onChange={handleChange} required={!editId} minLength="6" placeholder="Mínimo 6 caracteres" />
+                  {!editId && <><label>Senha</label>
+                  <input type="password" name="senha" value={form.senha} onChange={handleChange} required minLength="8" placeholder="8 caracteres, maiúscula, número e símbolo" /></>}
                 </div>
                 <div className="form-group">
                   <label>Perfil</label>

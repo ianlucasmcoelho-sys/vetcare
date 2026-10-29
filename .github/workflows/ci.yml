@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: backend/package-lock.json
 
@@ -26,6 +26,9 @@ jobs:
 
       - name: Check Backend Syntax & ESM Imports
         run: node --check backend/src/index.js
+
+      - name: Run Backend Regression Tests
+        run: node --test backend/tests/*.test.js
 
   frontend-build:
     name: Frontend Build & Typecheck
@@ -37,7 +40,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
@@ -46,3 +49,6 @@ jobs:
 
       - name: Build Frontend
         run: npm --prefix frontend run build
+
+      - name: Run Frontend Regression Tests
+        run: node --test frontend/tests/*.test.js

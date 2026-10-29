@@ -61,7 +61,7 @@ export const estoqueMovimentacaoSchema = z.object({
   body: z.object({
     produto_id: z.number().positive('Produto é obrigatório'),
     tipo: z.enum(['entrada', 'saida']),
-    quantidade: z.coerce.number().positive('Quantidade deve ser positiva'),
+    quantidade: z.coerce.number().int('Quantidade deve ser inteira').positive('Quantidade deve ser positiva'),
     motivo: z.string().optional(),
   })
 });

@@ -1,3 +1,4 @@
+import { allowWrites } from '../middlewares/roleMiddleware.js';
 // backend/src/routes/prontuarioRoutes.js
 import express from 'express';
 import {
@@ -14,6 +15,7 @@ import { authMiddleware } from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.use(authMiddleware);
+router.use(allowWrites('admin', 'veterinario'));
 
 // Rotas de prontuários
 router.get('/', getAllProntuarios);

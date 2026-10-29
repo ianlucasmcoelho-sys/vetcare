@@ -1,3 +1,4 @@
+import { allowWrites } from '../middlewares/roleMiddleware.js';
 import express from 'express';
 import {
   getAllConsultas,
@@ -12,6 +13,7 @@ import { authMiddleware } from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.use(authMiddleware);
+router.use(allowWrites('admin', 'veterinario'));
 
 // Rotas de consulta
 router.get('/', getAllConsultas);

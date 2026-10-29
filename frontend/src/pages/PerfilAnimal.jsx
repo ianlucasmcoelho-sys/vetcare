@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/date";
 import { Link } from 'react-router-dom';
 import { usePermission } from '../hooks/usePermission';
 import React, { useState, useEffect } from "react";
@@ -71,7 +72,7 @@ export default function PerfilAnimal() {
         data: p.data_visita,
         titulo: 'Consulta / Prontuário',
         subtitulo: `Vet: ${p.veterinario || "Clínica"}`,
-        conteudo: `Sintomas: ${p.sintomas} | Diagnóstico: ${p.diagnostico}`,
+        conteudo: `Sintomas: ${p.sintomas || 'Não informados'} | Diagnóstico: ${p.diagnostico || 'Não informado'}`,
         icone: <FiInfo />
       });
     });
@@ -82,7 +83,7 @@ export default function PerfilAnimal() {
         tipo: 'vacina',
         data: v.data_aplicacao,
         titulo: `Vacina: ${v.nome_vacina}`,
-        subtitulo: `Próxima Dose: ${v.proxima_dose || 'N/A'}`,
+        subtitulo: `Próxima Dose: ${formatDate(v.proxima_dose)}`,
         conteudo: 'Aplicação de imunizante.',
         icone: <MdOutlineVaccines />
       });
@@ -182,7 +183,7 @@ export default function PerfilAnimal() {
             <label>{animal.nascimento ? "Nascimento" : "Idade"}</label>
             <strong>
               {animal.nascimento
-                ? animal.nascimento
+                ? formatDate(animal.nascimento)
                 : animal.idade !== null && animal.idade !== undefined
                   ? `${animal.idade} ${animal.idade_unidade || "anos"}`
                   : "Não informada"}
@@ -202,7 +203,7 @@ export default function PerfilAnimal() {
             <div className="stat-data">
               <label style={{ color: '#ef4444' }}>Data do Óbito</label>
               <strong style={{ color: '#ef4444' }}>
-                {animal.data_obito ? new Date(animal.data_obito + "T00:00:00").toLocaleDateString() : "Não informada"}
+                {animal.data_obito ? formatDate(animal.data_obito + "T00:00:00") : "Não informada"}
               </strong>
             </div>
           </div>
@@ -233,7 +234,7 @@ export default function PerfilAnimal() {
               historicoUnificado.map(evento => (
                 <div key={evento.id} className={`timeline-item ${evento.tipo}`}>
                   <div className="timeline-date">
-                    <span>{new Date(evento.data).toLocaleDateString()}</span>
+                    <span>{formatDate(evento.data)}</span>
                   </div>
                   <div className="timeline-badge">{evento.icone}</div>
                   <div className="timeline-content">
@@ -259,7 +260,7 @@ export default function PerfilAnimal() {
               prontuarios.map(p => (
                 <div key={p.id} className="timeline-item">
                   <div className="timeline-date">
-                    <span>{new Date(p.data_visita).toLocaleDateString()}</span>
+                    <span>{formatDate(p.data_visita)}</span>
                   </div>
                   <div className="timeline-content">
                     <div className="visit-header">
@@ -288,8 +289,8 @@ export default function PerfilAnimal() {
                   <div className="vacina-icon"><MdOutlineVaccines /></div>
                   <div className="vacina-info-mini">
                     <strong>{v.nome_vacina}</strong>
-                    <span>Aplicada em: {v.data_aplicacao}</span>
-                    {v.proxima_dose && <span className="next-dose">Próxima: {v.proxima_dose}</span>}
+                    <span>Aplicada em: {formatDate(v.data_aplicacao)}</span>
+                    {v.proxima_dose && <span className="next-dose">Próxima: {formatDate(v.proxima_dose)}</span>}
                   </div>
                 </div>
               ))
@@ -312,7 +313,7 @@ export default function PerfilAnimal() {
                     </div>
                   </div>
                   <div className="exame-status-tag">{e.status}</div>
-                  <div className="exame-date">{new Date(e.data_solicitacao).toLocaleDateString()}</div>
+                  <div className="exame-date">{formatDate(e.data_solicitacao)}</div>
                   <button className="btn-view-exame"><FiDownload /></button>
                 </div>
               ))

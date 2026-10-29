@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { FiFileText, FiUpload, FiTrash2, FiEdit2, FiCheckCircle, FiX, FiEye, FiDownload } from "react-icons/fi";
 import { apiGet, apiPost, apiPut, apiDelete, api } from "../services/api";
@@ -197,7 +198,7 @@ export default function TemplateManager() {
                         <span className="badge-inactive">Inativo</span>
                       )}
                     </td>
-                    <td>{new Date(template.created_at).toLocaleDateString()}</td>
+                    <td>{formatDate(template.created_at)}</td>
                     <td className="actions">
                       <button onClick={() => visualizarTemplate(template.conteudo_html, template.conteudo_css)} className="action-btn preview" title="Visualizar">
                         <FiEye />

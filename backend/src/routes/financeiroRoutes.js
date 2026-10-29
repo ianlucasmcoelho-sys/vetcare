@@ -1,3 +1,4 @@
+import { allowWrites } from '../middlewares/roleMiddleware.js';
 // backend/src/routes/financeiroRoutes.js
 import express from 'express';
 import {
@@ -16,6 +17,7 @@ import { validate, financeiroSchema } from '../middlewares/validationMiddleware.
 const router = express.Router();
 
 router.use(authMiddleware, requirePremiumFeature);
+router.use(allowWrites('admin', 'recepcionista'));
 
 router.get('/', getAllFinanceiro);
 router.get('/resumo', getFinanceiroResumo);

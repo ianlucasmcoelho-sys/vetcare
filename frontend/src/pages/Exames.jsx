@@ -1,3 +1,4 @@
+import { formatDate, localDateInput } from "../utils/date";
 import useQuickCreate from '../hooks/useQuickCreate';
 import { loadPatientContext } from '../services/patientContext';
 import React, { useState, useEffect } from "react";
@@ -15,7 +16,7 @@ export default function Exames() {
   const [formData, setFormData] = useState({
     animal_id: "",
     tipo_exame: "",
-    data_solicitacao: new Date().toISOString().split('T')[0],
+    data_solicitacao: localDateInput(),
     laboratorio: "",
     resultado: "",
     status: "pendente"
@@ -51,7 +52,7 @@ export default function Exames() {
       }
       setShowModal(false);
       setEditingExame(null);
-      setFormData({ animal_id: "", tipo_exame: "", data_solicitacao: new Date().toISOString().split('T')[0], laboratorio: "", resultado: "", status: "pendente" });
+      setFormData({ animal_id: "", tipo_exame: "", data_solicitacao: localDateInput(), laboratorio: "", resultado: "", status: "pendente" });
       carregarDados();
     } catch (err) {
       console.error("Erro ao salvar exame:", err);
@@ -120,7 +121,7 @@ export default function Exames() {
               <div className="exame-info">
                 <h3>{exame.tipo_exame}</h3>
                 <p><strong>Pet:</strong> {exame.animal_nome}</p>
-                <p><strong>Solicitado em:</strong> {new Date(exame.data_solicitacao).toLocaleDateString()}</p>
+                <p><strong>Solicitado em:</strong> {formatDate(exame.data_solicitacao)}</p>
                 <p><strong>Laboratório:</strong> {exame.laboratorio || "Não informado"}</p>
               </div>
               <div className="exame-actions">

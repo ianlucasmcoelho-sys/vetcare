@@ -1,3 +1,4 @@
+import { localDateInput } from "../utils/date";
 import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect, useMemo } from "react";
 import {
@@ -146,7 +147,7 @@ export default function Responsaveis() {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.href = url;
-    link.setAttribute("download", `tutores_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute("download", `tutores_${localDateInput()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -160,7 +161,7 @@ export default function Responsaveis() {
       t.id, t.nome, t.cpf, t.rg, t.nascimento, t.telefone, t.celular,
       t.email, t.cep, t.endereco, t.cidade, t.estado, t.observacoes
     ]);
-    exportExcel({ fileName: `tutores_${new Date().toISOString().split("T")[0]}`, sheetName: "Tutores", columns, rows });
+    exportExcel({ fileName: `tutores_${localDateInput()}`, sheetName: "Tutores", columns, rows });
     setShowExportModal(false);
   };
 

@@ -775,6 +775,7 @@
   .perfil-container .perfil-tabs {
     width: 100%;
     justify-content: center;
+    flex-wrap: wrap;
   }
 
   .perfil-container .tab-btn span {

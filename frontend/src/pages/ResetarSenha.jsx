@@ -1,3 +1,4 @@
+import { TbPaw } from 'react-icons/tb';
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FiArrowLeft, FiCheckCircle, FiEye, FiEyeOff, FiLock, FiShield } from 'react-icons/fi';
@@ -52,7 +53,7 @@ export default function ResetarSenha() {
         <FiArrowLeft /> Voltar ao login
       </button>
       <section className="recovery-card" aria-labelledby="reset-title">
-        <div className="recovery-brand"><img src="/logo.png" alt="" /><span>Vet<span>Care</span></span></div>
+        <div className="recovery-brand"><TbPaw aria-hidden="true" /><span>Vet<span>Care</span></span></div>
         <div className="recovery-icon"><FiShield /></div>
         {!token ? (
           <div className="recovery-result">

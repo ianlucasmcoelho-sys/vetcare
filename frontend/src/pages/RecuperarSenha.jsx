@@ -1,3 +1,4 @@
+import { TbPaw } from 'react-icons/tb';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiCheckCircle, FiMail, FiShield } from 'react-icons/fi';
@@ -42,7 +43,7 @@ export default function RecuperarSenha() {
 
       <section className="recovery-card" aria-labelledby="recovery-title">
         <div className="recovery-brand">
-          <img src="/logo.png" alt="" />
+          <TbPaw aria-hidden="true" />
           <span>Vet<span>Care</span></span>
         </div>
         <div className="recovery-icon"><FiShield /></div>

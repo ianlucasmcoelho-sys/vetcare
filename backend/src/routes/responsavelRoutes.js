@@ -1,3 +1,4 @@
+import { allowWrites } from '../middlewares/roleMiddleware.js';
 // backend/src/routes/responsavelRoutes.js
 import express from 'express';
 import {
@@ -12,6 +13,7 @@ import { authMiddleware } from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.use(authMiddleware);
+router.use(allowWrites('admin', 'recepcionista'));
 
 router.get('/', getAllResponsaveis);
 router.get('/:id', getResponsavelById);

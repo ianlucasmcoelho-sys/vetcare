@@ -46,14 +46,10 @@ export default function MeuPerfil() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await apiPut(`/auth/usuarios/${usuario?.id}`, {
-        ...dadosForm,
-        perfil: usuario?.perfil,
-        ativo: 1
-      });
+      const res = await apiPut('/auth/meu-perfil', { nome: dadosForm.nome });
 
       if (res && res.ok) {
-        const novosDados = { ...usuario, ...dadosForm };
+        const novosDados = { ...usuario, nome: dadosForm.nome.trim() };
         localStorage.setItem("usuario", JSON.stringify(novosDados));
         setUsuario(novosDados);
         showToast("Dados atualizados com sucesso!", "success");
@@ -126,9 +122,10 @@ export default function MeuPerfil() {
                 type="email" 
                 name="email" 
                 value={dadosForm.email} 
-                onChange={handleDadosChange}
-                required 
+                readOnly
+                className="input-disabled"
               />
+              <small>O administrador pode alterar o e-mail na gestão de usuários.</small>
             </div>
             <div className="form-group">
               <label>Perfil de Acesso</label>
@@ -165,7 +162,7 @@ export default function MeuPerfil() {
                 value={senhaForm.novaSenha} 
                 onChange={handleSenhaChange}
                 required 
-                minLength="6"
+                minLength="8"
               />
             </div>
             <div className="form-group">

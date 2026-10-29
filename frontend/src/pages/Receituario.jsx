@@ -1,3 +1,4 @@
+import { formatDate, localDateInput } from "../utils/date";
 import { loadPatientContext } from '../services/patientContext';
 import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect } from "react";
@@ -43,7 +44,7 @@ export default function Receituario() {
   const [formData, setFormData] = useState({
     animal_id: "",
     tutor_id: "",
-    data_emissao: new Date().toISOString().split('T')[0],
+    data_emissao: localDateInput(),
     medicamentos: "",
     posologia: "",
     observacoes: "",
@@ -110,7 +111,7 @@ export default function Receituario() {
     setFormData({
       animal_id: animal ? String(animal.id) : "",
       tutor_id: tutor ? String(tutor.id) : "",
-      data_emissao: new Date().toISOString().split('T')[0],
+      data_emissao: localDateInput(),
       medicamentos: "",
       posologia: "",
       observacoes: "",
@@ -269,7 +270,7 @@ export default function Receituario() {
                           <p className="receita-tutor"><FiUser size={12} /> {tutor?.nome || "Tutor"}</p>
                         </div>
                         <div className="receita-date-badge">
-                          {new Date(r.data_emissao).toLocaleDateString()}
+                          {formatDate(r.data_emissao)}
                         </div>
                       </div>
 

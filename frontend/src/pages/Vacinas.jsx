@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/date";
 import { loadPatientContext } from '../services/patientContext';
 import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect, useMemo } from "react";
@@ -206,12 +207,12 @@ export default function Vacinas() {
                     <div className="info-row">
                       <FiCalendar className="info-icon" size={14} />
                       <span className="info-label">Aplicação:</span>
-                      <span>{v.data_aplicacao}</span>
+                      <span>{formatDate(v.data_aplicacao)}</span>
                     </div>
                     <div className="info-row">
                       <FiCalendar className="info-icon" size={14} />
                       <span className="info-label">Próxima dose:</span>
-                      <span className={vencida ? "vencida" : proxima ? "proxima" : ""}>{v.proxima_dose || "Não informada"}</span>
+                      <span className={vencida ? "vencida" : proxima ? "proxima" : ""}>{formatDate(v.proxima_dose)}</span>
                     </div>
                   </div>
                   <div className="vacina-card-footer">

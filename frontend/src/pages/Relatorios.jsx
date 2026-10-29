@@ -1,3 +1,4 @@
+import { localDateInput } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { 
   FiDollarSign, FiActivity, FiTrendingUp, FiTrendingDown, 
@@ -14,8 +15,8 @@ import "./Relatorios.css";
 export default function Relatorios() {
   const [activeTab, setActiveTab] = useState("financeiro");
   const [loading, setLoading] = useState(false);
-  const [dataInicio, setDataInicio] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
-  const [dataFim, setDataFim] = useState(new Date().toISOString().split('T')[0]);
+  const [dataInicio, setDataInicio] = useState(localDateInput(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
+  const [dataFim, setDataFim] = useState(localDateInput());
   
   const [financeiro, setFinanceiro] = useState([]);
   const [vacinas, setVacinas] = useState([]);
@@ -59,8 +60,8 @@ export default function Relatorios() {
     } else {
       inicio.setDate(fim.getDate() - dias);
     }
-    setDataInicio(inicio.toISOString().split('T')[0]);
-    setDataFim(fim.toISOString().split('T')[0]);
+    setDataInicio(localDateInput(inicio));
+    setDataFim(localDateInput(fim));
   };
 
   const exportarPDF = () => {
@@ -117,7 +118,7 @@ export default function Relatorios() {
           <button className="v-btn-primary-glow" onClick={exportarPDF}>
             <FiPrinter /> Exportar PDF
           </button>
-          <button className="btn-outline" onClick={exportarExcel}>
+          <button className="btn-secondary" onClick={exportarExcel}>
             <FiDownload /> Exportar Excel
           </button>
         </div>
@@ -149,21 +150,21 @@ export default function Relatorios() {
           <div className="m-icon"><FiTrendingUp /></div>
           <div className="m-data">
             <span className="label">Receita Total</span>
-            <span className="value">R$ {resumoFinanceiro.entradas.toFixed(2)}</span>
+            <span className="value">{Number(resumoFinanceiro.entradas).toLocaleString('pt-BR', {style:'currency',currency:'BRL'})}</span>
           </div>
         </div>
         <div className="bi-metric-card v-glass-panel reveal-up expense" style={{animationDelay: '0.2s'}}>
           <div className="m-icon"><FiTrendingDown /></div>
           <div className="m-data">
             <span className="label">Despesas</span>
-            <span className="value">R$ {resumoFinanceiro.saidas.toFixed(2)}</span>
+            <span className="value">{Number(resumoFinanceiro.saidas).toLocaleString('pt-BR', {style:'currency',currency:'BRL'})}</span>
           </div>
         </div>
         <div className="bi-metric-card v-glass-panel reveal-up profit" style={{animationDelay: '0.25s'}}>
           <div className="m-icon"><FiDollarSign /></div>
           <div className="m-data">
             <span className="label">Lucro Líquido</span>
-            <span className="value">R$ {resumoFinanceiro.saldo.toFixed(2)}</span>
+            <span className="value">{Number(resumoFinanceiro.saldo).toLocaleString('pt-BR', {style:'currency',currency:'BRL'})}</span>
           </div>
         </div>
         <div className="bi-metric-card v-glass-panel reveal-up production" style={{animationDelay: '0.3s'}}>

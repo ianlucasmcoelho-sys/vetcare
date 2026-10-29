@@ -6,7 +6,7 @@ import {
 import { MdOutlinePets } from "react-icons/md";
 import { apiGet } from "../services/api";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import "./Documentos.css";
 
 export default function Documentos() {
@@ -107,11 +107,11 @@ export default function Documentos() {
     doc.text(splitText, 20, 80);
 
     // Dados do Animal
-    doc.autoTable({
+    autoTable(doc, {
       startY: 120,
       head: [['Informações do Paciente', 'Dados do Responsável']],
       body: [
-        [`Nome: ${pet.nome}\nEspécie: ${pet.especie}\nRaça: ${pet.raca}`, `Nome: ${tutor?.nome}\nCPF: ${tutor?.cpf}\nCelular: ${tutor?.celular}`]
+        [`Nome: ${pet.nome}\nEspécie: ${pet.especie}\nRaça: ${pet.raca || 'Não informada'}`, `Nome: ${tutor?.nome || 'Não informado'}\nCPF: ${tutor?.cpf || 'Não informado'}\nCelular: ${tutor?.celular || 'Não informado'}`]
       ],
       theme: 'striped',
       headStyles: { fillColor: [20, 184, 166] } // Teal

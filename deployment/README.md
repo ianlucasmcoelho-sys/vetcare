@@ -2,6 +2,10 @@
 
 Pacote atual: `VetCare-Hostinger-Staging-20261028-completo-atual.zip`.
 
+Atualização de QA de 28/10/2026: correções de sessão e permissões na API, isolamento de prontuários de animais homônimos, datas sem deslocamento de fuso, upload e miniaturas autenticadas, geração de PDF, perfil pessoal, validações de cadastro/estoque/modelos e ajustes de responsividade e tema. CI passa a executar regressões com Node 22. Relatório completo: `docs/relatorio-qa-20261028.md`.
+
+Validação desta entrega: 44 testes automatizados aprovados, 82 verificações HTTP locais aprovadas após reteste, build de produção concluído e inspeção de telas em desktop e largura de celular. Auditoria de dependências de produção sem vulnerabilidades conhecidas reportadas. As validações anteriores abaixo são históricas. Esta entrega ainda precisa ser publicada; e-mail real, primeiro ciclo de cobrança real e persistência de anexos entre deploys continuam pendentes de homologação externa.
+
 Contém o código-fonte e o build do frontend. Não inclui dependências instaladas, credenciais, banco SQLite local, uploads de usuários, logs ou backups. As variáveis devem ser configuradas separadamente no servidor; `backend/.env.example` contém somente exemplos.
 
 Inclui o Início com avisos, Dashboard clínico, cadastro encadeado de tutor e animal, ações rápidas do paciente e agenda completa. O módulo de banho e tosa foi removido, preservando os dados históricos.

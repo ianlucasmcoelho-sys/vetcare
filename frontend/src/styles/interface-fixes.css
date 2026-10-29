@@ -130,6 +130,13 @@
   .layout .internacao-container .inline-med-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 768px) {
+  .layout .content > :is(.agenda-container, .central-arquivos-container, .comissoes-container, .configuracoes-container, .docs-container, .exames-container, .estoque-container, .financeiro-container, .prontuario-container, .orcamentos-container, .perfil-animal-container, .perfil-container, .receituario-container, .retornos-container, .precos-container, .relatorios-container, .vacinas-container, .usuarios-container, .retencao-container, .template-container) { padding: 0; min-width: 0; }
+  .layout .content .page-header { flex-direction: column; align-items: stretch; gap: 18px; }
+  .layout .content .page-header > div { min-width: 0; width: 100%; }
+  .layout .content .page-header .header-actions { justify-content: flex-start; flex-wrap: wrap; }
+  .layout .content .search-wrapper { min-width: 0; width: 100%; box-sizing: border-box; }
+  .layout .content .search-wrapper input { width: 100%; min-width: 0; box-sizing: border-box; }
+  .layout .financeiro-container .transacao-valor { margin-left: 0; box-sizing: border-box; }
   .layout .meuperfil-container .meuperfil-grid, .layout .internacao-container .vital-grid { grid-template-columns: minmax(0, 1fr); }
   .layout .internacao-container .hospital-header-fixed, .layout .internacao-container .hospital-content-scroll { padding: 1rem; }
   .layout .internacao-container .hospital-title { font-size: 1.25rem; }

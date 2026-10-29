@@ -1,4 +1,5 @@
 import { isRetiredDemoAccount } from '../services/demoAccess.js';
+import { currentSessionUser } from '../services/sessionUser.js';
 import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'vetcare_secret_key_2024';
 
@@ -19,15 +20,16 @@ export const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ error: 'Token obsoleto. Por favor, faça login novamente.' });
     }
 
-    req.usuario = decoded;
-
     const db = await openDb();
+    const user = await currentSessionUser(db, decoded);
+    if (!user) return res.status(401).json({ error: 'Sessão revogada. Faça login novamente.' });
+    req.usuario = user;
     const clinica = await db.get('SELECT email as clinica_email, status_assinatura, data_expiracao FROM clinicas WHERE id = ?', [decoded.clinica_id]);
     if (!clinica) {
       return res.status(404).json({ error: 'Clínica não encontrada.' });
     }
     // Check retired demo access before the billing bypass, including old sessions.
-    if (isRetiredDemoAccount({ email: decoded.email, clinica_email: clinica.clinica_email })) {
+    if (isRetiredDemoAccount({ email: user.email, clinica_email: clinica.clinica_email })) {
       return res.status(401).json({ error: 'Perfil de demonstração descontinuado.' });
     }
 

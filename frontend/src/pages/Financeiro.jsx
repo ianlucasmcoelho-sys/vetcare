@@ -1,3 +1,4 @@
+import { localDateInput } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { 
   FiPlus, FiSearch, FiX, FiTrendingUp, FiTrendingDown, 
@@ -23,7 +24,7 @@ export default function Financeiro() {
     categoria: "Serviços",
     valor: "",
     tipo: "entrada",
-    data: new Date().toISOString().split('T')[0],
+    data: localDateInput(),
     metodo_pagamento: "Dinheiro",
     observacoes: "",
     veterinario_id: ""
@@ -49,10 +50,10 @@ export default function Financeiro() {
 
   const carregarUsuarios = async () => {
     try {
-      const response = await apiGet("/auth/usuarios");
+      const response = await apiGet("/agendamentos/profissionais");
       if (response && response.ok) {
         const dados = await response.json();
-        setUsuarios(dados.filter(u => u.perfil === 'veterinario' && u.ativo));
+        setUsuarios(dados.filter(u => u.perfil === 'veterinario' && u.ativo !== 0));
       }
     } catch (error) {
       console.error("Erro ao carregar usuários:", error);
@@ -104,7 +105,7 @@ export default function Financeiro() {
   const resetForm = () => {
     setForm({
       descricao: "", categoria: "Serviços", valor: "", tipo: "entrada",
-      data: new Date().toISOString().split('T')[0], metodo_pagamento: "Dinheiro", observacoes: "", veterinario_id: ""
+      data: localDateInput(), metodo_pagamento: "Dinheiro", observacoes: "", veterinario_id: ""
     });
     setEditId(null);
   };

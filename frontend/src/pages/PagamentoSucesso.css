@@ -1,0 +1,10 @@
+.billing-result-page { min-height: 100dvh; display: grid; place-items: center; padding: 24px; box-sizing: border-box; background: var(--bg-primary); color: var(--text-primary); }
+.billing-result-card { width: 100%; max-width: 560px; box-sizing: border-box; text-align: center; padding: 44px 36px; border: 1px solid var(--border-color); border-radius: 24px; background: var(--bg-card); box-shadow: var(--shadow); }
+.billing-result-icon { width: 64px; height: 64px; display: grid; place-items: center; margin: 0 auto 24px; border-radius: 18px; color: var(--primary-dark); background: rgba(20,184,166,.1); font-size: 30px; }
+.billing-result-card h1 { font-size: clamp(24px, 4vw, 32px); margin: 0 0 16px; }
+.billing-result-card p { color: var(--text-muted); line-height: 1.7; }
+.billing-result-actions { display: grid; gap: 12px; margin-top: 28px; }
+.billing-result-actions a { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); color: var(--text-primary); font-weight: 600; text-decoration: none; }
+.billing-result-actions a:first-child { color: white; background: var(--primary-dark); border-color: var(--primary-dark); }
+.billing-result-actions a:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+@media(max-width:480px) { .billing-result-page { padding: 16px; } .billing-result-card { padding: 32px 20px; } }

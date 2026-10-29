@@ -1,3 +1,4 @@
+import { formatDate, localDateInput } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { 
   FiPlus, FiSearch, FiPrinter, FiEdit2, FiTrash2, 
@@ -41,7 +42,7 @@ export default function Orcamentos() {
     animal_id: "",
     tutor_nome: "",
     pet_nome: "",
-    data_emissao: new Date().toISOString().split('T')[0],
+    data_emissao: localDateInput(),
     validade: "10",
     status: "Pendente",
     observacoes: "",
@@ -212,7 +213,7 @@ export default function Orcamentos() {
   const fecharModal = () => {
     setForm({
       animal_id: "", tutor_nome: "", pet_nome: "",
-      data_emissao: new Date().toISOString().split('T')[0],
+      data_emissao: localDateInput(),
       validade: "10", status: "Pendente", observacoes: "",
       itens: []
     });
@@ -235,7 +236,7 @@ export default function Orcamentos() {
       animal_id: orc.animal_id || "",
       tutor_nome: orc.tutor_nome || "",
       pet_nome: orc.pet_nome || "",
-      data_emissao: orc.data_emissao || new Date().toISOString().split('T')[0],
+      data_emissao: orc.data_emissao || localDateInput(),
       validade: orc.validade || "10",
       status: orc.status || "Pendente",
       observacoes: orc.observacoes || "",
@@ -490,7 +491,7 @@ export default function Orcamentos() {
                           <MdOutlinePets /> {orc.pet_nome}
                         </span>
                       </td>
-                      <td>{new Date(orc.data_emissao).toLocaleDateString('pt-BR')}</td>
+                      <td>{formatDate(orc.data_emissao)}</td>
                       <td>{orc.validade} dias</td>
                       <td className="col-total">
                         R$ {parseFloat(orc.total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

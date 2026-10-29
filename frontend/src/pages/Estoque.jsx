@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { 
   FiPlus, FiSearch, FiX, FiBox, FiAlertTriangle, FiTag, 
@@ -343,7 +344,7 @@ export default function Estoque() {
                       <div className="data-row">
                         <span className="label">VENCIMENTO</span>
                         <span className={`value ${isExpirado(item.dataExpiracao) ? "text-danger" : isNearExpiration(item.dataExpiracao) ? "text-warning" : ""}`}>
-                          {new Date(item.dataExpiracao).toLocaleDateString('pt-BR')}
+                          {formatDate(item.dataExpiracao)}
                         </span>
                       </div>
                     )}
@@ -543,7 +544,7 @@ export default function Estoque() {
                     <tbody>
                       {getProductHistory(editId).map(h => (
                         <tr key={h.id}>
-                          <td>{new Date(h.created_at).toLocaleDateString('pt-BR')}</td>
+                          <td>{formatDate(h.created_at)}</td>
                           <td>
                             <span className={`move-badge ${h.tipo}`}>
                               {h.tipo === "entrada" ? <FiArrowDownLeft /> : <FiArrowUpRight />}

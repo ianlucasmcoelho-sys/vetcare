@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiSave, FiHome, FiPhone, FiMail, FiFileText, FiClock, FiCalendar, FiUser, FiInfo, FiCheckCircle, FiAlertCircle, FiStar } from "react-icons/fi";
@@ -236,7 +237,7 @@ export default function Configuracoes() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Vencimento:</span>
                   <strong style={{ color: 'var(--text-main)' }}>
-                    {new Date(assinatura.data_expiracao).toLocaleDateString('pt-BR')}
+                    {formatDate(assinatura.data_expiracao)}
                   </strong>
                 </div>
 

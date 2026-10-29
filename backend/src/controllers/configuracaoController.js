@@ -9,10 +9,11 @@ export const getConfiguracoes = async (req, res) => {
     let config = await db.get('SELECT * FROM configuracoes WHERE clinica_id = ?', [clinica_id]);
     
     if (!config) {
+      const clinic = await db.get('SELECT nome, telefone, email FROM clinicas WHERE id = ?', [clinica_id]);
       // Criar configuração padrão para a clínica
       await db.run(`
-        INSERT INTO configuracoes (clinica_id, nome_clinica) VALUES (?, 'VetCare')
-      `, [clinica_id]);
+        INSERT INTO configuracoes (clinica_id, nome_clinica, telefone, email) VALUES (?, ?, ?, ?)
+      `, [clinica_id, clinic?.nome || 'VetCare', clinic?.telefone || null, clinic?.email || null]);
       config = await db.get('SELECT * FROM configuracoes WHERE clinica_id = ?', [clinica_id]);
     }
 

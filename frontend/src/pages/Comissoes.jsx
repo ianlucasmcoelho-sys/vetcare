@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { FiPercent, FiDollarSign, FiCheckSquare, FiSave } from "react-icons/fi";
 import { apiGet, apiPost } from "../services/api";
@@ -21,14 +22,14 @@ export default function Comissoes() {
     setLoading(true);
     try {
       const [resUsers, resRegras, resComissoes] = await Promise.all([
-        apiGet("/auth/usuarios"),
+        apiGet("/agendamentos/profissionais"),
         apiGet("/comissoes/regras"),
         apiGet("/comissoes")
       ]);
 
       if (resUsers?.ok) {
         const users = await resUsers.json();
-        setUsuarios(users.filter(u => u.perfil === "veterinario" && u.ativo));
+        setUsuarios(users.filter(u => u.perfil === "veterinario" && u.ativo !== 0));
       }
       if (resRegras?.ok) {
         setRegras(await resRegras.json());
@@ -183,7 +184,7 @@ export default function Comissoes() {
                       </td>
                       <td>{c.veterinario_nome}</td>
                       <td>{c.servico_descricao}</td>
-                      <td>{new Date(c.data_venda).toLocaleDateString()}</td>
+                      <td>{formatDate(c.data_venda)}</td>
                       <td>R$ {formatarValor(c.valor_comissao)}</td>
                       <td>
                         <span className={`status-badge status-${c.status}`}>{c.status}</span>

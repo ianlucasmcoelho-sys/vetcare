@@ -76,3 +76,5 @@
   .recovery-back { top: max(0.75rem, env(safe-area-inset-top)); left: max(0.75rem, env(safe-area-inset-left)); }
   .recovery-card { border-radius: 1.15rem; }
 }
+
+.recovery-brand > svg { width: 32px; height: 32px; padding: 7px; box-sizing: content-box; color: white; background: var(--primary-dark, #0f766e); border-radius: 12px; }

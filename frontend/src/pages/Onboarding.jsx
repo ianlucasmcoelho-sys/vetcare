@@ -17,7 +17,8 @@ export default function Onboarding({ usuario }) {
   const finalizarOnboarding = async () => {
     setLoading(true);
     try {
-      await apiPost("/auth/onboarding");
+      const response = await apiPost("/auth/onboarding");
+      if (!response?.ok) throw new Error('Não foi possível concluir a apresentação. Tente novamente.');
       
       // Atualiza o local storage
       const usr = JSON.parse(localStorage.getItem("usuario"));

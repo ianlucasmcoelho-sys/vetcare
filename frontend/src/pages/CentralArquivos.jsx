@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { 
   FiFile, FiUpload, FiTrash2, FiSearch, FiX, FiCheck, 
@@ -5,10 +6,29 @@ import {
   FiFileText, FiImage, FiPlus, FiChevronRight
 } from "react-icons/fi";
 import { MdOutlinePets } from "react-icons/md";
-import { apiGet, apiPost, apiDelete, api, API_URL, BASE_URL } from "../services/api";
+import { apiGet, apiDelete, api, API_URL } from "../services/api";
+import { useToast } from "../hooks/useToast";
 import "./CentralArquivos.css";
 
+function PrivateImage({ file }) {
+  const [src, setSrc] = useState('');
+  useEffect(() => {
+    let disposed = false;
+    let objectUrl;
+    apiGet(`/anexos/download/${file.id}`).then(async response => {
+      if (!response?.ok) return;
+      const blob = await response.blob();
+      if (disposed) return;
+      objectUrl = URL.createObjectURL(blob);
+      setSrc(objectUrl);
+    }).catch(() => {});
+    return () => { disposed = true; if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [file.id]);
+  return src ? <img src={src} alt={file.nome_arquivo} /> : <FiImage aria-label="Imagem protegida" />;
+}
+
 export default function CentralArquivos() {
+  const { showToast, ToastContainer } = useToast();
   const [animais, setAnimais] = useState([]);
   const [selectedPet, setSelectedPet] = useState(null);
   const [anexos, setAnexos] = useState([]);
@@ -23,9 +43,13 @@ export default function CentralArquivos() {
 
   const carregarAnexos = async (animalId) => {
     setLoading(true);
-    const res = await apiGet(`/anexos/animal/${animalId}`);
-    if (res.ok) setAnexos(await res.json());
-    setLoading(false);
+    try {
+      setAnexos([]);
+      const res = await apiGet(`/anexos/animal/${animalId}`);
+      if (!res?.ok) throw new Error('Não foi possível carregar os arquivos.');
+      setAnexos(await res.json());
+    } catch (error) { showToast(error.message, 'error'); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => { carregarAnimais(); }, []);
@@ -54,11 +78,14 @@ export default function CentralArquivos() {
 
       if (res.ok) {
         carregarAnexos(selectedPet.id);
-      }
+        showToast('Arquivo anexado com sucesso.', 'success');
+      } else throw new Error((await res.json()).error || 'Não foi possível anexar o arquivo.');
     } catch (err) {
       console.error("Erro no upload:", err);
+      showToast(err.message || 'Não foi possível anexar o arquivo.', 'error');
     } finally {
       setUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -86,9 +113,10 @@ export default function CentralArquivos() {
         a.click();
         window.URL.revokeObjectURL(url);
         a.remove();
-      }
+      } else throw new Error('Não foi possível baixar o arquivo.');
     } catch (err) {
       console.error("Erro ao baixar arquivo:", err);
+      showToast(err.message || 'Não foi possível baixar o arquivo.', 'error');
     }
   };
 
@@ -100,6 +128,7 @@ export default function CentralArquivos() {
 
   return (
     <div className="central-arquivos-container fade-in">
+      <ToastContainer />
       <div className="page-header">
         <div className="header-info">
           <h1 className="page-title">Central de Arquivos</h1>
@@ -152,7 +181,7 @@ export default function CentralArquivos() {
                 <label className="btn-upload-premium">
                   {uploading ? <FiActivity className="spin" /> : <FiPlus />}
                   {uploading ? "Enviando..." : "Anexar Arquivo"}
-                  <input type="file" onChange={handleFileUpload} style={{ display: "none" }} disabled={uploading} />
+                  <input type="file" accept="application/pdf,image/jpeg,image/png,image/webp" onChange={handleFileUpload} style={{ display: "none" }} disabled={uploading} />
                 </label>
               </div>
 
@@ -170,7 +199,7 @@ export default function CentralArquivos() {
                     <div key={file.id} className="anexo-card-premium">
                       <div className="anexo-preview">
                         {file.tipo_mime?.includes("image") ? (
-                          <img src={`${BASE_URL}/${file.caminho}`} alt={file.nome_arquivo} />
+                          <PrivateImage file={file} />
                         ) : (
                           <div className="file-icon-large">{getFileIcon(file.tipo_mime)}</div>
                         )}
@@ -178,13 +207,13 @@ export default function CentralArquivos() {
                       <div className="anexo-info">
                         <div className="anexo-main">
                           <strong>{file.nome_arquivo}</strong>
-                          <span>{new Date(file.created_at).toLocaleDateString()}</span>
+                          <span>{formatDate(file.created_at)}</span>
                         </div>
                         <div className="anexo-actions">
-                          <button onClick={() => handleDownload(file)} className="btn-download-file">
+                          <button aria-label={`Baixar ${file.nome_arquivo}`} onClick={() => handleDownload(file)} className="btn-download-file">
                             <FiDownload />
                           </button>
-                          <button onClick={() => deletarAnexo(file.id)} className="btn-delete-file">
+                          <button aria-label={`Excluir ${file.nome_arquivo}`} onClick={() => deletarAnexo(file.id)} className="btn-delete-file">
                             <FiTrash2 />
                           </button>
                         </div>

@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { 
   FiUsers, FiUser, FiAlertCircle, FiTrendingUp, FiCheckCircle, FiClock
@@ -108,7 +109,7 @@ export default function Retencao() {
                       </td>
                       <td>
                         <span className="date-tag danger">
-                          {s.ultima_visita ? new Date(s.ultima_visita).toLocaleDateString() : "Nunca veio"}
+                          {s.ultima_visita ? formatDate(s.ultima_visita) : "Nunca veio"}
                         </span>
                       </td>
                       <td>{s.total_pets} pet(s)</td>
@@ -126,7 +127,7 @@ export default function Retencao() {
                     <div className="pet-tag"><MdOutlinePets /> {v.pet_nome}</div>
                     <div className="vacina-info">
                       <strong>{v.nome_vacina}</strong>
-                      <span>Vence em: {new Date(v.proxima_dose).toLocaleDateString()}</span>
+                      <span>Vence em: {formatDate(v.proxima_dose)}</span>
                     </div>
                     <div className="tutor-info">
                       <FiUser /> {v.tutor_nome}

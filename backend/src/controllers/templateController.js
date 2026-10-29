@@ -65,6 +65,9 @@ export const getTemplateAtivo = async (req, res) => {
 export const criarTemplate = async (req, res) => {
   try {
     const { nome, tipo, conteudo_html, conteudo_css } = req.body;
+    if (typeof nome !== 'string' || !nome.trim() || !['receituario', 'prontuario'].includes(tipo) || typeof conteudo_html !== 'string' || !conteudo_html.trim()) {
+      return res.status(400).json({ error: 'Informe nome, tipo e conteúdo HTML do modelo.' });
+    }
     const db = await openDb();
     
     const result = await db.run(`
@@ -85,6 +88,8 @@ export const atualizarTemplate = async (req, res) => {
     const { id } = req.params;
     const { nome, conteudo_html, conteudo_css, ativo } = req.body;
     const db = await openDb();
+    const existing = await db.get('SELECT tipo FROM templates WHERE id = ? AND clinica_id = ?', [id, req.usuario.clinica_id]);
+    if (!existing) return res.status(404).json({ error: 'Modelo não encontrado.' });
     
     await db.run(`
       UPDATE templates SET 
@@ -98,11 +103,10 @@ export const atualizarTemplate = async (req, res) => {
     
     // Se este template foi ativado, desativar os outros do mesmo tipo
     if (ativo === 1) {
-      const template = await db.get('SELECT tipo FROM templates WHERE id = ?', [id]);
       await db.run(`
         UPDATE templates SET ativo = 0 
         WHERE clinica_id = ? AND tipo = ? AND id != ?
-      `, [req.usuario.clinica_id, template.tipo, id]);
+      `, [req.usuario.clinica_id, existing.tipo, id]);
     }
     
     res.json({ success: true });
@@ -134,6 +138,10 @@ export const uploadTemplate = async (req, res) => {
     if (!file) {
       return res.status(400).json({ error: 'Nenhum arquivo enviado' });
     }
+    if (typeof nome !== 'string' || !nome.trim() || !['receituario', 'prontuario'].includes(tipo)) {
+      fs.unlinkSync(file.path);
+      return res.status(400).json({ error: 'Informe nome e tipo válidos para o modelo.' });
+    }
     
     const conteudo_html = fs.readFileSync(file.path, 'utf8');
     
@@ -150,6 +158,7 @@ export const uploadTemplate = async (req, res) => {
     res.json({ success: true, id: result.lastID });
   } catch (error) {
     console.error('Erro ao fazer upload:', error);
+    if (req.file?.path && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     res.status(500).json({ error: 'Erro ao fazer upload' });
   }
 };

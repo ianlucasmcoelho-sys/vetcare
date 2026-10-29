@@ -7,7 +7,7 @@ export const getAllProntuarios = async (req, res) => {
     const db = await openDb();
     const clinica_id = req.usuario.clinica_id;
     const prontuarios = await db.all(`
-      SELECT p.*, a.nome AS pet_nome, r.nome AS tutor_nome
+      SELECT p.*, COALESCE(a.nome, p.pet_nome) AS pet_nome, COALESCE(r.nome, p.tutor_nome) AS tutor_nome
       FROM prontuarios p
       LEFT JOIN animais a ON p.animal_id = a.id
       LEFT JOIN responsaveis r ON a.responsavel_id = r.id
@@ -28,7 +28,7 @@ export const getProntuarioById = async (req, res) => {
     const clinica_id = req.usuario.clinica_id;
     const db = await openDb();
     const prontuario = await db.get(`
-      SELECT p.*, a.nome AS pet_nome, r.nome AS tutor_nome
+      SELECT p.*, COALESCE(a.nome, p.pet_nome) AS pet_nome, COALESCE(r.nome, p.tutor_nome) AS tutor_nome
       FROM prontuarios p
       LEFT JOIN animais a ON p.animal_id = a.id
       LEFT JOIN responsaveis r ON a.responsavel_id = r.id
@@ -53,7 +53,7 @@ export const getProntuariosByPet = async (req, res) => {
     const clinica_id = req.usuario.clinica_id;
     const db = await openDb();
     const prontuarios = await db.all(`
-      SELECT p.*, a.nome AS pet_nome, r.nome AS tutor_nome
+      SELECT p.*, COALESCE(a.nome, p.pet_nome) AS pet_nome, COALESCE(r.nome, p.tutor_nome) AS tutor_nome
       FROM prontuarios p
       LEFT JOIN animais a ON p.animal_id = a.id
       LEFT JOIN responsaveis r ON a.responsavel_id = r.id
@@ -75,7 +75,7 @@ export const getProntuariosByAnimalId = async (req, res) => {
     const clinica_id = req.usuario.clinica_id;
     const db = await openDb();
     const prontuarios = await db.all(`
-      SELECT p.*, a.nome AS pet_nome, r.nome AS tutor_nome
+      SELECT p.*, COALESCE(a.nome, p.pet_nome) AS pet_nome, COALESCE(r.nome, p.tutor_nome) AS tutor_nome
       FROM prontuarios p
       LEFT JOIN animais a ON p.animal_id = a.id
       LEFT JOIN responsaveis r ON a.responsavel_id = r.id

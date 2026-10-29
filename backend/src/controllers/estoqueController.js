@@ -14,14 +14,14 @@ export const registrarMovimentacao = async (req, res) => {
     await runTransaction(async (db) => {
       // 1. Verificar se o produto pertence à clínica
       const produto = await db.get('SELECT id, quantidade FROM servicos WHERE id = ? AND clinica_id = ?', [produto_id, clinica_id]);
-      if (!produto) throw new Error('Produto não encontrado ou sem permissão');
+      if (!produto) throw Object.assign(new Error('Produto não encontrado ou sem permissão'), { status: 404 });
 
       // 2. Calcular novo saldo
       const novaQtde = tipo === 'entrada' 
         ? produto.quantidade + parseInt(quantidade)
         : produto.quantidade - parseInt(quantidade);
 
-      if (novaQtde < 0) throw new Error('Saldo insuficiente em estoque');
+      if (novaQtde < 0) throw Object.assign(new Error('Saldo insuficiente em estoque'), { status: 400 });
 
       // 3. Atualizar saldo no produto
       await db.run('UPDATE servicos SET quantidade = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND clinica_id = ?', [novaQtde, produto_id, clinica_id]);
@@ -35,7 +35,7 @@ export const registrarMovimentacao = async (req, res) => {
 
     res.json({ success: true, message: 'Movimentação registrada com sucesso!' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.status || 500).json({ error: error.status ? error.message : 'Não foi possível registrar a movimentação.' });
   }
 };
 

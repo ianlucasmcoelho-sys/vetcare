@@ -21,7 +21,7 @@ export const api = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
   
   const headers = {
-    'Content-Type': 'application/json',
+    ...(!(options.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
     ...options.headers,
   };
 
@@ -57,7 +57,7 @@ export const api = async (endpoint, options = {}) => {
 
     return response;
   } catch (error) {
-    console.error('Erro na requisição:', error);
+    if (error.name !== 'AbortError') console.error('Erro na requisição:', error);
     throw error;
   }
 };

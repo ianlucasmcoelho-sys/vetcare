@@ -383,11 +383,26 @@
 
 /* Responsive */
 @media (max-width: 900px) {
-  .perfil-animal-container .perfil-top-grid { grid-template-columns: 1fr; }
+  .perfil-animal-container .perfil-top-grid { grid-template-columns: minmax(0, 1fr); }
   .perfil-animal-container .perfil-stats-row { grid-template-columns: 1fr; }
   .perfil-animal-container .timeline-item { grid-template-columns: 1fr; }
   .perfil-animal-container .timeline-date { text-align: left; padding-top: 0; }
   .perfil-animal-container .timeline-content::before { display: none; }
+}
+
+@media (max-width: 600px) {
+  .perfil-animal-container { padding: 20px 12px; }
+  .perfil-animal-container .animal-main-card { padding: 20px; gap: 16px; flex-wrap: wrap; min-width: 0; }
+  .perfil-animal-container .animal-avatar-large { width: 68px; height: 68px; flex-shrink: 0; }
+  .perfil-animal-container .animal-basic-info { min-width: 0; overflow-wrap: anywhere; }
+  .perfil-animal-container .animal-basic-info .name-row { flex-wrap: wrap; gap: 8px; }
+  .perfil-animal-container .animal-basic-info h1 { font-size: 26px; }
+  .perfil-animal-container .tutor-mini-card { padding: 20px; gap: 12px; min-width: 0; overflow-wrap: anywhere; }
+  .perfil-animal-container .tutor-avatar-mini { flex-shrink: 0; }
+  .perfil-animal-container .perfil-tabs { flex-wrap: wrap; }
+  .perfil-animal-container .tab-btn { padding: 10px 12px; }
+  .perfil-animal-container .timeline-container { padding-left: 0; }
+  .perfil-animal-container .timeline-container::before { display: none; }
 }
 
 .perfil-animal-container .patient-quick-actions { margin: 24px 0; padding: 22px; border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-card); }

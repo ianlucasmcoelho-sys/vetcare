@@ -1,3 +1,4 @@
+import { allowWrites } from '../middlewares/roleMiddleware.js';
 // backend/src/routes/servicoRoutes.js
 import express from 'express';
 import {
@@ -17,6 +18,7 @@ import { requirePremiumFeature } from '../middlewares/subscriptionMiddleware.js'
 const router = express.Router();
 
 router.use(authMiddleware, requirePremiumFeature);
+router.use(allowWrites('admin', 'recepcionista'));
 
 // Rotas de serviços/estoque
 router.get('/', getAllServicos);

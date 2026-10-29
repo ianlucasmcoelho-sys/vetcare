@@ -460,7 +460,7 @@ export default function TopBar({ isDarkMode, onToggleTheme, isCollapsed }) {
             </div>
             <div className="user-info">
               <span className="user-name">{usuario?.nome || 'Veterinário(a)'}</span>
-              <span className="user-role">{usuario?.clinica_nome || 'Clínica VetCare'}</span>
+              <span className="user-role">{usuario?.clinica?.nome || usuario?.clinica_nome || 'Clínica VetCare'}</span>
             </div>
             <TbChevronDown className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`} />
           </div>

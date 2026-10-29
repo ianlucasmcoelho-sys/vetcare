@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getBillingStatus, syncBilling } from '../services/billing';
+import { FiArrowLeft, FiCreditCard } from 'react-icons/fi';
+import './PagamentoSucesso.css';
 
 export default function PagamentoSucesso() {
   const [message,setMessage]=useState('Consultando a confirmação do pagamento…');
@@ -19,5 +21,5 @@ export default function PagamentoSucesso() {
     check();
     return ()=>{cancelled=true;clearTimeout(timer);};
   },[]);
-  return <main className="v-page-container" style={{maxWidth:680,margin:'60px auto',textAlign:'center'}}><h1>Status do pagamento</h1><p role="status">{message}</p><p><Link to="/checkout">Acompanhar cobrança</Link></p><Link to="/">Voltar ao início</Link></main>;
+  return <main className="billing-result-page"><section className="billing-result-card"><span className="billing-result-icon" aria-hidden="true"><FiCreditCard /></span><h1>Status do pagamento</h1><p role="status" aria-live="polite">{message}</p><div className="billing-result-actions"><Link to="/checkout">Acompanhar cobrança</Link><Link to="/"><FiArrowLeft />Voltar ao início</Link></div></section></main>;
 }

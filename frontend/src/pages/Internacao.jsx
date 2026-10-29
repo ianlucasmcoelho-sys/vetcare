@@ -1,3 +1,4 @@
+import { formatDate, localDateInput } from "../utils/date";
 import React, { useState, useEffect } from "react";
 import { 
   FiPlus, FiCheck, FiX, FiActivity, FiClock, FiThermometer, 
@@ -21,7 +22,7 @@ export default function Internacao() {
 
   const [formData, setFormData] = useState({
     animal_id: "",
-    data_entrada: new Date().toISOString().split('T')[0],
+    data_entrada: localDateInput(),
     motivo: "",
     observacoes: ""
   });
@@ -30,7 +31,7 @@ export default function Internacao() {
     medicamento: "",
     dosagem: "",
     horario_agendado: "",
-    data_agendada: new Date().toISOString().split('T')[0]
+    data_agendada: localDateInput()
   });
 
   const [sinaisData, setSinaisData] = useState({
@@ -79,7 +80,7 @@ export default function Internacao() {
     const res = await apiPost("/internacoes", formData);
     if (res.ok) {
       setShowModal(false);
-      setFormData({ animal_id: "", data_entrada: new Date().toISOString().split('T')[0], motivo: "", observacoes: "" });
+      setFormData({ animal_id: "", data_entrada: localDateInput(), motivo: "", observacoes: "" });
       carregarDados();
     }
   };
@@ -88,7 +89,7 @@ export default function Internacao() {
     e.preventDefault();
     const res = await apiPost("/internacoes/medicacao", { ...medData, internacao_id: selectedInternacao.id });
     if (res.ok) {
-      setMedData({ medicamento: "", dosagem: "", horario_agendado: "", data_agendada: new Date().toISOString().split('T')[0] });
+      setMedData({ medicamento: "", dosagem: "", horario_agendado: "", data_agendada: localDateInput() });
       carregarDetalhes(selectedInternacao.id);
     }
   };
@@ -109,7 +110,7 @@ export default function Internacao() {
 
   const handleAlta = async (id) => {
     if (window.confirm("Confirmar alta médica deste paciente?")) {
-      await apiPut(`/internacoes/${id}`, { status: 'alta', data_saida: new Date().toISOString().split('T')[0] });
+      await apiPut(`/internacoes/${id}`, { status: 'alta', data_saida: localDateInput() });
       setShowDetailModal(false);
       carregarDados();
     }
@@ -188,7 +189,7 @@ export default function Internacao() {
                     <div className="info-item">
                       <FiClock className="info-icon" />
                       <span className="info-label">ENTRADA</span>
-                      <span className="info-value">{new Date(i.data_entrada).toLocaleDateString()}</span>
+                      <span className="info-value">{formatDate(i.data_entrada)}</span>
                     </div>
                   </div>
                 </div>
@@ -216,7 +217,7 @@ export default function Internacao() {
                 </div>
                 <div>
                   <h2 className="hospital-title">{details.animal_nome}</h2>
-                  <p className="hospital-subtitle">{details.animal_especie} • Admitido em {new Date(details.data_entrada).toLocaleDateString()}</p>
+                  <p className="hospital-subtitle">{details.animal_especie} • Admitido em {formatDate(details.data_entrada)}</p>
                 </div>
               </div>
               <div className="hospital-actions">

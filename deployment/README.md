@@ -1,6 +1,8 @@
 # Pacote de implantação VetCare
 
-Pacote atual: `VetCare-Hostinger-Staging-20261028-completo-atual.zip`.
+Pacote atual: `VetCare-Hostinger-Staging-20261029-completo-atual.zip`.
+
+Atualização de layout de 29/10/2026: selo Tutor Ativo em espaço próprio, sem sobreposição ao nome; cards de animais com alturas uniformes, rodapé na base, quebra de textos longos e título completo ao passar o cursor. Build de produção concluído. Conferência visual local dos estilos com sete cards de dados fictícios em desktop (1280 px) e celular (375 px): alturas iguais, sem vazamento horizontal ou sobreposição do selo. Esta entrega não inclui o teste de pagamento de R$ 0,10. Publicação confirmada em 29/10/2026 no domínio vetcaresistema.com: HTML e quatro arquivos JS/CSS de tutores e animais idênticos ao build local, com HTTP 200; API saudável e banco conectado.
 
 Atualização de QA de 28/10/2026: correções de sessão e permissões na API, isolamento de prontuários de animais homônimos, datas sem deslocamento de fuso, upload e miniaturas autenticadas, geração de PDF, perfil pessoal, validações de cadastro/estoque/modelos e ajustes de responsividade e tema. CI passa a executar regressões com Node 22. Relatório completo: `docs/relatorio-qa-20261028.md`.
 

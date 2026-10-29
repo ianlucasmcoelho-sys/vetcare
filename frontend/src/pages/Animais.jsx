@@ -263,7 +263,7 @@ export default function Animais() {
                         <MdOutlinePets size={28} />
                       </div>
                       <div className="animal-info">
-                        <h3 className="animal-nome">
+                        <h3 className="animal-nome" title={animal.nome}>
                           {animal.nome}
                           {animal.sexo && (
                             <span className={`animal-sexo ${animal.sexo === "M" ? "sexo-m" : "sexo-f"}`}>
@@ -271,7 +271,7 @@ export default function Animais() {
                             </span>
                           )}
                         </h3>
-                        <p className="animal-detalhes">
+                        <p className="animal-detalhes" title={[animal.especie, animal.raca].filter(Boolean).join(' • ')}>
                           {animal.especie} {animal.raca && `• ${animal.raca}`}
                         </p>
                       </div>

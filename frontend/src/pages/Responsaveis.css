@@ -66,9 +66,9 @@
 }
 
 .responsaveis-container .tutor-card-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
+  align-self: flex-end;
+  flex: 0 0 auto;
+  margin: 12px 20px 0;
   background: rgba(var(--success-rgb), 0.1);
   color: var(--success);
   font-size: 10px;
@@ -77,18 +77,20 @@
   border-radius: 6px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  z-index: 1;
 }
 
 .responsaveis-container .tutor-card-header {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 24px 20px 16px 20px;
+  padding: 12px 20px 16px;
+  min-height: 100px;
+  min-width: 0;
   border-bottom: 1px solid var(--border-light);
 }
 
 .responsaveis-container .tutor-avatar {
+  flex: 0 0 auto;
   width: 50px;
   height: 50px;
   background: rgba(var(--primary-rgb), 0.1);
@@ -104,6 +106,11 @@
   background: var(--primary);
   color: white;
   transform: scale(1.1) rotate(5deg);
+}
+
+.responsaveis-container .tutor-info {
+  min-width: 0;
+  flex: 1;
 }
 
 .responsaveis-container .tutor-info h3 {
@@ -123,6 +130,8 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
+
+.responsaveis-container .tutor-email svg { flex: 0 0 auto; }
 
 .responsaveis-container .tutor-card-body {
   padding: 20px;
@@ -282,7 +291,8 @@
   .responsaveis-container .header-actions > button { flex: 1 1 0; justify-content: center; }
   .responsaveis-container .header-actions span { display: inline; }
   .responsaveis-container .search-section { padding: 0.875rem; }
-  .responsaveis-container .tutor-card-header { gap: 0.875rem; padding: 1.125rem 1rem 0.875rem; }
+  .responsaveis-container .tutor-card-header { gap: 0.875rem; padding: 0.75rem 1rem 0.875rem; }
+  .responsaveis-container .tutor-card-badge { margin: 0.75rem 1rem 0; }
   .responsaveis-container .tutor-card-body { padding: 1rem; }
   .responsaveis-container .contact-row { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
   .responsaveis-container .tutor-card-footer { padding: 0.75rem 1rem; }
@@ -291,7 +301,6 @@
 @media (max-width: 380px) {
   .responsaveis-container .header-actions { flex-direction: column; }
   .responsaveis-container .header-actions > button { width: 100%; }
-  .responsaveis-container .tutor-card-badge { top: 0.625rem; right: 0.625rem; }
   .responsaveis-container .tutor-avatar { width: 2.75rem; height: 2.75rem; flex: 0 0 auto; }
 }
 

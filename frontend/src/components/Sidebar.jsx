@@ -39,6 +39,8 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
   const plano = usuario?.clinica?.plano_id || 'free';
   const status = usuario?.clinica?.status_assinatura || 'trial';
   const isPlanoGratuito = plano === 'free' && status !== 'vitalicio';
+  const hasPaidCompletePlan = status === 'vitalicio'
+    || (plano === 'complete' && ['active', 'ativo', 'ativa'].includes(status.toLowerCase()));
 
   const menuSections = [
     {
@@ -89,7 +91,7 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
 
   menuSections.splice(2, 0, {
     title: 'Estética & Bem-Estar',
-    items: [{ path: '/banhotosa', label: 'Banho & Tosa', icon: TbScissors, premium: isPlanoGratuito }]
+    items: [{ path: '/banhotosa', label: 'Banho & Tosa', icon: TbScissors, premium: !hasPaidCompletePlan }]
   });
   menuSections[4].items.unshift({ path: '/automacoes', label: 'Mensagens WhatsApp', icon: TbSettings });
 

@@ -88,3 +88,27 @@ export const requirePremiumFeature = async (req, res, next) => {
     res.status(500).json({ error: 'Erro ao validar acesso a recurso premium' });
   }
 };
+
+export const requirePaidCompletePlan = async (req, res, next) => {
+  try {
+    const { clinica_id } = req.usuario;
+    if (!clinica_id) return res.status(401).json({ error: 'Sessão inválida' });
+
+    const db = await openDb();
+    const clinica = await db.get('SELECT status_assinatura, plano_id FROM clinicas WHERE id = ?', [clinica_id]);
+    if (!clinica) return res.status(404).json({ error: 'Clínica não encontrada' });
+
+    const status = String(clinica.status_assinatura || '').toLowerCase();
+    const paidActive = ['active', 'ativo', 'ativa'].includes(status) && clinica.plano_id === 'complete';
+    if (status === 'vitalicio' || paidActive) return next();
+
+    return res.status(403).json({
+      error: 'Plano necessário',
+      code: 'COMPLETE_PLAN_REQUIRED',
+      message: 'Banho & Tosa está disponível para assinaturas ativas do VetCare Completo.'
+    });
+  } catch (error) {
+    console.error('Erro ao validar plano de Banho & Tosa:', error);
+    return res.status(500).json({ error: 'Erro ao validar acesso a Banho & Tosa' });
+  }
+};

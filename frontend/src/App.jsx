@@ -154,6 +154,8 @@ function AppLayout() {
   const isPeriodoTeste = ['free', 'trial'].includes(status) && dataExpiracao && new Date() <= dataExpiracao;
   const isAssinaturaValida = ['active', 'ativo', 'ativa', 'lifetime', 'vitalicio'].includes(status) || Boolean(isPeriodoTeste);
   const isFreePlan = plano === 'free' && status !== 'vitalicio';
+  const hasPaidCompletePlan = status === 'vitalicio'
+    || (plano === 'complete' && ['active', 'ativo', 'ativa'].includes(status));
 
   // Rotas Públicas (Quando NÃO está logado)
   if (!token) {
@@ -250,7 +252,7 @@ function AppLayout() {
           <Route path="/templates" element={<TemplateManager />} />
           <Route path="/orcamentos" element={<Orcamentos />} />
           <Route path="/notas-fiscais" element={<NotasFiscais />} />
-          <Route path="/banhotosa" element={isFreePlan ? <Navigate to="/planos" /> : <BanhoTosa />} />
+          <Route path="/banhotosa" element={hasPaidCompletePlan ? <BanhoTosa /> : <Navigate to="/planos" replace />} />
 
           {/* Premium / Blocked Features for Vet Clínica */}
           <Route path="/internacao" element={isFreePlan ? <Navigate to="/planos" /> : <Internacao />} />

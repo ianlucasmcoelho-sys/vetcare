@@ -10,14 +10,14 @@ import {
   deleteBanhoTosa
 } from '../controllers/banhoTosaController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
-import { requirePremiumFeature } from '../middlewares/subscriptionMiddleware.js';
+import { requirePaidCompletePlan } from '../middlewares/subscriptionMiddleware.js';
 
 const router = express.Router();
 
 // Link de acompanhamento sem login: retorna somente informações do pet e da etapa atual.
 router.get('/acompanhar/:token', getPublicBanhoTosa);
 router.use(authMiddleware);
-router.use(requirePremiumFeature);
+router.use(requirePaidCompletePlan);
 
 router.get('/', getAllBanhoTosa);
 router.post('/', createBanhoTosa);

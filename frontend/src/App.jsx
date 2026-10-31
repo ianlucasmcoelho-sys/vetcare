@@ -102,8 +102,9 @@ function AppLayout() {
   const token = localStorage.getItem("token");
 
   if (location.pathname.startsWith("/acompanhar-banho-tosa/")) {
+    const token = decodeURIComponent(location.pathname.slice("/acompanhar-banho-tosa/".length).split("/")[0]);
     return <Suspense fallback={<div role="status" className="route-loading">Carregando acompanhamento...</div>}>
-      <AcompanharBanhoTosa />
+      <AcompanharBanhoTosa token={token} />
     </Suspense>;
   }
 

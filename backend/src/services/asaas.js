@@ -11,9 +11,9 @@ export function billingConfiguration(env = process.env) {
 }
 
 // Axios errors contain secrets and card data; never log or return their configuration.
-export function createAsaasGateway(env = process.env) {
+export function createAsaasGateway(env = process.env, { timeout = 65000 } = {}) {
   const config = billingConfiguration(env);
-  const api = axios.create({ baseURL:config.url, timeout:65000, headers:{access_token:env.ASAAS_API_KEY,'Content-Type':'application/json','User-Agent':'VetCare/1.0'} });
+  const api = axios.create({ baseURL:config.url, timeout, headers:{access_token:env.ASAAS_API_KEY,'Content-Type':'application/json','User-Agent':'VetCare/1.0'} });
   const request = async (method, path, data, params) => {
     try { return (await api.request({method,url:path,data,params})).data; }
     catch (cause) {
@@ -31,6 +31,7 @@ export function createAsaasGateway(env = process.env) {
     createSubscription:data=>request('POST','/subscriptions',data),
     getSubscription:id=>request('GET',`/subscriptions/${encodeURIComponent(id)}`),
     listPayments:id=>request('GET',`/subscriptions/${encodeURIComponent(id)}/payments`,undefined,{limit:100}),
+    listCompanyPayments:(subscription,offset=0)=>request('GET','/payments',undefined,{subscription,offset,limit:100}),
     getPayment:id=>request('GET',`/payments/${encodeURIComponent(id)}`),
     getPix:id=>request('GET',`/payments/${encodeURIComponent(id)}/pixQrCode`)
   };

@@ -7,6 +7,22 @@ on:
     branches: [ main ]
 
 jobs:
+  management-check:
+    name: Independent VetCare Management
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: management
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: management/package-lock.json
+      - run: npm ci
+      - run: npm test
+
   backend-check:
     name: Backend Syntax & Health Verification
     runs-on: ubuntu-latest
@@ -29,6 +45,9 @@ jobs:
 
       - name: Run Backend Regression Tests
         run: node --test backend/tests/*.test.js
+
+      - name: Run Desktop Client Tests
+        run: node --test desktop/tests/*.test.cjs
 
   frontend-build:
     name: Frontend Build & Typecheck

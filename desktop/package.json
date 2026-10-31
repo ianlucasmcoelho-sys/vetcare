@@ -1,0 +1,54 @@
+{
+  "name": "vetcare-gestao-desktop",
+  "productName": "VetCare Gestão",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Painel empresarial VetCare para Windows",
+  "author": "VetCare",
+  "license": "UNLICENSED",
+  "main": "src/main.cjs",
+  "scripts": {
+    "prepare:ui": "node scripts/prepare-ui.cjs",
+    "start": "npm run prepare:ui && electron .",
+    "build": "npm run prepare:ui && electron-builder --win --x64",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "devDependencies": {
+    "electron": "45.2.0",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "com.vetcaresistema.gestao",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/*.cjs",
+      "ui/*",
+      "assets/icon.ico",
+      "package.json"
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "VetCare Gestão",
+      "artifactName": "VetCare-Gestao-Instalador-${version}.exe",
+      "uninstallDisplayName": "VetCare Gestão"
+    },
+    "portable": {
+      "artifactName": "VetCare-Gestao-Portatil-${version}.exe"
+    }
+  }
+}

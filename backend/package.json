@@ -7,7 +7,8 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "provision:lifetime-admin": "node scripts/provisionLifetimeAdmin.js"
+    "provision:lifetime-admin": "node scripts/provisionLifetimeAdmin.js",
+    "provision:company-owner": "node scripts/provisionCompanyOwner.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

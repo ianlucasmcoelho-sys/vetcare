@@ -1,6 +1,7 @@
 import pg from 'pg';
 import path from 'path';
 import { migrateSandboxBilling } from './services/billingEnvironment.js';
+import { initCompanyAuth } from './services/companyAuth.js';
 
 let pgPoolInstance = null;
 let sqliteDbPromise = null;
@@ -57,8 +58,9 @@ function convertPlaceholders(sql) {
   return converted;
 }
 
-function createPostgresAdapter(client) {
+export function createPostgresAdapter(client) {
   return {
+    dialect: 'postgres',
     exec: (sql) => client.query(convertSqliteToPostgres(sql)),
     run: async (sql, params = []) => {
       const normalizedSql = sql.trim().replace(/;+\s*$/, '');
@@ -711,5 +713,6 @@ export async function initDb() {
     CREATE INDEX IF NOT EXISTS idx_notas_fiscais_data ON notas_fiscais(data_emissao);
   `);
 
+  await initCompanyAuth(db);
   console.log(`✅ Banco de dados ${process.env.DATABASE_URL ? 'PostgreSQL' : 'SQLite'} sincronizado!`);
 }

@@ -36,6 +36,8 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import comissoesRoutes from './routes/comissoesRoutes.js';
 import asaasRoutes from './routes/asaasRoutes.js';
+import companyRoutes from './routes/companyRoutes.js';
+import companyDesktopRoutes from './routes/companyDesktopRoutes.js';
 import notaFiscalRoutes from './routes/notaFiscalRoutes.js';
 import { handleStripeWebhook } from './controllers/stripeWebhook.js';
 
@@ -157,6 +159,8 @@ app.use('/api/pagamento', paymentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/comissoes', comissoesRoutes);
 app.use('/api/asaas', asaasRoutes);
+app.use('/api/company/desktop', companyDesktopRoutes);
+app.use('/api/company', companyRoutes);
 app.use('/api/notas-fiscais', notaFiscalRoutes);
 
 // Servir arquivos estáticos (Uploads com Autenticação)

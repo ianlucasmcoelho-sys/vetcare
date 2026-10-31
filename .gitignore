@@ -39,6 +39,8 @@ backend/uploads/
 backend/.env
 frontend/.env
 backups/
+desktop/ui/
+desktop/release/
 
 # auth tokens
 backend/.wwebjs_auth/

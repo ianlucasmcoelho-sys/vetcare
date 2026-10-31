@@ -91,7 +91,7 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
     title: 'Estética & Bem-Estar',
     items: [{ path: '/banhotosa', label: 'Banho & Tosa', icon: TbScissors, premium: isPlanoGratuito }]
   });
-  menuSections[4].items.unshift({ path: '/automacoes', label: 'Automações de WhatsApp', icon: TbSettings });
+  menuSections[4].items.unshift({ path: '/automacoes', label: 'Mensagens WhatsApp', icon: TbSettings });
 
   const handleLinkClick = () => {
     if (onLinkClick) onLinkClick();

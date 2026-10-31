@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FiPlus, FiX, FiClock, FiScissors, FiEdit2, FiTrash2, FiCopy, FiChevronRight, FiCalendar, FiArchive, FiRotateCcw } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 import { apiGet, apiPost, apiPut, apiPatch, apiDelete } from '../services/api';
+import { criarLinkWhatsAppWeb } from '../utils/whatsapp';
 import './BanhoTosa.css';
 
 const etapas = ['Agendado', 'Chegou', 'Banho', 'Tosa', 'Secagem', 'Finalizado', 'Indo até você'];
@@ -63,7 +64,7 @@ export default function BanhoTosa() {
       const response = editId ? await apiPut(`/banhotosa/${editId}`, form) : await apiPost('/banhotosa', form);
       if (response?.ok) { setShowModal(false); setForm(formVazio()); await carregarDados(); }
       else if (response) { const error = await response.json(); window.alert(error.error || 'Não foi possível salvar o agendamento.'); }
-    } catch { window.alert('Não foi possível conectar ao servidor.'); }
+    } catch (error) { popup?.close(); window.alert(error.message || 'Could not contact the server.'); }
     finally { setLoading(false); }
   };
 
@@ -90,7 +91,7 @@ export default function BanhoTosa() {
         return;
       }
       setRegistros((itens) => itens.map((item) => item.id === registro.id ? { ...item, arquivado: arquivado ? 1 : 0 } : item));
-    } catch { window.alert('Não foi possível conectar ao servidor.'); }
+    } catch (error) { popup?.close(); window.alert(error.message || 'Could not contact the server.'); }
   };
   const compartilhar = async (registro) => {
     const url = `${window.location.origin}/acompanhar-banho-tosa/${registro.token_acompanhamento}`;
@@ -98,13 +99,19 @@ export default function BanhoTosa() {
     catch { window.prompt('Copie o link para compartilhar com o tutor:', url); }
   };
   const enviarLinkWhatsApp = async (registro) => {
+    const popup = window.open('about:blank', '_blank');
     setSendingId(registro.id);
     try {
       const response = await apiPost(`/banhotosa/${registro.id}/enviar-link`, {});
       const result = response ? await response.json() : {};
-      if (response?.ok) window.alert(result.message || 'Link enviado pelo WhatsApp.');
-      else window.alert(result.error || 'Não foi possível enviar a mensagem.');
-    } catch { window.alert('Não foi possível conectar ao servidor.'); }
+      if (response?.ok) {
+        const url = criarLinkWhatsAppWeb(result.telefone, result.mensagem);
+        if (!url) throw new Error('O tutor não possui telefone cadastrado.');
+        if (popup) popup.location.href = url;
+        else window.location.href = url;
+      }
+      else { popup?.close(); window.alert(result.error || 'Could not prepare the message.'); }
+    } catch (error) { popup?.close(); window.alert(error.message || 'Could not contact the server.'); }
     finally { setSendingId(null); }
   };
   const renderCard = (item, arquivado = false) => {
@@ -149,7 +156,7 @@ export default function BanhoTosa() {
         <fieldset><legend>Serviços</legend><div className="banho-service-options">{servicosDisponiveis.map((servico) => <label key={servico}><input type="checkbox" checked={form.servicos.includes(servico)} onChange={(e) => setForm({ ...form, servicos: e.target.checked ? [...form.servicos, servico] : form.servicos.filter((item) => item !== servico) })} />{servico}</label>)}</div></fieldset>
         <label className="banho-checkbox"><input type="checkbox" checked={form.pacote_mensal} onChange={(e) => setForm({ ...form, pacote_mensal: e.target.checked })} /> Faz parte de pacote mensal</label>
         <label>Observações<textarea rows="3" placeholder="Preferências, alergias ou instruções especiais" value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} /></label>
-        <footer><p>O aviso com o link será enviado quando o pet chegar, se o WhatsApp estiver conectado.</p><button type="button" className="banho-quiet" onClick={() => setShowModal(false)}>Cancelar</button><button type="submit" className="banho-primary" disabled={loading}>{loading ? 'Salvando…' : editId ? 'Salvar alterações' : 'Agendar serviço'}</button></footer>
+        <footer><p>Use Enviar WhatsApp no cart&#227;o para abrir a mensagem com o link de acompanhamento.</p><button type="button" className="banho-quiet" onClick={() => setShowModal(false)}>Cancelar</button><button type="submit" className="banho-primary" disabled={loading}>{loading ? 'Salvando…' : editId ? 'Salvar alterações' : 'Agendar serviço'}</button></footer>
       </form>
     </section></div>}
   </main>;

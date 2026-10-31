@@ -4,7 +4,7 @@ Este projeto pode ser publicado atrás de Nginx com o frontend estático e o bac
 
 ## Requisitos
 
-- Node.js 22.12.0 ou superior e npm. O Puppeteer usado pela integração de WhatsApp exige esse mínimo.
+- Node.js 22.12.0 ou superior e npm.
 - PostgreSQL gerenciado com backups automáticos habilitados e restauração testada.
 - Domínio com HTTPS. Configure o certificado antes de habilitar o servidor TLS no Nginx.
 - SMTP autenticado para recuperação de senha.
@@ -37,7 +37,6 @@ O plano Web/Cloud executa a aplicação Node.js e pode receber um domínio tempo
 
 O backend serve o frontend gerado pelo Vite quando `frontend/dist` está presente. Os anexos, entretanto, ficam no disco local do app; como cada deploy cria uma nova versão do app, use somente anexos descartáveis no teste. Antes da operação real, configure armazenamento persistente externo para os arquivos e verifique a política de retenção do provedor.
 
-O Web App gerenciado da Hostinger não oferece WebSockets de entrada nem processos persistentes de worker. A sessão do WhatsApp Web do VetCare depende de um navegador e conexão em execução contínua; trate essa integração como indisponível para validação nesse plano e faça o teste completo dela em VPS/ambiente compatível. O teste na Hostinger serve para interface, API, login e banco de staging.
 
 ## Build e publicação
 

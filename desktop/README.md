@@ -9,7 +9,7 @@ Aplicativo independente para os sócios do VetCare. Não exige segundo site, sub
 
 Destino: Windows 10/11 de 64 bits. O runtime já acompanha o executável; não é preciso instalar Node.js. As versões ainda não possuem assinatura digital comercial. Atualizações são manuais: distribuir um novo instalador/portátil após gerar e verificar a versão. Não há download ou execução automática de atualizações.
 
-**O executável já pode abrir, mas o uso dos dados reais depende da publicação da API e do provisionamento das contas empresariais abaixo.** A conta de demonstração da prévia web não é uma conta válida do aplicativo. Não foram criadas senhas reais nesta entrega.
+**A API e as duas contas empresariais foram verificadas em produção em 31/10/2026**, com login, validação de sessão e logout aprovados. Downloads, e-mails de login e instruções estão em [ACESSO.md](ACESSO.md). Senhas não são publicadas no repositório nem na Release. A conta de demonstração da prévia web não é uma conta válida do aplicativo.
 
 ## Como funciona
 
@@ -60,4 +60,4 @@ O build prepara `ui/` a partir de `management/public/` e gera os executáveis em
 
 Para desenvolvimento, `npm start`. Apenas quando não empacotado, `VETCARE_DESKTOP_DEV_ORIGIN` aceita um servidor HTTP em loopback para testes. O executável empacotado ignora essa variável e mantém o destino de produção fixo.
 
-Testes em `desktop/tests/` cobrem restrição de destino/operações, sigilo do token na ponte, consultas, logout e mensagens de falha. Testes do backend em `backend/tests/companyDesktop.test.js` cobrem contas próprias, senhas, revogação e recusa de sessões de clínicas. A publicação e o primeiro login real continuam pendentes de ativação no servidor.
+Testes em `desktop/tests/` cobrem restrição de destino/operações, sigilo do token na ponte, consultas, logout e mensagens de falha. Testes do backend em `backend/tests/companyDesktop.test.js` cobrem contas próprias, senhas, revogação e recusa de sessões de clínicas. A suíte completa conta com 74 testes aprovados. O backend publicado foi conferido com `authVersion: 2` e as duas contas empresariais autenticaram com sucesso em 31/10/2026.

@@ -94,9 +94,13 @@ export default function BanhoTosa() {
     } catch (error) { popup?.close(); window.alert(error.message || 'Could not contact the server.'); }
   };
   const compartilhar = async (registro) => {
-    const url = `${window.location.origin}/acompanhar-banho-tosa/${registro.token_acompanhamento}`;
-    try { await navigator.clipboard.writeText(url); window.alert('Link de acompanhamento copiado.'); }
-    catch { window.prompt('Copie o link para compartilhar com o tutor:', url); }
+    try {
+      const response = await apiPost(`/banhotosa/${registro.id}/enviar-link`, {});
+      const result = response ? await response.json() : {};
+      if (!response?.ok || !result.link) throw new Error(result.error || 'NÃ£o foi possÃ­vel gerar o link de acompanhamento.');
+      try { await navigator.clipboard.writeText(result.link); window.alert('Link de acompanhamento copiado.'); }
+      catch { window.prompt('Copie o link para compartilhar com o tutor:', result.link); }
+    } catch (error) { window.alert(error.message || 'NÃ£o foi possÃ­vel gerar o link de acompanhamento.'); }
   };
   const enviarLinkWhatsApp = async (registro) => {
     const popup = window.open('about:blank', '_blank');

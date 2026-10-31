@@ -9,9 +9,11 @@ const publicUrl = (req, token) => {
 };
 
 const mensagemAcompanhamento = (tutor, pet, link) => [
-  `Ol\u00e1, ${tutor || 'tutor(a)'}!`,
+  `Ol\u00e1, ${tutor || 'tutor(a)'}! \uD83D\uDC3E`,
   '',
-  `Acompanhe o atendimento de banho e tosa de ${pet} pelo link:`,
+  `${pet} chegou ao nosso espa\u00e7o de banho e tosa. J\u00e1 come\u00e7amos o atendimento com todo o carinho!`,
+  '',
+  'Acompanhe cada etapa por este link:',
   link
 ].join('\n');
 

@@ -112,25 +112,71 @@ export const createInternacao = async (req, res) => {
 // Agendar medicação
 export const agendarMedicacao = async (req, res) => {
   try {
-    const { internacao_id, medicamento, dosagem, horario_agendado, data_agendada } = req.body;
+    const { internacao_id, medicamento, dosagem, horario_agendado } = req.body;
+    const dataInicio = req.body.data_inicio || req.body.data_agendada;
+    const dataFim = req.body.data_fim || dataInicio;
     const clinica_id = req.usuario.clinica_id;
+    if (!internacao_id || !medicamento?.trim() || !horario_agendado || !dataInicio || !dataFim) {
+      return res.status(400).json({ error: 'Informe medicamento, horário e período.' });
+    }
+    const inicioMs = Date.parse(`${dataInicio}T00:00:00.000Z`);
+    const fimMs = Date.parse(`${dataFim}T00:00:00.000Z`);
+    const dataValida = (data, timestamp) => /^\d{4}-\d{2}-\d{2}$/.test(data)
+      && Number.isFinite(timestamp)
+      && new Date(timestamp).toISOString().slice(0, 10) === data;
+    if (!dataValida(dataInicio, inicioMs) || !dataValida(dataFim, fimMs) || fimMs < inicioMs) {
+      return res.status(400).json({ error: 'Informe um período de datas válido.' });
+    }
+    const quantidadeDias = Math.floor((fimMs - inicioMs) / 86400000) + 1;
+    if (quantidadeDias > 90) {
+      return res.status(400).json({ error: 'O período de medicação pode ter no máximo 90 dias.' });
+    }
     const db = await openDb();
 
     const internacao = await db.get('SELECT id FROM internacoes WHERE id = ? AND clinica_id = ?', [internacao_id, clinica_id]);
     if (!internacao) return res.status(404).json({ error: 'Internação não encontrada.' });
-    
-    await db.run(`
-      INSERT INTO internacao_medicacoes (internacao_id, medicamento, dosagem, horario_agendado, data_agendada)
-      VALUES (?, ?, ?, ?, ?)
-    `, [internacao_id, medicamento, dosagem, horario_agendado, data_agendada]);
 
-    res.json({ success: true });
+    await runTransaction(async (tx) => {
+      for (let dia = 0; dia < quantidadeDias; dia += 1) {
+        const dataAgendada = new Date(inicioMs + dia * 86400000).toISOString().slice(0, 10);
+        await tx.run(`
+          INSERT INTO internacao_medicacoes (internacao_id, medicamento, dosagem, horario_agendado, data_agendada)
+          VALUES (?, ?, ?, ?, ?)
+        `, [internacao_id, medicamento.trim(), dosagem || null, horario_agendado, dataAgendada]);
+      }
+    });
+
+    res.status(201).json({ success: true, dias_agendados: quantidadeDias });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao agendar medicação' });
   }
 };
 
-// Registrar aplicação de medicação
+// Corrigir uma dose sem alterar seu status ou trilha de aplicação.
+export const editarMedicacao = async (req, res) => {
+  try {
+    const { medicamento, dosagem, horario_agendado } = req.body;
+    const dataAgendada = req.body.data_agendada || req.body.data_inicio;
+    const timestamp = Date.parse(`${dataAgendada}T00:00:00.000Z`);
+    const clinica_id = req.usuario.clinica_id;
+    if (!medicamento?.trim() || !horario_agendado || !/^\d{4}-\d{2}-\d{2}$/.test(dataAgendada || '')
+      || !Number.isFinite(timestamp) || new Date(timestamp).toISOString().slice(0, 10) !== dataAgendada) {
+      return res.status(400).json({ error: 'Informe medicamento, dose, horário e uma data válida.' });
+    }
+    const db = await openDb();
+    const result = await db.run(`
+      UPDATE internacao_medicacoes
+      SET medicamento = ?, dosagem = ?, horario_agendado = ?, data_agendada = ?
+      WHERE id = ? AND internacao_id IN (SELECT id FROM internacoes WHERE clinica_id = ?)
+    `, [medicamento.trim(), dosagem || null, horario_agendado, dataAgendada, req.params.id, clinica_id]);
+    if (!result.changes) return res.status(404).json({ error: 'Medicação não encontrada.' });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Erro ao corrigir medicação da internação:', error);
+    res.status(500).json({ error: 'Não foi possível corrigir a medicação.' });
+  }
+};
+
 export const aplicarMedicacao = async (req, res) => {
   try {
     const { id } = req.params;
@@ -157,6 +203,11 @@ export const registrarSinaisVitais = async (req, res) => {
     const { internacao_id, temperatura, frequencia_cardiaca, frequencia_respiratoria, peso, observacao } = req.body;
     const clinica_id = req.usuario.clinica_id;
     const usuario_id = req.usuario.id;
+    const campos = [temperatura, frequencia_cardiaca, frequencia_respiratoria, peso];
+    const valores = campos.map((valor) => valor === '' || valor === null || valor === undefined ? null : Number(valor));
+    if (valores.some((valor) => valor !== null && !Number.isFinite(valor)) || (valores.every((valor) => valor === null) && !observacao?.trim())) {
+      return res.status(400).json({ error: 'Informe ao menos um sinal vital ou uma observação clínica válida.' });
+    }
     const db = await openDb();
 
     const internacao = await db.get('SELECT id FROM internacoes WHERE id = ? AND clinica_id = ?', [internacao_id, clinica_id]);
@@ -166,11 +217,35 @@ export const registrarSinaisVitais = async (req, res) => {
       INSERT INTO internacao_sinais_vitais 
       (internacao_id, temperatura, frequencia_cardiaca, frequencia_respiratoria, peso, observacao, usuario_id)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [internacao_id, temperatura, frequencia_cardiaca, frequencia_respiratoria, peso, observacao, usuario_id]);
+    `, [internacao_id, ...valores, observacao?.trim() || null, usuario_id]);
 
-    res.json({ success: true });
+    res.status(201).json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao registrar sinais vitais' });
+  }
+};
+
+// Corrigir medições mantendo o horário original do registro clínico.
+export const editarSinaisVitais = async (req, res) => {
+  try {
+    const { temperatura, frequencia_cardiaca, frequencia_respiratoria, peso, observacao } = req.body;
+    const clinica_id = req.usuario.clinica_id;
+    const campos = [temperatura, frequencia_cardiaca, frequencia_respiratoria, peso];
+    const valores = campos.map((valor) => valor === '' || valor === null || valor === undefined ? null : Number(valor));
+    if (valores.some((valor) => valor !== null && !Number.isFinite(valor)) || (valores.every((valor) => valor === null) && !observacao?.trim())) {
+      return res.status(400).json({ error: 'Informe ao menos um sinal vital ou uma observação clínica válida.' });
+    }
+    const db = await openDb();
+    const result = await db.run(`
+      UPDATE internacao_sinais_vitais
+      SET temperatura = ?, frequencia_cardiaca = ?, frequencia_respiratoria = ?, peso = ?, observacao = ?
+      WHERE id = ? AND internacao_id IN (SELECT id FROM internacoes WHERE clinica_id = ?)
+    `, [...valores, observacao?.trim() || null, req.params.id, clinica_id]);
+    if (!result.changes) return res.status(404).json({ error: 'Registro de sinais vitais não encontrado.' });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Erro ao corrigir sinais vitais da internação:', error);
+    res.status(500).json({ error: 'Não foi possível corrigir os sinais vitais.' });
   }
 };
 

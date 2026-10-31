@@ -38,6 +38,9 @@ const Checkout = lazyPage("Checkout");
 const PagamentoSucesso = lazyPage("PagamentoSucesso");
 const Onboarding = lazyPage("Onboarding");
 const Comissoes = lazyPage("Comissoes");
+const BanhoTosa = lazyPage("BanhoTosa");
+const AcompanharBanhoTosa = lazyPage("AcompanharBanhoTosa");
+const Automacoes = lazyPage("Automacoes");
 const Assinatura = lazyPage("Assinatura");
 const NotasFiscais = lazyPage("NotasFiscais");
 import "./App.css";
@@ -97,6 +100,12 @@ function AppLayout() {
   });
   const location = useLocation();
   const token = localStorage.getItem("token");
+
+  if (location.pathname.startsWith("/acompanhar-banho-tosa/")) {
+    return <Suspense fallback={<div role="status" className="route-loading">Carregando acompanhamento...</div>}>
+      <AcompanharBanhoTosa />
+    </Suspense>;
+  }
 
   const toggleMobileMenu = () => setMobileMenuOpen((open) => !open);
 
@@ -240,6 +249,7 @@ function AppLayout() {
           <Route path="/templates" element={<TemplateManager />} />
           <Route path="/orcamentos" element={<Orcamentos />} />
           <Route path="/notas-fiscais" element={<NotasFiscais />} />
+          <Route path="/banhotosa" element={isFreePlan ? <Navigate to="/planos" /> : <BanhoTosa />} />
 
           {/* Premium / Blocked Features for Vet Clínica */}
           <Route path="/internacao" element={isFreePlan ? <Navigate to="/planos" /> : <Internacao />} />
@@ -248,7 +258,7 @@ function AppLayout() {
           <Route path="/servicos" element={isFreePlan ? <Navigate to="/planos" /> : <Estoque />} />
           <Route path="/comissoes" element={isFreePlan ? <Navigate to="/planos" /> : <Comissoes />} />
           <Route path="/crm" element={isFreePlan ? <Navigate to="/planos" /> : <Retencao />} />
-          <Route path="/automacoes" element={<Navigate to="/" replace />} />
+          <Route path="/automacoes" element={<Automacoes />} />
           <Route path="/relatorios" element={isFreePlan ? <Navigate to="/planos" /> : <Relatorios />} />
           
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -36,6 +36,9 @@ const loaders = {
   PagamentoSucesso: () => import("../pages/PagamentoSucesso.jsx"),
   Onboarding: () => import("../pages/Onboarding.jsx"),
   Comissoes: () => import("../pages/Comissoes.jsx"),
+  BanhoTosa: () => import("../pages/BanhoTosa.jsx"),
+  AcompanharBanhoTosa: () => import("../pages/AcompanharBanhoTosa.jsx"),
+  Automacoes: () => import("../pages/Automacoes.jsx"),
   Assinatura: () => import("../pages/Assinatura.jsx"),
   NotasFiscais: () => import("../pages/NotasFiscais.jsx"),
 };

@@ -1,5 +1,6 @@
 import pg from 'pg';
 import path from 'path';
+import { randomBytes } from 'node:crypto';
 import { migrateSandboxBilling } from './services/billingEnvironment.js';
 import { initCompanyAuth } from './services/companyAuth.js';
 
@@ -587,6 +588,24 @@ export async function initDb() {
       FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     );
 
+    CREATE TABLE IF NOT EXISTS banho_tosa (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clinica_id INTEGER NOT NULL,
+      animal_id INTEGER NOT NULL,
+      data TEXT NOT NULL,
+      horario TEXT NOT NULL,
+      pacote_mensal INTEGER DEFAULT 0,
+      status TEXT DEFAULT 'Agendado',
+      observacoes TEXT,
+      token_acompanhamento TEXT,
+      servicos TEXT,
+      chegada_notificada INTEGER DEFAULT 0,
+      arquivado INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (clinica_id) REFERENCES clinicas(id),
+      FOREIGN KEY (animal_id) REFERENCES animais(id) ON DELETE CASCADE
+    );
 
     CREATE TABLE IF NOT EXISTS configuracoes_whatsapp (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -667,6 +686,10 @@ export async function initDb() {
     `ALTER TABLE clinicas ADD COLUMN asaas_subscription_id TEXT`,
     `ALTER TABLE clinicas ADD COLUMN asaas_environment TEXT NOT NULL DEFAULT 'sandbox'`,
     `ALTER TABLE billing_payments ADD COLUMN environment TEXT NOT NULL DEFAULT 'sandbox'`,
+    'ALTER TABLE banho_tosa ADD COLUMN token_acompanhamento TEXT',
+    'ALTER TABLE banho_tosa ADD COLUMN servicos TEXT',
+    'ALTER TABLE banho_tosa ADD COLUMN chegada_notificada INTEGER DEFAULT 0',
+    'ALTER TABLE banho_tosa ADD COLUMN arquivado INTEGER DEFAULT 0',
     'ALTER TABLE animais ADD COLUMN obito INTEGER DEFAULT 0',
     'ALTER TABLE animais ADD COLUMN data_obito TEXT',
     'ALTER TABLE servicos ADD COLUMN codigoBarras TEXT',
@@ -680,6 +703,14 @@ export async function initDb() {
       if (!duplicateColumn) throw error;
     }
   }
+
+  const registrosSemTokenBanho = await db.all('SELECT id FROM banho_tosa WHERE token_acompanhamento IS NULL');
+  for (const registro of registrosSemTokenBanho) {
+    await db.run('UPDATE banho_tosa SET token_acompanhamento = ? WHERE id = ?', [randomBytes(24).toString('hex'), registro.id]);
+  }
+  await db.run("UPDATE banho_tosa SET status = 'Agendado' WHERE status = 'Aguardando'");
+  await db.run("UPDATE banho_tosa SET status = 'Banho' WHERE status = 'No Banho'");
+  await db.run("UPDATE banho_tosa SET chegada_notificada = 1 WHERE status NOT IN ('Agendado', 'Aguardando') AND chegada_notificada = 0");
 
   // Reset tokens store epoch milliseconds, which exceed PostgreSQL INTEGER capacity.
   if (process.env.DATABASE_URL) {
@@ -709,6 +740,7 @@ export async function initDb() {
     CREATE INDEX IF NOT EXISTS idx_prontuarios_clinica ON prontuarios(clinica_id);
     CREATE INDEX IF NOT EXISTS idx_financeiro_clinica ON financeiro(clinica_id);
     CREATE INDEX IF NOT EXISTS idx_vacinas_clinica ON vacinas(clinica_id);
+    CREATE INDEX IF NOT EXISTS idx_banhotosa_clinica ON banho_tosa(clinica_id);
     CREATE INDEX IF NOT EXISTS idx_notas_fiscais_clinica ON notas_fiscais(clinica_id);
     CREATE INDEX IF NOT EXISTS idx_notas_fiscais_data ON notas_fiscais(data_emissao);
   `);

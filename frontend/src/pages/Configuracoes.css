@@ -67,6 +67,13 @@
   color: #14b8a6;
 }
 
+.config-whatsapp-description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .form-group {
   margin-bottom: 16px;
 }

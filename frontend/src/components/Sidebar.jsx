@@ -14,6 +14,7 @@ import {
   TbPrescription,
   TbFileCertificate,
   TbFileInvoice,
+  TbScissors,
   TbReceiptTax,
   TbReceipt,
   TbPackage,
@@ -85,6 +86,12 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
       ]
     }
   ];
+
+  menuSections.splice(2, 0, {
+    title: 'Estética & Bem-Estar',
+    items: [{ path: '/banhotosa', label: 'Banho & Tosa', icon: TbScissors, premium: isPlanoGratuito }]
+  });
+  menuSections[4].items.unshift({ path: '/automacoes', label: 'Automações de WhatsApp', icon: TbSettings });
 
   const handleLinkClick = () => {
     if (onLinkClick) onLinkClick();

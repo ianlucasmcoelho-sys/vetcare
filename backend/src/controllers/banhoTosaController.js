@@ -141,13 +141,15 @@ export const enviarLinkBanhoTosa = async (req, res) => {
     const registro = await getRegistro(db, req.params.id, clinicaId);
     if (!registro) return res.status(404).json({ error: 'Agendamento nao encontrado.' });
 
-    const telefone = registro.tutor_celular || registro.tutor_telefone;
-    if (!telefone) return res.status(400).json({ error: 'O tutor deste pet nao tem telefone cadastrado.' });
-
-    const token = registro.token_acompanhamento || randomBytes(24).toString('hex');
-    if (!registro.token_acompanhamento) {
-      await db.run('UPDATE banho_tosa SET token_acompanhamento = ? WHERE id = ? AND clinica_id = ?', [token, registro.id, registro.clinica_id]);
+    let token = registro.token_acompanhamento;
+    if (!token) {
+      const candidate = randomBytes(24).toString('hex');
+      await db.run("UPDATE banho_tosa SET token_acompanhamento = ? WHERE id = ? AND clinica_id = ? AND (token_acompanhamento IS NULL OR token_acompanhamento = '')", [candidate, registro.id, clinicaId]);
+      const saved = await db.get('SELECT token_acompanhamento FROM banho_tosa WHERE id = ? AND clinica_id = ?', [registro.id, clinicaId]);
+      token = saved?.token_acompanhamento || null;
     }
+    if (!token) throw new Error('Nao foi possivel gerar um link de acompanhamento.');
+    const telefone = registro.tutor_celular || registro.tutor_telefone || null;
     const link = publicUrl(req, token);
     const mensagem = mensagemAcompanhamento(registro.tutor_nome, registro.animal_nome, link);
     res.json({ success: true, telefone, mensagem, link, message: 'Mensagem pronta para abrir no WhatsApp Web.' });

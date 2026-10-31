@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { apiGet } from '../services/api';
 import './BanhoTosa.css';
 
 const etapas = ['Agendado', 'Chegou', 'Banho', 'Tosa', 'Secagem', 'Finalizado', 'Indo até você'];
 
-export default function AcompanharBanhoTosa() {
-  const { token } = useParams();
+export default function AcompanharBanhoTosa({ token }) {
   const [atendimento, setAtendimento] = useState(null);
   const [erro, setErro] = useState(false);
   useEffect(() => {

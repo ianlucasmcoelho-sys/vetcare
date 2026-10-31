@@ -8,9 +8,12 @@ export default function Automacoes() {
   const { showToast, ToastContainer } = useToast();
   const [loading, setLoading] = useState(false);
   const [salvo, setSalvo] = useState(false);
+  const [gerandoQr, setGerandoQr] = useState(false);
   
   const [statusWpp, setStatusWpp] = useState("DESCONECTADO"); // INICIANDO, AGUARDANDO_LEITURA, CONECTADO, DESCONECTADO
   const [qrCodeImg, setQrCodeImg] = useState(null);
+  const [numeroConectado, setNumeroConectado] = useState(null);
+  const [progressoConexao, setProgressoConexao] = useState(null);
 
   const [config, setConfig] = useState({
     ativo: false,
@@ -62,9 +65,9 @@ export default function Automacoes() {
       if (res && res.ok) {
         const data = await res.json();
         setStatusWpp(data.status);
-        if (data.qr) {
-          setQrCodeImg(data.qr);
-        }
+        setNumeroConectado(data.phone || null);
+        setProgressoConexao(Number.isFinite(data.progress) ? data.progress : null);
+        setQrCodeImg(data.qr || null);
       }
     } catch (err) {
       console.log("Erro ao checar status", err);
@@ -73,12 +76,36 @@ export default function Automacoes() {
 
   const desconectar = async () => {
     try {
-      await apiPost("/whatsapp/desconectar");
+      const response = await apiPost("/whatsapp/desconectar", {});
+      const result = response ? await response.json() : {};
+      if (!response?.ok || result.success === false) {
+        throw new Error(result.error || "Não foi possível desconectar o WhatsApp.");
+      }
       showToast("WhatsApp Desconectado.", "success");
       setStatusWpp("DESCONECTADO");
       setQrCodeImg(null);
+      setNumeroConectado(null);
+      setProgressoConexao(null);
     } catch (err) {
-      showToast("Erro ao desconectar.", "error");
+      showToast(err.message || "Erro ao desconectar.", "error");
+    }
+  };
+
+  const gerarNovoQr = async () => {
+    if (gerandoQr) return;
+    setGerandoQr(true);
+    setQrCodeImg(null);
+    setStatusWpp("INICIANDO");
+    setProgressoConexao(null);
+    try {
+      const response = await apiPost("/whatsapp/gerar-qr", {});
+      const result = response ? await response.json() : {};
+      if (!response?.ok) throw new Error(result.error || "Não foi possível gerar outro QR Code.");
+      showToast("Novo QR Code solicitado. Aguarde alguns segundos.", "success");
+    } catch (error) {
+      showToast(error.message || "Erro ao gerar outro QR Code.", "error");
+    } finally {
+      setGerandoQr(false);
     }
   };
 
@@ -133,6 +160,7 @@ export default function Automacoes() {
         {/* Seção 1: Conexão QR Code */}
         <div className="v-automacoes-section">
           <h2><FiSettings /> Conexão do WhatsApp</h2>
+          <p className="v-automacoes-hint">Conecte o WhatsApp da clínica lendo o QR Code. As mensagens serão enviadas por este número para o telefone do tutor cadastrado no perfil do pet.</p>
           
           <div className="v-automacoes-switch-wrapper">
             <label className="v-switch">
@@ -154,16 +182,33 @@ export default function Automacoes() {
               <div className="status-conectado">
                 <FiCheckCircle size={48} color="#25D366" />
                 <h3>WhatsApp Conectado!</h3>
-                <p>O sistema já pode disparar mensagens.</p>
+                <p>Mensagens enviadas pelo sistema sairão de {numeroConectado || "este número conectado"}.</p>
                 <button type="button" onClick={desconectar} className="btn-desconectar">
-                  <FiLogOut /> Desconectar Aparelho
+                  <FiLogOut /> Desconectar WhatsApp
                 </button>
               </div>
             ) : statusWpp === "AGUARDANDO_LEITURA" && qrCodeImg ? (
               <div className="status-qr">
                 <h3>Escaneie o QR Code</h3>
-                <p>Abra o WhatsApp no seu celular, vá em Aparelhos Conectados e aponte para a tela.</p>
+                <p>Abra o WhatsApp que deseja usar, acesse Aparelhos conectados e leia este QR Code. Esse será o número remetente do sistema.</p>
                 <img src={qrCodeImg} alt="QR Code" className="qr-image" />
+              </div>
+            ) : statusWpp === "DESCONECTADO" ? (
+              <div className="status-desconectado" role="status">
+                <FiLogOut size={32} />
+                <h3>WhatsApp Desconectado</h3>
+                <p>Conecte novamente para receber e enviar mensagens pelo sistema.</p>
+              </div>
+            ) : statusWpp === "AUTENTICADO" || statusWpp === "SINCRONIZANDO" ? (
+              <div className="status-loading" role="status" aria-live="polite">
+                <FiRefreshCw className="spin" size={32} />
+                <p>{statusWpp === "AUTENTICADO" ? "Sessão reconhecida. Sincronizando WhatsApp..." : "Carregando conversas do WhatsApp..."}</p>
+                {progressoConexao !== null && <p className="status-progress">{progressoConexao}%</p>}
+              </div>
+            ) : statusWpp === "FALHA" ? (
+              <div className="status-falha" role="status">
+                <FiMessageCircle size={32} />
+                <p>Não foi possível iniciar o WhatsApp. Gere outro QR Code para tentar novamente.</p>
               </div>
             ) : (
               <div className="status-loading">
@@ -172,6 +217,12 @@ export default function Automacoes() {
               </div>
             )}
           </div>
+          {statusWpp !== "CONECTADO" && (
+            <button type="button" className="btn-gerar-qr" onClick={gerarNovoQr} disabled={gerandoQr}>
+              <FiRefreshCw className={gerandoQr ? "spin" : ""} />
+              {gerandoQr ? "Gerando novo QR Code..." : statusWpp === "DESCONECTADO" ? "Conectar WhatsApp" : "Gerar outro QR Code"}
+            </button>
+          )}
         </div>
 
         {/* Seção 2: Gatilhos */}

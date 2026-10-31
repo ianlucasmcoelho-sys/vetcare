@@ -6,13 +6,13 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
 
-  
-  
+
+
   min-height: 100vh;
   animation: fadeIn 0.4s ease;
 }
 
-.page-header {
+.prontuario-container .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -22,7 +22,7 @@
 }
 
 /* Back Link Button */
-.back-link-btn {
+.prontuario-container .back-link-btn {
   background: transparent;
   border: none;
   display: flex;
@@ -36,23 +36,23 @@
   font-weight: 800;
 }
 
-.back-link-btn span {
+.prontuario-container .back-link-btn span {
   color: var(--text-primary);
 }
 
-.back-link-btn svg {
+.prontuario-container .back-link-btn svg {
   background: var(--bg-hover);
   padding: 8px;
   border-radius: 50%;
   font-size: 32px;
 }
 
-.back-link-btn:hover {
+.prontuario-container .back-link-btn:hover {
   transform: translateX(-4px);
 }
 
 /* Main Content Card */
-.prontuario-card {
+.prontuario-container .prontuario-card {
   background: var(--bg-card);
   border-radius: 16px;
   border: 1px solid var(--border-color);
@@ -60,14 +60,14 @@
   box-shadow: var(--shadow-sm);
 }
 
-.search-section {
+.prontuario-container .search-section {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
   background: transparent;
 }
 
 /* Animals Grid (Selection View) */
-.animais-grid {
+.prontuario-container .animais-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
@@ -75,7 +75,7 @@
 }
 
 /* Record Count Badge */
-.record-count-badge {
+.prontuario-container .record-count-badge {
   font-size: 10px;
   font-weight: 700;
   color: var(--primary);
@@ -86,14 +86,14 @@
 }
 
 /* Records List (History View) */
-.records-list {
+.prontuario-container .records-list {
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.prontuario-card-item {
+.prontuario-container .prontuario-card-item {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 14px;
@@ -101,12 +101,12 @@
   transition: all 0.3s ease;
 }
 
-.prontuario-card-item:hover {
+.prontuario-container .prontuario-card-item:hover {
   border-color: var(--primary);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
-.prontuario-card-header {
+.prontuario-container .prontuario-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -115,20 +115,20 @@
   background: var(--bg-hover);
 }
 
-.prontuario-nome {
+.prontuario-container .prontuario-nome {
   font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
 }
 
-.prontuario-tags {
+.prontuario-container .prontuario-tags {
   margin-top: 4px;
   display: flex;
   gap: 8px;
 }
 
-.tag-tutor {
+.prontuario-container .tag-tutor {
   font-size: 12px;
   color: var(--text-secondary);
   display: flex;
@@ -137,12 +137,12 @@
 }
 
 /* Action Icons (Standard) */
-.prontuario-header-actions {
+.prontuario-container .prontuario-header-actions {
   display: flex;
   gap: 8px;
 }
 
-.action-icon {
+.prontuario-container .action-icon {
   width: 34px;
   height: 34px;
   border-radius: 10px;
@@ -156,37 +156,37 @@
   transition: all 0.2s;
 }
 
-.action-icon:hover {
+.prontuario-container .action-icon:hover {
   border-color: var(--primary);
   color: var(--primary);
   transform: translateY(-2px);
 }
 
-.delete-btn:hover {
+.prontuario-container .delete-btn:hover {
   background: #fee2e2;
   border-color: #ef4444;
   color: #ef4444;
 }
 
 /* Medical Info Grid (Inside Record Card) */
-.prontuario-card-body {
+.prontuario-container .prontuario-card-body {
   padding: 20px;
 }
 
-.medical-grid {
+.prontuario-container .medical-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
 }
 
-.medical-info-box {
+.prontuario-container .medical-info-box {
   background: var(--bg-hover);
   padding: 16px;
   border-radius: 12px;
   border-left: 4px solid var(--border-color);
 }
 
-.medical-info-box label {
+.prontuario-container .medical-info-box label {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -197,31 +197,31 @@
   margin-bottom: 8px;
 }
 
-.medical-info-box p {
+.prontuario-container .medical-info-box p {
   font-size: 13px;
   color: var(--text-primary);
   line-height: 1.5;
   margin: 0;
 }
 
-.medical-info-box.warning { border-left-color: var(--warning); background: rgba(var(--warning-rgb), 0.05); }
-.medical-info-box.info { border-left-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
-.medical-info-box.success { border-left-color: var(--success); background: rgba(var(--primary-rgb), 0.05); }
+.prontuario-container .medical-info-box.warning { border-left-color: var(--warning); background: rgba(var(--warning-rgb), 0.05); }
+.prontuario-container .medical-info-box.info { border-left-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+.prontuario-container .medical-info-box.success { border-left-color: var(--success); background: rgba(var(--primary-rgb), 0.05); }
 
 /* Modal Styling Alignment */
-.modal-header {
+.prontuario-container .modal-header {
   padding: 20px 24px;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-color);
 }
 
-.modal-title-wrapper {
+.prontuario-container .modal-title-wrapper {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.title-icon {
+.prontuario-container .title-icon {
   font-size: 20px;
   color: var(--primary);
   background: var(--bg-hover);
@@ -229,7 +229,7 @@
   border-radius: 10px;
 }
 
-.form-scroll-area {
+.prontuario-container .form-scroll-area {
   padding: 24px;
   max-height: 70vh;
   overflow-y: auto;
@@ -241,13 +241,13 @@
 /* Responsive */
 @media (max-width: 768px) {
   .prontuario-container { padding: 16px; }
-  .animais-grid { grid-template-columns: 1fr; padding: 16px; }
-  .medical-grid { grid-template-columns: 1fr; }
-  .prontuario-card-header { flex-direction: column; align-items: stretch; gap: 12px; }
+  .prontuario-container .animais-grid { grid-template-columns: 1fr; padding: 16px; }
+  .prontuario-container .medical-grid { grid-template-columns: 1fr; }
+  .prontuario-container .prontuario-card-header { flex-direction: column; align-items: stretch; gap: 12px; }
 }
 
 /* Estilos para o Prontuário por Voz (IA) */
-.section-header-ai {
+.prontuario-container .section-header-ai {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -256,7 +256,7 @@
   gap: 12px;
 }
 
-.btn-ai-dictation {
+.prontuario-container .btn-ai-dictation {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -272,17 +272,17 @@
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
-.btn-ai-dictation:hover:not(:disabled) {
+.prontuario-container .btn-ai-dictation:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
 }
 
-.btn-ai-dictation:disabled {
+.prontuario-container .btn-ai-dictation:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.btn-ai-dictation.recording {
+.prontuario-container .btn-ai-dictation.recording {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
   animation: pulse-button 1.5s infinite;
@@ -294,7 +294,7 @@
   100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
-.recording-indicator {
+.prontuario-container .recording-indicator {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -308,7 +308,7 @@
   font-weight: 600;
 }
 
-.pulse-dot {
+.prontuario-container .pulse-dot {
   width: 10px;
   height: 10px;
   background-color: #ef4444;
@@ -322,7 +322,7 @@
   100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
-.ai-spinner {
+.prontuario-container .ai-spinner {
   width: 16px;
   height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import useQuickCreate from '../hooks/useQuickCreate';
+import React, { useState, useEffect, useMemo } from "react";
 import { 
   FiPlus, FiCalendar, FiShield, FiX, FiSearch, FiEdit2, 
   FiTrash2, FiAlertCircle, FiInfo, FiClock, FiCheckCircle
@@ -9,12 +10,16 @@ import "./Vacinas.css";
 
 export default function Vacinas() {
   const [showModal, setShowModal] = useState(false);
+  useQuickCreate(() => setShowModal(true));
   const [vacinas, setVacinas] = useState([]);
   const [animais, setAnimais] = useState([]);
   const [loading, setLoading] = useState(false);
   const [busca, setBusca] = useState("");
   const [editId, setEditId] = useState(null);
-  const [filtroStatus, setFiltroStatus] = useState("todas");
+  const [filtroStatus, setFiltroStatus] = useState(() => {
+    const status = new URLSearchParams(window.location.search).get("status");
+    return ["vencidas", "proximas"].includes(status) ? status : "todas";
+  });
 
   const [form, setForm] = useState({
     nome_vacina: "", data_aplicacao: "", proxima_dose: "",
@@ -104,28 +109,29 @@ export default function Vacinas() {
     return animal ? animal.nome : "Pet não identificado";
   };
 
-  const isVencida = (dataProximaDose) => {
-    if (!dataProximaDose) return false;
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    const data = new Date(dataProximaDose);
-    return data < hoje;
-  };
-
-  const isProxima = (dataProximaDose) => {
-    if (!dataProximaDose) return false;
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    const data = new Date(dataProximaDose);
-    const diffTime = data - hoje;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 30 && diffDays > 0;
-  };
+  const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+  const limite = new Date(`${hoje}T12:00:00Z`);
+  limite.setUTCDate(limite.getUTCDate() + 30);
+  const dataLimite = limite.toISOString().slice(0, 10);
+  const isVencida = value => Boolean(value && String(value).slice(0, 10) < hoje);
+  const isProxima = value => Boolean(value && String(value).slice(0, 10) >= hoje && String(value).slice(0, 10) <= dataLimite);
+  const ultimasDoses = useMemo(() => {
+    const doses = new Map();
+    for (const vacina of vacinas) {
+      const key = `${vacina.animal_id}:${vacina.nome_vacina?.trim().toLowerCase()}`;
+      const anterior = doses.get(key);
+      if (!anterior || vacina.data_aplicacao > anterior.data_aplicacao ||
+        (vacina.data_aplicacao === anterior.data_aplicacao && vacina.id > anterior.id)) doses.set(key, vacina);
+    }
+    return new Set([...doses.values()].map(vacina => vacina.id));
+  }, [vacinas]);
+  const animaisAtivos = useMemo(() => new Set(animais.filter(animal => !animal.obito).map(animal => String(animal.id))), [animais]);
 
   const vacinasFiltradas = vacinas.filter(v => {
     const animalNome = getNomeAnimal(v.animal_id).toLowerCase();
     const vacinaNome = v.nome_vacina?.toLowerCase();
     const matchBusca = animalNome.includes(busca.toLowerCase()) || vacinaNome?.includes(busca.toLowerCase());
+    if (filtroStatus !== "todas" && (!ultimasDoses.has(v.id) || !animaisAtivos.has(String(v.animal_id)))) return false;
     if (filtroStatus === "vencidas") return matchBusca && isVencida(v.proxima_dose);
     if (filtroStatus === "proximas") return matchBusca && isProxima(v.proxima_dose);
     return matchBusca;

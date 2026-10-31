@@ -26,8 +26,8 @@ import { apiGet } from '../services/api.js';
 import './TopBar.css';
 
 const ROUTE_MAP = {
-  '/': { title: 'Dashboard', category: 'Visão Geral' },
-  '/dashboard': { title: 'Dashboard', category: 'Visão Geral' },
+  '/': { title: 'Início', category: 'Principal' },
+  '/dashboard': { title: 'Dashboard clínico', category: 'Indicadores' },
   '/agenda': { title: 'Agenda & Consultas', category: 'Principal' },
   '/responsaveis': { title: 'Tutores & Clientes', category: 'Cadastros' },
   '/animais': { title: 'Pacientes (Pets)', category: 'Cadastros' },

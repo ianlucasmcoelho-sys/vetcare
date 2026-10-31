@@ -8,6 +8,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { initDb, openDb, closeDatabase } from './db.js';
+import { cleanupAllClients } from './services/whatsappManager.js';
 import { authMiddleware } from './middlewares/authMiddleware.js';
 import { provisionLifetimeAdminFromEnvironment } from './services/lifetimeProvisioner.js';
 
@@ -36,6 +37,7 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import comissoesRoutes from './routes/comissoesRoutes.js';
 import banhoTosaRoutes from './routes/banhoTosaRoutes.js';
+import whatsappRoutes from './routes/whatsappRoutes.js';
 import asaasRoutes from './routes/asaasRoutes.js';
 import notaFiscalRoutes from './routes/notaFiscalRoutes.js';
 import { handleStripeWebhook } from './controllers/stripeWebhook.js';
@@ -158,6 +160,7 @@ app.use('/api/pagamento', paymentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/comissoes', comissoesRoutes);
 app.use('/api/banhotosa', banhoTosaRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/asaas', asaasRoutes);
 app.use('/api/notas-fiscais', notaFiscalRoutes);
 
@@ -286,6 +289,7 @@ async function startServer() {
       console.log(`Encerrando servidor (${signal})...`);
       server.close(async (error) => {
         try {
+          await cleanupAllClients();
           await closeDatabase();
         } catch (shutdownError) {
           console.error('Falha ao liberar recursos:', shutdownError.message);

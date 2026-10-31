@@ -1,3 +1,4 @@
+import useQuickCreate from '../hooks/useQuickCreate';
 import React, { useState, useEffect } from "react";
 import { 
   FiPlus, FiCalendar, FiClock, FiX, FiSearch, FiEdit2, 
@@ -11,6 +12,7 @@ import "./Agenda.css";
 
 export default function Agenda() {
   const [showModal, setShowModal] = useState(false);
+  useQuickCreate(() => setShowModal(true));
   const [agendamentos, setAgendamentos] = useState([]);
   const [animais, setAnimais] = useState([]);
   const [tutores, setTutores] = useState([]);
@@ -276,9 +278,6 @@ export default function Agenda() {
                   <div className="action-buttons">
                     {ag.status !== "Concluído" && ag.status !== "Cancelado" && (
                       <>
-                        <button onClick={() => atualizarStatus(ag.id, "Confirmado")} className="action-btn confirm-btn">
-                          <FiCheckCircle size={14} /> Confirmar
-                        </button>
                         <button onClick={() => atualizarStatus(ag.id, "Concluído")} className="action-btn success-btn">
                           <FiCheckCircle size={14} /> Concluir
                         </button>

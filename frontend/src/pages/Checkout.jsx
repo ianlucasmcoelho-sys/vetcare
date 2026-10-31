@@ -1,3 +1,4 @@
+import BackToDashboard from "../components/BackToDashboard";
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiCreditCard, FiLock, FiCheckCircle, FiShield, FiAlertCircle, FiCopy, FiUser, FiMapPin, FiCalendar, FiFileText } from 'react-icons/fi';
@@ -168,7 +169,8 @@ export default function Checkout() {
           <FiShield size={24} color="var(--primary)" />
           <span>Vet Care Secure Checkout</span>
         </div>
-      </nav>
+      <BackToDashboard />
+        </nav>
 
       <div className="v-checkout-container reveal-up">
         {sucessoCC ? (

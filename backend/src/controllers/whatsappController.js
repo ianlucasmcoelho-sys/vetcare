@@ -53,7 +53,7 @@ export const updateConfiguracao = async (req, res) => {
   }
 };
 
-import { getStatus, disconnect } from '../services/whatsappManager.js';
+import { getStatus, disconnect, gerarNovoQr } from '../services/whatsappManager.js';
 
 export const getStatusQr = async (req, res) => {
   try {
@@ -72,5 +72,16 @@ export const desconectarWhatsApp = async (req, res) => {
     res.json({ success });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao desconectar' });
+  }
+};
+
+export const gerarNovoQrWhatsApp = async (req, res) => {
+  try {
+    const iniciado = await gerarNovoQr(req.usuario.clinica_id);
+    if (!iniciado) return res.status(409).json({ error: 'Já existe uma solicitação de QR Code em andamento.' });
+    res.status(202).json({ success: true, status: 'INICIANDO', message: 'Solicitamos um novo QR Code.' });
+  } catch (error) {
+    console.error('Erro ao gerar novo QR Code do WhatsApp:', error);
+    res.status(500).json({ error: 'Não foi possível gerar outro QR Code.' });
   }
 };

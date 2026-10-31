@@ -1,5 +1,6 @@
 import pg from 'pg';
 import path from 'path';
+import { randomBytes } from 'node:crypto';
 
 let pgPoolInstance = null;
 let sqliteDbPromise = null;
@@ -564,6 +565,8 @@ export async function initDb() {
       observacoes TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      chegada_notificada INTEGER DEFAULT 0,
+      arquivado INTEGER DEFAULT 0,
       FOREIGN KEY (clinica_id) REFERENCES clinicas(id),
       FOREIGN KEY (animal_id) REFERENCES animais(id) ON DELETE CASCADE
     );
@@ -643,6 +646,10 @@ export async function initDb() {
     `ALTER TABLE clinicas ADD COLUMN plano_id TEXT DEFAULT 'free'`,
     `ALTER TABLE clinicas ADD COLUMN asaas_customer_id TEXT`,
     `ALTER TABLE clinicas ADD COLUMN asaas_subscription_id TEXT`,
+    'ALTER TABLE banho_tosa ADD COLUMN token_acompanhamento TEXT',
+    'ALTER TABLE banho_tosa ADD COLUMN servicos TEXT',
+    'ALTER TABLE banho_tosa ADD COLUMN chegada_notificada INTEGER DEFAULT 0',
+    'ALTER TABLE banho_tosa ADD COLUMN arquivado INTEGER DEFAULT 0',
     'ALTER TABLE animais ADD COLUMN obito INTEGER DEFAULT 0',
     'ALTER TABLE animais ADD COLUMN data_obito TEXT',
     'ALTER TABLE servicos ADD COLUMN codigoBarras TEXT',
@@ -656,6 +663,14 @@ export async function initDb() {
       if (!duplicateColumn) throw error;
     }
   }
+
+  const missingBanhoTokens = await db.all('SELECT id FROM banho_tosa WHERE token_acompanhamento IS NULL');
+  for (const registro of missingBanhoTokens) {
+    await db.run('UPDATE banho_tosa SET token_acompanhamento = ? WHERE id = ?', [randomBytes(24).toString('hex'), registro.id]);
+  }
+  await db.run("UPDATE banho_tosa SET status = 'Agendado' WHERE status = 'Aguardando'");
+  await db.run("UPDATE banho_tosa SET status = 'Banho' WHERE status = 'No Banho'");
+  await db.run("UPDATE banho_tosa SET chegada_notificada = 1 WHERE status NOT IN ('Agendado', 'Aguardando') AND chegada_notificada = 0");
 
   // Reset tokens store epoch milliseconds, which exceed PostgreSQL INTEGER capacity.
   if (process.env.DATABASE_URL) {

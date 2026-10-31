@@ -1,0 +1,50 @@
+/* Scoped to the authenticated desktop: keep decorative layers static. */
+@media (min-width: 769px) {
+  .layout .v-orb-dash {
+    display: none;
+  }
+
+  .layout .v-dash-mesh {
+    will-change: auto;
+    transform: none;
+    background-image: radial-gradient(ellipse at top left, rgba(20, 184, 166, .07), transparent 65%);
+  }
+
+  .layout .topbar,
+  .layout .v-kpi-card,
+  .layout .v-dash-panel,
+  .layout .v-btn-icon-glass,
+  .layout .glass-panel,
+  .layout .v-glass-panel {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .layout .reveal-up,
+  .layout .reveal-left,
+  .layout .reveal-fade,
+  .layout .fade-in {
+    animation-duration: 160ms;
+    animation-delay: 0ms !important;
+  }
+
+  .layout .content {
+    transition: none;
+  }
+
+  .layout .sidebar-link,
+  .layout .v-kpi-card,
+  .layout .v-btn-icon-glass {
+    transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layout *, .layout *::before, .layout *::after {
+    animation-duration: .01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

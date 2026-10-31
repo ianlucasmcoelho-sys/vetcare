@@ -6,12 +6,12 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
 
-  
+
   animation: fadeIn 0.4s ease;
 }
 
 /* Header de Página */
-.page-title {
+.internacao-container .page-title {
   font-size: 28px;
   font-weight: 700;
   background: linear-gradient(135deg, #0f766e, #14b8a6);
@@ -22,14 +22,14 @@
 
 /* Card Principal e Busca */
 
-.search-section {
+.internacao-container .search-section {
   padding: 20px 24px;
   border-bottom: 1px solid var(--border-color);
   background: transparent;
 }
 
 /* Grid de Pacientes */
-.pacientes-grid {
+.internacao-container .pacientes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
@@ -39,13 +39,13 @@
 
 /* Card de Paciente - Padrão "Responsaveis" */
 
-.paciente-card-item:hover {
+.internacao-container .paciente-card-item:hover {
   transform: translateY(-6px);
   border-color: #14b8a6;
   box-shadow: 0 15px 30px -10px rgba(20, 184, 166, 0.15);
 }
 
-.paciente-card-badge {
+.internacao-container .paciente-card-badge {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -60,7 +60,7 @@
   border: 1px solid #fee2e2;
 }
 
-.paciente-card-header {
+.internacao-container .paciente-card-header {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -68,7 +68,7 @@
   background: transparent;
 }
 
-.pet-avatar-hospital {
+.internacao-container .pet-avatar-hospital {
   width: 50px;
   height: 50px;
   background: linear-gradient(135deg, #0f766e, #14b8a6);
@@ -80,14 +80,14 @@
   box-shadow: 0 8px 16px -4px rgba(20, 184, 166, 0.3);
 }
 
-.pet-nome {
+.internacao-container .pet-nome {
   font-size: 17px;
   font-weight: 800;
   color: var(--text-primary);
   margin: 0 0 2px 0;
 }
 
-.pet-tutor {
+.internacao-container .pet-tutor {
   font-size: 12px;
   color: var(--text-secondary);
   margin: 0;
@@ -96,11 +96,11 @@
   gap: 6px;
 }
 
-.paciente-card-body {
+.internacao-container .paciente-card-body {
   padding: 0 20px 20px 20px;
 }
 
-.hospital-info-row {
+.internacao-container .hospital-info-row {
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
@@ -110,26 +110,26 @@
   border: 1px dashed var(--border-color);
 }
 
-.info-item {
+.internacao-container .info-item {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.info-label {
+.internacao-container .info-label {
   font-size: 10px;
   font-weight: 800;
   color: var(--text-secondary);
   text-transform: uppercase;
 }
 
-.info-value {
+.internacao-container .info-value {
   font-size: 13px;
   font-weight: 700;
   color: var(--text-secondary);
 }
 
-.paciente-card-footer {
+.internacao-container .paciente-card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -138,7 +138,7 @@
   border-top: 1px solid var(--border-color);
 }
 
-.card-actions-hint {
+.internacao-container .card-actions-hint {
   font-size: 12px;
   font-weight: 700;
   color: #14b8a6;
@@ -148,7 +148,7 @@
 }
 
 /* Modal Hospitalar Premium (O Mapa) */
-.hospital-modal-premium {
+.internacao-container .hospital-modal-premium {
   max-width: 950px !important;
   background: var(--bg-card) !important;
   max-height: 92vh;
@@ -158,7 +158,7 @@
   border-radius: 28px !important;
 }
 
-.hospital-header-fixed {
+.internacao-container .hospital-header-fixed {
   padding: 24px 32px;
   background: var(--bg-card);
   border-bottom: 1px solid #eef2f6;
@@ -167,7 +167,7 @@
   align-items: center;
 }
 
-.patient-avatar-gradient {
+.internacao-container .patient-avatar-gradient {
   width: 64px;
   height: 64px;
   background: linear-gradient(135deg, #1e293b, #334155);
@@ -179,8 +179,8 @@
   box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
 }
 
-.hospital-title { font-size: 26px; font-weight: 800; color: var(--text-primary); margin: 0; }
-.hospital-tabs-nav {
+.internacao-container .hospital-title { font-size: 26px; font-weight: 800; color: var(--text-primary); margin: 0; }
+.internacao-container .hospital-tabs-nav {
   display: flex;
   gap: 32px;
   padding: 0 32px;
@@ -188,7 +188,7 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.nav-tab {
+.internacao-container .nav-tab {
   padding: 18px 0;
   background: none;
   border: none;
@@ -203,9 +203,9 @@
   transition: all 0.2s;
 }
 
-.nav-tab.active { color: #14b8a6; border-bottom-color: #14b8a6; }
+.internacao-container .nav-tab.active { color: #14b8a6; border-bottom-color: #14b8a6; }
 
-.hospital-content-scroll {
+.internacao-container .hospital-content-scroll {
   flex: 1;
   overflow-y: auto;
   padding: 32px;
@@ -213,7 +213,7 @@
 }
 
 /* Agenda de Medicações */
-.med-card-hospital {
+.internacao-container .med-card-hospital {
   background: var(--bg-card);
   border-radius: 18px;
   padding: 20px;
@@ -226,15 +226,15 @@
   transition: all 0.2s;
 }
 
-.med-card-hospital.aplicado { opacity: 0.6; background: var(--bg-hover); border-left: 5px solid #10b981; }
-.med-card-hospital.pendente { border-left: 5px solid #f59e0b; }
+.internacao-container .med-card-hospital.aplicado { opacity: 0.6; background: var(--bg-hover); border-left: 5px solid #10b981; }
+.internacao-container .med-card-hospital.pendente { border-left: 5px solid #f59e0b; }
 
-.med-time-box { display: flex; flex-direction: column; text-align: center; background: var(--bg-hover); padding: 8px; border-radius: 12px; }
-.med-time-box .time { font-size: 18px; font-weight: 800; color: var(--text-primary); }
-.med-time-box .date { font-size: 10px; font-weight: 700; color: var(--text-secondary); }
+.internacao-container .med-time-box { display: flex; flex-direction: column; text-align: center; background: var(--bg-hover); padding: 8px; border-radius: 12px; }
+.internacao-container .med-time-box .time { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+.internacao-container .med-time-box .date { font-size: 10px; font-weight: 700; color: var(--text-secondary); }
 
 /* Modal Cadastro Internação (Fixed Height) */
-.internacao-modal-fixed {
+.internacao-container .internacao-modal-fixed {
   max-width: 700px !important;
   max-height: 90vh;
   display: flex;
@@ -242,7 +242,7 @@
   overflow: hidden;
 }
 
-.hospital-info-box {
+.internacao-container .hospital-info-box {
   margin-top: 24px;
   background: #f0f9ff;
   border: 1px solid #bae6fd;
@@ -256,9 +256,114 @@
   font-weight: 600;
 }
 
+.internacao-container .quick-add-med,
+.internacao-container .vital-signs-form,
+.internacao-container .vitals-trends,
+.internacao-container .vitals-history-list {
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--bg-card);
+}
+
+.internacao-container .inline-med-form {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.4fr) minmax(100px, .8fr) 120px repeat(2, minmax(145px, 1fr)) 44px;
+  align-items: end;
+  gap: 10px;
+}
+
+.internacao-container .inline-med-form input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.internacao-container .inline-med-form label {
+  display: grid;
+  gap: 5px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.internacao-container .inline-med-form .btn-add-med,
+.internacao-container .inline-med-form .btn-cancel-edit {
+  display: grid;
+  place-items: center;
+  min-height: 42px;
+  border: 0;
+  border-radius: 9px;
+  cursor: pointer;
+}
+.internacao-container .inline-med-form .btn-add-med { background: #127b67; color: white; }
+.internacao-container .inline-med-form .btn-cancel-edit { background: #eef1f4; color: var(--text-secondary); }
+.internacao-container .med-status-action { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.internacao-container .btn-edit-record { display: inline-flex; align-items: center; justify-content: center; gap: 5px; margin-left: auto; padding: 6px 9px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-card); color: var(--text-secondary); font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.internacao-container .btn-edit-record:hover { border-color: #159579; color: #127b67; }
+.internacao-container .vital-form-actions { display: flex; align-items: center; gap: 8px; }
+.internacao-container .vital-form-actions .btn-cancel-edit { padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 9px; background: var(--bg-card); color: var(--text-secondary); font: inherit; font-weight: 700; cursor: pointer; }
+.internacao-container .vitals-header .btn-edit-record { margin-left: auto; }
+
+.internacao-container .med-schedule-hint { margin: 10px 0 0; color: var(--text-secondary); font-size: 12px; }
+.internacao-container .med-day-group { margin-top: 18px; }
+.internacao-container .med-day-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
+.internacao-container .med-day-heading h5 { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--text-primary); font-size: 14px; text-transform: capitalize; }
+.internacao-container .med-day-heading span { color: var(--text-secondary); font-size: 12px; }
+.internacao-container .med-detail { display: grid; gap: 5px; }
+.internacao-container .med-detail small { color: var(--text-secondary); font-size: 11px; }
+
+.internacao-container .vital-signs-form { display: grid; gap: 16px; }
+.internacao-container .vital-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.internacao-container .vital-input { display: grid; gap: 7px; color: var(--text-secondary); font-size: 12px; font-weight: 700; }
+.internacao-container .input-unit { display: flex; align-items: center; gap: 9px; min-height: 42px; padding: 0 10px; border: 1px solid var(--border-color); border-radius: 9px; background: var(--bg-primary); }
+.internacao-container .input-unit svg { flex: 0 0 auto; color: #159579; }
+.internacao-container .input-unit input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--text-primary); font: inherit; }
+.internacao-container .input-unit span { color: var(--text-secondary); font-size: 11px; }
+.internacao-container .vital-textarea { display: grid; gap: 7px; color: var(--text-secondary); font-size: 12px; font-weight: 700; }
+.internacao-container .vital-textarea textarea { box-sizing: border-box; width: 100%; min-height: 84px; padding: 10px; border: 1px solid var(--border-color); border-radius: 9px; background: var(--bg-primary); color: var(--text-primary); font: inherit; resize: vertical; }
+.internacao-container .btn-save-vitals { justify-self: start; padding: 10px 15px; border: 0; border-radius: 9px; background: #127b67; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+.internacao-container .vitals-history-title { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; color: #159579; }
+.internacao-container .vitals-history-title .section-mini-title { margin: 0; }
+.internacao-container .vital-trends-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.internacao-container .vital-trend-card { position: relative; min-width: 0; padding: 14px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-primary); }
+.internacao-container .vital-trend-card > header,
+.internacao-container .vital-trend-card > footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.internacao-container .vital-trend-card > header span { display: inline-flex; align-items: center; gap: 7px; color: var(--text-secondary); font-size: 12px; font-weight: 700; }
+.internacao-container .vital-trend-card > header span svg { color: #159579; }
+.internacao-container .vital-trend-card > header strong { color: var(--text-primary); font-size: 14px; }
+.internacao-container .vital-trend-chart { display: block; width: 100%; height: 100px; overflow: visible; }
+.internacao-container .vital-trend-chart line { stroke: var(--border-color); stroke-width: 1; opacity: .75; }
+.internacao-container .vital-trend-chart text { fill: var(--text-secondary); font-size: 16px; font-weight: 500; }
+.internacao-container .vital-trend-chart polyline { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.internacao-container .vital-trend-chart circle { stroke: var(--bg-card); stroke-width: 2; }
+.internacao-container .vital-trend-chart circle { cursor: crosshair; }
+.internacao-container .vital-point-tooltip { position: fixed; z-index: 10000; display: grid; gap: 4px; max-width: 240px; padding: 9px 12px; border: 1px solid rgba(255,255,255,.14); border-radius: 9px; background: #172333; color: #fff; box-shadow: 0 8px 24px rgba(15,23,42,.24); pointer-events: none; font-size: 12px; line-height: 1.3; white-space: nowrap; }
+.internacao-container .vital-point-tooltip strong { font-size: 13px; }
+.internacao-container .vital-point-tooltip span { color: #d2dbe6; }
+.internacao-container .vital-trend-card > footer { color: var(--text-secondary); font-size: 10px; }
+.internacao-container .vital-trend-empty { display: grid; place-items: center; min-height: 100px; color: var(--text-secondary); font-size: 12px; }
+.internacao-container .vitals-history-list { display: grid; gap: 12px; margin-top: 18px; }
+.internacao-container .vitals-history-list > .section-mini-title { margin: 0; }
+.internacao-container .vitals-history-card { padding: 14px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-primary); }
+.internacao-container .vitals-header { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; color: var(--text-secondary); font-size: 12px; }
+.internacao-container .vitals-body-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.internacao-container .v-comment { margin: 10px 0 0; color: var(--text-secondary); font-size: 13px; white-space: pre-wrap; }
+
 /* ... Estilos de botões seguindo btn-primary global ... */
 
 @media (max-width: 768px) {
-  .pacientes-grid { grid-template-columns: 1fr; }
-  .med-card-hospital { grid-template-columns: 1fr; text-align: center; }
+  .internacao-container .pacientes-grid { grid-template-columns: 1fr; }
+  .internacao-container .med-card-hospital { grid-template-columns: 1fr; text-align: center; }
+  .internacao-container .inline-med-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .internacao-container .inline-med-form > input:first-child { grid-column: 1 / -1; }
+  .internacao-container .inline-med-form .btn-add-med { min-height: 42px; }
+  .internacao-container .vital-trends-grid { grid-template-columns: 1fr; }
 }

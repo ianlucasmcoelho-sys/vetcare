@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { 
-  FiPlus, FiSearch, FiTrash2, FiEdit3, FiX, FiUser, 
+import useQuickCreate from '../hooks/useQuickCreate';
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  FiPlus, FiSearch, FiTrash2, FiEdit3, FiX, FiUser,
   FiMail, FiPhone, FiMapPin, FiDownload, FiInfo
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ import "./Responsaveis.css";
 export default function Responsaveis() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  useQuickCreate(() => setShowModal(true));
   const [tutores, setTutores] = useState([]);
   const [busca, setBusca] = useState("");
   const [editId, setEditId] = useState(null);
@@ -61,7 +63,7 @@ export default function Responsaveis() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = editId 
+      const res = editId
         ? await apiPut(`/responsaveis/${editId}`, form)
         : await apiPost("/responsaveis", form);
 
@@ -135,7 +137,7 @@ export default function Responsaveis() {
       t.cidade || "",
       t.estado || ""
     ]);
-    
+
     const csvContent = [cabecalho, ...linhas].map(row => row.join(",")).join("\n");
     const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -159,11 +161,11 @@ export default function Responsaveis() {
     setShowExportModal(false);
   };
 
-  const tutoresFiltrados = tutores.filter(t => 
+  const tutoresFiltrados = useMemo(() => tutores.filter(t =>
     t.nome?.toLowerCase().includes(busca.toLowerCase()) ||
     t.email?.toLowerCase().includes(busca.toLowerCase()) ||
     t.celular?.includes(busca)
-  );
+  ), [tutores, busca]);
 
   // Lógica de Paginação
   const totalPages = Math.ceil(tutoresFiltrados.length / itemsPerPage);
@@ -227,8 +229,8 @@ export default function Responsaveis() {
           <>
             <div className="tutores-grid">
               {tutoresExibidos.map((tutor) => (
-                <div 
-                  key={tutor.id} 
+                <div
+                  key={tutor.id}
                   className="tutor-card-item v-glass-panel"
                   onClick={() => abrirPerfil(tutor.id)}
                   style={{animationDelay: `${0.1 + (0.05 * (tutor.id % 10))}s`}}
@@ -245,7 +247,7 @@ export default function Responsaveis() {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="tutor-card-body">
                     <div className="contact-row">
                       <div className="contact-item">
@@ -259,7 +261,7 @@ export default function Responsaveis() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="location-info">
                       <FiMapPin className="location-icon" />
                       <span>
@@ -271,15 +273,15 @@ export default function Responsaveis() {
                   <div className="tutor-card-footer">
                     <span className="id-tag">#{String(tutor.id).padStart(4, '0')}</span>
                     <div className="tutor-actions">
-                      <button 
-                        onClick={(e) => abrirEdicao(tutor, e)} 
+                      <button
+                        onClick={(e) => abrirEdicao(tutor, e)}
                         className="action-btn edit"
                         title="Editar Perfil"
                       >
                         <FiEdit3 size={14} />
                       </button>
-                      <button 
-                        onClick={(e) => deletarTutor(tutor.id, e)} 
+                      <button
+                        onClick={(e) => deletarTutor(tutor.id, e)}
                         className="action-btn delete"
                         title="Excluir Registro"
                       >
@@ -290,8 +292,8 @@ export default function Responsaveis() {
                 </div>
               ))}
             </div>
-            
-            <Pagination 
+
+            <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}

@@ -1,3 +1,4 @@
+import BackToDashboard from "../components/BackToDashboard";
 import React, { useState, useEffect } from 'react';
 import { FiCheck, FiLogOut, FiZap, FiShield, FiStar, FiHeart } from 'react-icons/fi';
 import './Planos.css';
@@ -37,6 +38,7 @@ const Planos = () => {
           </div>
           <span>Vet Care <span className="v-nav-badge">SaaS</span></span>
         </div>
+        <BackToDashboard />
         <button className="v-btn-logout-pill" onClick={handleLogout}>
           <FiLogOut /> SAIR
         </button>

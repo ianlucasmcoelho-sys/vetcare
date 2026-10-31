@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiSave, FiHome, FiPhone, FiMail, FiFileText, FiClock, FiCalendar, FiUser, FiInfo, FiCheckCircle, FiAlertCircle, FiStar } from "react-icons/fi";
+import { FiSave, FiHome, FiPhone, FiMail, FiFileText, FiClock, FiCalendar, FiUser, FiInfo, FiCheckCircle, FiAlertCircle, FiStar, FiMessageCircle } from "react-icons/fi";
 import { usePermission } from "../hooks/usePermission";
 import { useToast } from "../hooks/useToast";
 import { apiGet, apiPut } from "../services/api";
@@ -195,6 +195,19 @@ export default function Configuracoes() {
               <label>Dias de Funcionamento</label>
               <input type="text" name="dias_funcionamento" value={config.dias_funcionamento} onChange={handleChange} disabled={!podeEditar} />
             </div>
+          </div>
+
+          <div className="config-card">
+            <h3 className="config-title"><FiMessageCircle /> WhatsApp da Clínica</h3>
+            <p className="config-whatsapp-description">Conecte o WhatsApp que será usado como remetente das mensagens. O tutor recebe no telefone cadastrado no perfil do pet.</p>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => navigate('/automacoes')}
+              style={{ width: '100%', justifyContent: 'center', marginTop: '12px' }}
+            >
+              <FiMessageCircle /> Conectar ou gerenciar WhatsApp
+            </button>
           </div>
 
           <div className="config-card">

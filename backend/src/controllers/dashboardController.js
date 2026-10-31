@@ -1,10 +1,12 @@
+import { getClinicHome, getClinicalOverview } from '../services/clinicOverview.js';
+import { getDashboardVaccines } from '../services/dashboardVaccines.js';
 import { openDb } from '../db.js';
 
 export const getDashboardStats = async (req, res) => {
   try {
     const db = await openDb();
     const clinica_id = req.usuario.clinica_id;
-    const hoje = new Date().toISOString().split('T')[0];
+    const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
     const mesAtual = hoje.slice(0, 7);
 
     // 1. Estatísticas Gerais
@@ -65,7 +67,10 @@ export const getDashboardStats = async (req, res) => {
       saidas.push(f.sai || 0);
     }
 
+    const vacinasResumo = await getDashboardVaccines(db, clinica_id, hoje);
+
     res.json({
+      vacinasResumo,
       stats: {
         tutores: stats[0].total,
         pets: stats[1].total,
@@ -83,5 +88,23 @@ export const getDashboardStats = async (req, res) => {
   } catch (error) {
     console.error('Erro ao buscar dados do dashboard:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+export const getHomeOverview = async (req, res) => {
+  try {
+    res.json(await getClinicHome(await openDb(), req.usuario.clinica_id));
+  } catch (error) {
+    console.error('Erro ao buscar início da clínica:', error.message);
+    res.status(500).json({ error: 'Não foi possível carregar os avisos da clínica.' });
+  }
+};
+
+export const getClinicalDashboard = async (req, res) => {
+  try {
+    res.json(await getClinicalOverview(await openDb(), req.usuario.clinica_id, req.usuario.perfil));
+  } catch (error) {
+    console.error('Erro ao buscar indicadores clínicos:', error.message);
+    res.status(500).json({ error: 'Não foi possível carregar os indicadores da clínica.' });
   }
 };

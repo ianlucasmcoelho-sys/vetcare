@@ -8,6 +8,7 @@ import { MdOutlinePets, MdOutlineVaccines, MdOutlineMedicalServices } from "reac
 import { TbFlask } from "react-icons/tb";
 import { apiGet, apiDelete } from "../services/api";
 import "./PerfilAnimal.css";
+import MedicalRecordPreview from "../components/MedicalRecordPreview";
 
 export default function PerfilAnimal() {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export default function PerfilAnimal() {
   const [vacinas, setVacinas] = useState([]);
   const [exames, setExames] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [printOpen, setPrintOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("linha_do_tempo");
 
   useEffect(() => {
@@ -113,12 +115,13 @@ export default function PerfilAnimal() {
 
   return (
     <div className="perfil-animal-container fade-in">
+      {printOpen && <MedicalRecordPreview records={prontuarios} patient={{...animal, tutor_nome: tutor?.nome}} onClose={() => setPrintOpen(false)} />}
       <div className="perfil-header">
         <button className="btn-back" onClick={() => navigate("/animais")}>
           <FiArrowLeft /> Voltar
         </button>
         <div className="header-actions">
-          <button className="btn-outline" onClick={() => window.print()}>
+          <button className="btn-outline" onClick={() => setPrintOpen(true)}>
             <FiPrinter /> Imprimir Prontuário
           </button>
           <button className="btn-danger-outline" onClick={deletarAnimal}>

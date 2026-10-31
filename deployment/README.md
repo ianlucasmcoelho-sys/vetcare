@@ -1,7 +1,7 @@
 # Pacote de implantação
 
-O pacote atual do VetCare para Hostinger é:
+Pacote atual do VetCare para validação em staging:
 
-`VetCare-Hostinger-Staging-20261026-completo-atual.zip`
+`VetCare-Hostinger-Staging-20261031-completo-atual.zip`
 
-O ZIP contém o código-fonte do projeto, incluindo o padrão compartilhado dos formulários. Não inclui banco de dados local nem arquivos `.env` com segredos. Os outros ZIPs históricos e diretórios `staging-*` permanecem apenas como arquivos locais de trabalho.
+O ZIP contém o código-fonte e os arquivos necessários para preparar a aplicação. Não inclui dependências instaladas, backups, banco SQLite local, uploads de usuários nem arquivos `.env` com segredos. O arquivo `backend/.env.example` contém apenas nomes e valores de exemplo.

@@ -1,5 +1,4 @@
 /* Landing.css - World-Class 3D Experience */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 html {
   scroll-behavior: smooth;
@@ -1750,4 +1749,12 @@ html {
   .v-stat-card { padding: 1.5rem 1rem; }
   .v-stat-number { font-size: 2rem; }
   .v-trust-badges { flex-wrap: wrap; justify-content: center; }
+}
+
+/* First-viewport content should never wait for a reveal animation. */
+.v-landing-page .v-reveal.v-immediate { opacity: 1; transform: none; transition: none; will-change: auto; }
+.v-landing-page .v-reveal.v-visible { will-change: auto; }
+@media (prefers-reduced-motion: reduce) {
+  .v-landing-page *, .v-landing-page *::before, .v-landing-page *::after { animation: none !important; transition: none !important; }
+  .v-landing-page .v-reveal { opacity: 1; transform: none; }
 }

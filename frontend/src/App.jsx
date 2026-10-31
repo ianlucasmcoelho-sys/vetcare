@@ -1,48 +1,51 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import Sidebar from "./components/Sidebar.jsx";
-import TopBar from "./components/TopBar.jsx";
-import MenuToggle from "./components/MenuToggle.jsx";
+import { lazyPage } from "./utils/routePreload";
+const AuthenticatedShell = lazy(() => import("./components/AuthenticatedShell.jsx"));
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
-const Login = lazy(() => import("./pages/Login.jsx"));
-const Dashboard = lazy(() => import("./pages/Dashboard.jsx"));
-const Responsaveis = lazy(() => import("./pages/Responsaveis.jsx"));
-const Animais = lazy(() => import("./pages/Animais.jsx"));
-const Historico = lazy(() => import("./pages/Historico.jsx"));
-const Retornos = lazy(() => import("./pages/Retornos.jsx"));
-const Agenda = lazy(() => import("./pages/Agenda.jsx"));
-const Vacinas = lazy(() => import("./pages/Vacinas.jsx"));
-const Estoque = lazy(() => import("./pages/Estoque.jsx"));
-const Financeiro = lazy(() => import("./pages/Financeiro.jsx"));
-const Documentos = lazy(() => import("./pages/Documentos.jsx"));
-const Retencao = lazy(() => import("./pages/Retencao.jsx"));
-const CentralArquivos = lazy(() => import("./pages/CentralArquivos.jsx"));
-const PerfilTutor = lazy(() => import("./pages/PerfilTutor.jsx"));
-const PerfilAnimal = lazy(() => import("./pages/PerfilAnimal.jsx"));
-const Receituario = lazy(() => import("./pages/Receituario.jsx"));
-const Relatorios = lazy(() => import("./pages/Relatorios.jsx"));
-const Configuracoes = lazy(() => import("./pages/Configuracoes.jsx"));
-const MeuPerfil = lazy(() => import("./pages/MeuPerfil.jsx"));
-const CadastroClinica = lazy(() => import("./pages/CadastroClinica.jsx"));
-const ResetarSenha = lazy(() => import("./pages/ResetarSenha.jsx"));
-const RecuperarSenha = lazy(() => import("./pages/RecuperarSenha.jsx"));
-const Usuarios = lazy(() => import("./pages/Usuarios.jsx"));
-const Internacao = lazy(() => import("./pages/Internacao.jsx"));
-const Exames = lazy(() => import("./pages/Exames.jsx"));
-const TemplateManager = lazy(() => import("./pages/TemplateManager.jsx"));
-const TabelaPrecos = lazy(() => import("./pages/TabelaPrecos.jsx"));
-const Landing = lazy(() => import("./pages/Landing.jsx"));
-const Orcamentos = lazy(() => import("./pages/Orcamentos.jsx"));
-const Planos = lazy(() => import("./pages/Planos.jsx"));
-const Checkout = lazy(() => import("./pages/Checkout.jsx"));
-const PagamentoSucesso = lazy(() => import("./pages/PagamentoSucesso.jsx"));
-const Onboarding = lazy(() => import("./pages/Onboarding.jsx"));
-const Comissoes = lazy(() => import("./pages/Comissoes.jsx"));
-const BanhoTosa = lazy(() => import("./pages/BanhoTosa.jsx"));
-const Assinatura = lazy(() => import("./pages/Assinatura.jsx"));
-const NotasFiscais = lazy(() => import("./pages/NotasFiscais.jsx"));
+const Login = lazyPage("Login");
+const Dashboard = lazyPage("Dashboard");
+const Inicio = lazyPage("Inicio");
+const Responsaveis = lazyPage("Responsaveis");
+const Animais = lazyPage("Animais");
+const Historico = lazyPage("Historico");
+const Retornos = lazyPage("Retornos");
+const Agenda = lazyPage("Agenda");
+const Vacinas = lazyPage("Vacinas");
+const Estoque = lazyPage("Estoque");
+const Financeiro = lazyPage("Financeiro");
+const Documentos = lazyPage("Documentos");
+const Retencao = lazyPage("Retencao");
+const CentralArquivos = lazyPage("CentralArquivos");
+const PerfilTutor = lazyPage("PerfilTutor");
+const PerfilAnimal = lazyPage("PerfilAnimal");
+const Receituario = lazyPage("Receituario");
+const Relatorios = lazyPage("Relatorios");
+const Configuracoes = lazyPage("Configuracoes");
+const MeuPerfil = lazyPage("MeuPerfil");
+const CadastroClinica = lazyPage("CadastroClinica");
+const ResetarSenha = lazyPage("ResetarSenha");
+const RecuperarSenha = lazyPage("RecuperarSenha");
+const Usuarios = lazyPage("Usuarios");
+const Internacao = lazyPage("Internacao");
+const Exames = lazyPage("Exames");
+const TemplateManager = lazyPage("TemplateManager");
+const TabelaPrecos = lazyPage("TabelaPrecos");
+const Landing = lazyPage("Landing");
+const Orcamentos = lazyPage("Orcamentos");
+const Planos = lazyPage("Planos");
+const Checkout = lazyPage("Checkout");
+const PagamentoSucesso = lazyPage("PagamentoSucesso");
+const Onboarding = lazyPage("Onboarding");
+const Comissoes = lazyPage("Comissoes");
+const BanhoTosa = lazyPage("BanhoTosa");
+const Automacoes = lazyPage("Automacoes");
+const AcompanharBanhoTosa = lazyPage("AcompanharBanhoTosa");
+const Assinatura = lazyPage("Assinatura");
+const NotasFiscais = lazyPage("NotasFiscais");
 import "./App.css";
 import "./Global.css";
+import "./styles/performance.css";
 
 function RequiredFieldMessages() {
   useEffect(() => {
@@ -130,6 +133,12 @@ function AppLayout() {
     };
   }, [mobileMenuOpen]);
 
+  if (location.pathname.startsWith("/acompanhar-banho-tosa/")) {
+    return <Suspense fallback={<div role="status" className="route-loading">Carregando acompanhamento...</div>}>
+      <Routes><Route path="/acompanhar-banho-tosa/:token" element={<AcompanharBanhoTosa />} /></Routes>
+    </Suspense>;
+  }
+
   const usuarioStr = localStorage.getItem("usuario");
   const usuario = usuarioStr ? JSON.parse(usuarioStr) : null;
   const plano = usuario?.clinica?.plano_id || 'free';
@@ -205,33 +214,14 @@ function AppLayout() {
   }
 
   return (
-    <div className={`layout v-global-mesh-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
-      {/* Global Background Ambience */}
-      <div className="v-dash-mesh">
-        <div className="v-orb-dash v-orb-primary"></div>
-        <div className="v-orb-dash v-orb-secondary"></div>
-      </div>
-
-      <MenuToggle isOpen={mobileMenuOpen} onClick={toggleMobileMenu} />
-      <button
-        type="button"
-        className={`sidebar-overlay ${mobileMenuOpen ? "active" : ""}`} 
-        onClick={closeMobileMenu}
-        aria-label="Fechar menu de navegação"
-        aria-hidden={!mobileMenuOpen}
-        tabIndex={mobileMenuOpen ? 0 : -1}
-      />
-      <Sidebar
-        isCollapsed={sidebarCollapsed}
-        isMobileOpen={mobileMenuOpen}
-        onToggle={toggleSidebar}
-        onLinkClick={closeMobileMenu}
-      />
-      <TopBar isCollapsed={sidebarCollapsed} />
-      <main className="content">
+    <Suspense fallback={<div role="status" className="route-loading">Carregando...</div>}>
+      <AuthenticatedShell sidebarCollapsed={sidebarCollapsed} mobileMenuOpen={mobileMenuOpen}
+        toggleMobileMenu={toggleMobileMenu} closeMobileMenu={closeMobileMenu} toggleSidebar={toggleSidebar}>
         <Suspense fallback={<div role="status" aria-live="polite" className="route-loading">Carregando...</div>}>
       <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Inicio />} />
+          <Route path="/inicio" element={<Navigate to="/" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/responsaveis" element={<Responsaveis />} />
           <Route path="/perfil-tutor/:id" element={<PerfilTutor />} />
           <Route path="/animais" element={<Animais />} />
@@ -260,15 +250,15 @@ function AppLayout() {
           <Route path="/servicos" element={isFreePlan ? <Navigate to="/planos" /> : <Estoque />} />
           <Route path="/comissoes" element={isFreePlan ? <Navigate to="/planos" /> : <Comissoes />} />
           <Route path="/crm" element={isFreePlan ? <Navigate to="/planos" /> : <Retencao />} />
-          <Route path="/automacoes" element={<Navigate to="/" replace />} />
+          <Route path="/automacoes" element={isFreePlan ? <Navigate to="/planos" /> : <Automacoes />} />
           <Route path="/relatorios" element={isFreePlan ? <Navigate to="/planos" /> : <Relatorios />} />
           <Route path="/banhotosa" element={isFreePlan ? <Navigate to="/planos" /> : <BanhoTosa />} />
           
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-      </main>
-    </div>
+      </AuthenticatedShell>
+    </Suspense>
   );
 }
 

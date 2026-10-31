@@ -1,0 +1,154 @@
+/* Explicit page scopes keep lazy-loaded styles from changing other screens. */
+
+.sidebar.collapsed .sidebar-header { position: relative; justify-content: center; padding: 0; }
+.sidebar.collapsed .sidebar-toggle-btn {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  border-radius: 0;
+  background: var(--bg-sidebar);
+  color: var(--primary);
+  font-size: 1.4rem;
+}
+.sidebar.collapsed .sidebar-toggle-btn:hover { background: var(--bg-hover); }
+.sidebar.collapsed .sidebar-logo { visibility: hidden; }
+
+.layout :is(.animais-container, .responsaveis-container, .internacao-container, .meuperfil-container) {
+  padding: 0;
+  min-height: 0;
+}
+.layout :is(.animais-container, .responsaveis-container) .action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.layout :is(.animais-container, .responsaveis-container) :is(.view-btn, .edit-btn, .edit):hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+.layout :is(.animais-container, .responsaveis-container) :is(.delete-btn, .delete) {
+  color: var(--danger, #dc2626);
+  background: rgba(239, 68, 68, .08);
+  border-color: rgba(239, 68, 68, .25);
+}
+.layout :is(.animais-container, .responsaveis-container) :is(.delete-btn, .delete):hover {
+  color: white;
+  background: var(--danger, #dc2626);
+}
+.layout :is(.animal-card-footer, .tutor-actions, .prontuario-header-actions) { flex-wrap: wrap; gap: .5rem; }
+.layout :is(.animais-grid, .pacientes-grid) { grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
+.layout :is(.perfil-animal-container, .perfil-container, .meuperfil-container, .internacao-container, .retornos-container, .prontuario-container) :is(.btn-outline, .btn-back, .btn-danger-outline, .btn-outline-full, .btn-alta-action, .btn-apply-now, .btn-save-vitals) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 40px;
+  padding: .65rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: .875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.layout :is(.perfil-animal-container, .perfil-container) .btn-danger-outline {
+  color: var(--danger, #dc2626);
+  border-color: rgba(239, 68, 68, .3);
+  background: rgba(239, 68, 68, .06);
+}
+.layout :is(.perfil-animal-container, .perfil-container) .perfil-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.layout .meuperfil-container .meuperfil-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.layout .meuperfil-container .card-header-perfil { display: flex; align-items: center; gap: .75rem; padding-bottom: 1.25rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); color: var(--primary); }
+.layout .meuperfil-container .card-header-perfil h3 { margin: 0; font-size: 1.05rem; color: var(--text-primary); }
+.layout .meuperfil-container .perfil-form { display: flex; flex-direction: column; gap: 1.25rem; }
+.layout .meuperfil-container input { box-sizing: border-box; width: 100%; min-width: 0; }
+.layout .meuperfil-container button { align-self: flex-start; }
+.layout .meuperfil-container .input-disabled { opacity: .65; cursor: not-allowed; }
+.layout :is(.agenda-container, .retornos-container) :is(.agendamento-card-footer, .retorno-card-footer) { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+.layout :is(.agenda-container, .retornos-container) .action-btn { width: auto; height: auto; min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .6rem .85rem; white-space: normal; flex-shrink: 0; }
+.layout .retornos-container .filters-section { gap: 1rem; }
+.layout .retornos-container .search-wrapper { min-width: min(100%, 240px); width: 100%; box-sizing: border-box; }
+.layout .retornos-container .retorno-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; }
+.layout .retornos-container .info-value { overflow-wrap: anywhere; min-width: 0; }
+.layout :is(.animais-container, .responsaveis-container, .agenda-container, .internacao-container, .retornos-container) .search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  min-width: 0;
+  padding: .65rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-card);
+}
+.layout :is(.animais-container, .responsaveis-container, .agenda-container, .internacao-container, .retornos-container) .search-wrapper input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding: .35rem 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: .875rem;
+  box-shadow: none;
+}
+.layout .internacao-container .paciente-card-item { position: relative; overflow: hidden; cursor: pointer; }
+.layout .internacao-container .paciente-card-header { padding-top: 2.5rem; }
+.layout .internacao-container .hospital-header-fixed { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+.layout .internacao-container :is(.patient-brand, .hospital-actions) { display: flex; align-items: center; gap: .75rem; }
+.layout .internacao-container .hospital-subtitle { color: var(--text-muted); font-size: .85rem; margin: .35rem 0 0; }
+.layout .internacao-container .hospital-content-scroll { min-height: 0; overflow: auto; padding: 1.5rem; }
+.layout .internacao-container .btn-close-circle { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--border-color); border-radius: 50%; color: var(--text-secondary); background: var(--bg-card); cursor: pointer; }
+.layout .internacao-container :is(.btn-alta-action, .btn-apply-now, .btn-save-vitals, .btn-add-med) { background: var(--primary); border-color: var(--primary); color: white; }
+.layout .internacao-container .inline-med-form { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: .75rem; }
+.layout .internacao-container .med-detail { display: flex; flex-direction: column; gap: .35rem; min-width: 0; overflow-wrap: anywhere; }
+.layout .internacao-container .med-detail span { color: var(--text-secondary); font-size: .85rem; }
+.layout .internacao-container :is(.inline-med-form, .vital-signs-form) :is(input, textarea) { box-sizing: border-box; min-width: 0; width: 100%; padding: .75rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-input, var(--bg-card)); color: var(--text-primary); font: inherit; }
+.layout .internacao-container .btn-add-med { border-radius: 10px; min-width: 40px; cursor: pointer; }
+.layout .internacao-container .vital-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.layout .internacao-container .vital-textarea { margin: 1rem 0; }
+.layout .internacao-container .hospital-tabs-nav { flex-shrink: 0; overflow-x: auto; }
+.layout button:focus-visible, .back-dashboard:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.layout button:disabled { opacity: .6; cursor: not-allowed; }
+@media (max-width: 900px) {
+  .layout .internacao-container .inline-med-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+  .layout .meuperfil-container .meuperfil-grid, .layout .internacao-container .vital-grid { grid-template-columns: minmax(0, 1fr); }
+  .layout .internacao-container .hospital-header-fixed, .layout .internacao-container .hospital-content-scroll { padding: 1rem; }
+  .layout .internacao-container .hospital-title { font-size: 1.25rem; }
+  .layout .retornos-container .tabs-container { width: 100%; }
+}
+
+.layout .vaccine-reminders { margin: 1.5rem 0; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 18px; background: var(--bg-card); }
+.layout .vaccine-reminders-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.layout .vaccine-reminders h2 { display: flex; align-items: center; gap: .6rem; margin: 0; color: var(--text-primary); font-size: 1.1rem; }
+.layout .vaccine-reminders p { color: var(--text-muted); font-size: .85rem; }
+.layout .vaccine-reminders-heading > a { display: inline-flex; align-items: center; gap: .5rem; color: var(--primary); font-size: .85rem; font-weight: 600; text-decoration: none; }
+.layout .vaccine-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.25rem; }
+.layout .vaccine-summary > a { display: flex; flex-direction: column; gap: .3rem; padding: 1.25rem; border-radius: 12px; text-decoration: none; }
+.layout .vaccine-summary strong { font-size: 1.8rem; }
+.layout .vaccine-summary span { font-size: .85rem; }
+.layout .vaccine-summary-overdue { color: #dc2626; background: rgba(239, 68, 68, .09); border: 1px solid rgba(239, 68, 68, .25); }
+.layout .vaccine-summary-upcoming { color: var(--primary-dark); background: rgba(20, 184, 166, .08); border: 1px solid rgba(20, 184, 166, .25); }
+.layout .vaccine-reminders-list { list-style: none; margin: 1rem 0 0; padding: 0; }
+.layout .vaccine-reminders-list li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 0; border-top: 1px solid var(--border-color); }
+.layout .vaccine-reminders-list a { display: flex; flex-direction: column; gap: .25rem; color: var(--text-primary); text-decoration: none; }
+.layout .vaccine-reminders-list span, .layout .vaccine-reminders-list time { color: var(--text-muted); font-size: .8rem; }
+@media (max-width: 600px) { .layout .vaccine-summary { grid-template-columns: 1fr; } }

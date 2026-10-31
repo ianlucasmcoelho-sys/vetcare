@@ -2,12 +2,12 @@ import { openDb } from '../db.js';
 import { getClient } from './whatsappManager.js';
 
 // Enviar mensagem via WhatsApp nativo
-export const enviarWhatsApp = async (telefone, mensagem, clinica_id) => {
+export const enviarWhatsApp = async (telefone, mensagem, clinica_id, { manual = false } = {}) => {
   try {
     const db = await openDb();
     const config = await db.get(`SELECT * FROM configuracoes_whatsapp WHERE clinica_id = ?`, [clinica_id || 1]);
 
-    if (!config || !config.ativo) {
+    if (!config || (!config.ativo && !manual)) {
       console.log('⚠️ WhatsApp desativado na configuração da clínica.');
       return null;
     }
@@ -19,7 +19,8 @@ export const enviarWhatsApp = async (telefone, mensagem, clinica_id) => {
     }
 
     const numeroLimpo = telefone.replace(/\D/g, '');
-    const numeroFormatado = `55${numeroLimpo}@c.us`; // Formato exigido pelo whatsapp-web.js
+    const numeroComDDI = numeroLimpo.startsWith('55') && numeroLimpo.length > 11 ? numeroLimpo : `55${numeroLimpo}`;
+    const numeroFormatado = `${numeroComDDI}@c.us`; // Formato exigido pelo whatsapp-web.js
     
     await client.sendMessage(numeroFormatado, mensagem);
     

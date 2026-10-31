@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   TbLayoutDashboard,
+  TbHome,
   TbCalendar,
   TbUsers,
   TbPaw,
@@ -29,6 +30,7 @@ import {
   TbChevronRight
 } from 'react-icons/tb';
 import './Sidebar.css';
+import { preloadRoute } from '../utils/routePreload';
 
 export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkClick }) {
   const visuallyCollapsed = isCollapsed && !isMobileOpen;
@@ -42,7 +44,8 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
     {
       title: 'Principal',
       items: [
-        { path: '/', label: 'Dashboard', icon: TbLayoutDashboard },
+        { path: '/', label: 'Início', icon: TbHome },
+        { path: '/dashboard', label: 'Dashboard clínico', icon: TbLayoutDashboard },
         { path: '/agenda', label: 'Agendamentos', icon: TbCalendar },
         { path: '/responsaveis', label: 'Tutores / Clientes', icon: TbUsers },
         { path: '/animais', label: 'Pacientes (Pets)', icon: TbPaw },
@@ -109,6 +112,8 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
         {onToggle && (
           <button
             className="sidebar-toggle-btn"
+            aria-label={visuallyCollapsed ? "Expandir menu" : "Recolher menu"}
+            aria-expanded={!visuallyCollapsed}
             onClick={onToggle}
             title={visuallyCollapsed ? 'Expandir menu' : 'Recolher menu'}
           >
@@ -132,6 +137,8 @@ export default function Sidebar({ isCollapsed, isMobileOpen, onToggle, onLinkCli
                   className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
                   title={visuallyCollapsed ? item.label : undefined}
                   onClick={handleLinkClick}
+                  onMouseEnter={() => preloadRoute(item.path)}
+                  onFocus={() => preloadRoute(item.path)}
                 >
                   <span className="sidebar-link-icon">
                     <Icon />

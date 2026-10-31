@@ -7,8 +7,10 @@ import {
   updateInternacao, 
   deleteInternacao,
   agendarMedicacao,
+  editarMedicacao,
   aplicarMedicacao,
-  registrarSinaisVitais
+  registrarSinaisVitais,
+  editarSinaisVitais
 } from '../controllers/internacaoController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { requirePremiumFeature } from '../middlewares/subscriptionMiddleware.js';
@@ -26,7 +28,9 @@ router.delete('/:id', deleteInternacao);
 
 // Rotas de monitoramento clínico
 router.post('/medicacao', agendarMedicacao);
+router.put('/medicacao/:id', editarMedicacao);
 router.patch('/medicacao/:id/aplicar', aplicarMedicacao);
 router.post('/sinais-vitais', registrarSinaisVitais);
+router.put('/sinais-vitais/:id', editarSinaisVitais);
 
 export default router;

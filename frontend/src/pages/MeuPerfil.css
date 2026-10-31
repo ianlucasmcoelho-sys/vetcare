@@ -4,12 +4,12 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
 
-  
-  
+
+
   min-height: 100vh;
 }
 
-.page-title {
+.meuperfil-container .page-title {
   font-size: 28px;
   font-weight: 700;
   background: linear-gradient(135deg, #0f766e, #14b8a6);
@@ -19,13 +19,13 @@
   margin: 0 0 4px 0;
 }
 
-.page-subtitle {
+.meuperfil-container .page-subtitle {
   color: var(--text-muted);
   font-size: 14px;
   margin: 0 0 24px 0;
 }
 
-.alert {
+.meuperfil-container .alert {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -34,32 +34,32 @@
   margin-bottom: 20px;
 }
 
-.alert.success {
+.meuperfil-container .alert.success {
   background: #ecfdf5;
   border: 1px solid #10b981;
   color: #10b981;
 }
 
-.alert.error {
+.meuperfil-container .alert.error {
   background: #fef2f2;
   border: 1px solid #fecaca;
   color: #dc2626;
 }
 
-.meuperfil-grid {
+.meuperfil-container .meuperfil-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
 }
 
-.perfil-card {
+.meuperfil-container .perfil-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
 }
 
-.card-title {
+.meuperfil-container .card-title {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -69,26 +69,26 @@
   color: var(--text-primary);
 }
 
-.perfil-form {
+.meuperfil-container .perfil-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.form-group {
+.meuperfil-container .form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.form-group label {
+.meuperfil-container .form-group label {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
 }
 
-.form-group input {
+.meuperfil-container .form-group input {
   padding: 12px 14px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -97,16 +97,16 @@
   color: var(--text-primary);
 }
 
-.senha-wrapper {
+.meuperfil-container .senha-wrapper {
   position: relative;
 }
 
-.senha-wrapper input {
+.meuperfil-container .senha-wrapper input {
   width: 100%;
   padding-right: 40px;
 }
 
-.toggle-senha {
+.meuperfil-container .toggle-senha {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -117,13 +117,13 @@
   color: var(--text-secondary);
 }
 
-.senha-hint {
+.meuperfil-container .senha-hint {
   font-size: 11px;
   color: var(--text-muted);
   margin-top: 4px;
 }
 
-.perfil-badge {
+.meuperfil-container .perfil-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -136,7 +136,7 @@
   width: fit-content;
 }
 
-.btn-primary {
+.meuperfil-container .btn-primary {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,7 +150,7 @@
   cursor: pointer;
 }
 
-.btn-outline-full {
+.meuperfil-container .btn-outline-full {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -165,13 +165,13 @@
   cursor: pointer;
 }
 
-.form-actions {
+.meuperfil-container .form-actions {
   display: flex;
   gap: 12px;
   margin-top: 8px;
 }
 
-.btn-secondary {
+.meuperfil-container .btn-secondary {
   flex: 1;
   padding: 12px;
   background: var(--bg-hover);
@@ -185,7 +185,7 @@
   .meuperfil-container {
     padding: 16px;
   }
-  .meuperfil-grid {
+  .meuperfil-container .meuperfil-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -1,0 +1,18 @@
+.back-dashboard {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  padding: .75rem 1rem;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 12px;
+  background: var(--bg-card, white);
+  color: var(--text-primary, #0f172a);
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 600;
+}
+.back-dashboard:hover { border-color: var(--primary); color: var(--primary); }
+.v-planos-nav, .v-checkout-nav { gap: 1rem; flex-wrap: wrap; }
+
+@media (max-width: 768px) { .v-planos-nav .back-dashboard { order: 3; width: 100%; } }

@@ -1,3 +1,4 @@
+import { isRetiredDemoAccount } from '../services/demoAccess.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { createHash, randomBytes } from 'node:crypto';
@@ -14,13 +15,13 @@ export const login = async (req, res) => {
     const db = await openDb();
     
     const usuario = await db.get(`
-      SELECT u.*, c.nome as clinica_nome, c.status_assinatura, c.data_expiracao, c.plano_id, c.onboarding_concluido
+      SELECT u.*, c.nome as clinica_nome, c.email as clinica_email, c.status_assinatura, c.data_expiracao, c.plano_id, c.onboarding_concluido
       FROM usuarios u
       LEFT JOIN clinicas c ON u.clinica_id = c.id
       WHERE u.email = ? AND u.ativo = 1
     `, [email]);
 
-    if (!usuario) {
+    if (!usuario || isRetiredDemoAccount(usuario)) {
       return res.status(401).json({ error: 'E-mail ou senha inválidos' });
     }
 
@@ -70,6 +71,11 @@ export const verificarToken = async (req, res) => {
       return res.status(401).json({ error: 'Token não fornecido' });
     }
     const decoded = jwt.verify(token, JWT_SECRET);
+    const db = await openDb();
+    const clinica = await db.get('SELECT email as clinica_email FROM clinicas WHERE id = ?', [decoded.clinica_id]);
+    if (isRetiredDemoAccount({ email: decoded.email, clinica_email: clinica?.clinica_email })) {
+      return res.status(401).json({ error: 'Token inválido' });
+    }
     res.json({ valid: true, usuario: decoded });
   } catch (error) {
     res.status(401).json({ error: 'Token inválido' });
@@ -96,7 +102,7 @@ export const googleLogin = async (req, res) => {
     
     // Procura o usuário
     let usuario = await db.get(`
-      SELECT u.*, c.nome as clinica_nome, c.status_assinatura, c.data_expiracao, c.plano_id, c.onboarding_concluido
+      SELECT u.*, c.nome as clinica_nome, c.email as clinica_email, c.status_assinatura, c.data_expiracao, c.plano_id, c.onboarding_concluido
       FROM usuarios u
       LEFT JOIN clinicas c ON u.clinica_id = c.id
       WHERE u.email = ? AND u.ativo = 1
@@ -120,11 +126,15 @@ export const googleLogin = async (req, res) => {
       );
       
       usuario = await db.get(`
-        SELECT u.*, c.nome as clinica_nome, c.status_assinatura, c.data_expiracao, c.plano_id, c.onboarding_concluido
+        SELECT u.*, c.nome as clinica_nome, c.email as clinica_email, c.status_assinatura, c.data_expiracao, c.plano_id, c.onboarding_concluido
         FROM usuarios u
         LEFT JOIN clinicas c ON u.clinica_id = c.id
         WHERE u.id = ?
       `, [resultUsuario.lastID]);
+    }
+
+    if (isRetiredDemoAccount(usuario)) {
+      return res.status(401).json({ error: 'E-mail ou senha inválidos' });
     }
 
     await db.run(`UPDATE usuarios SET tentativas_login = 0, ultimo_login = CURRENT_TIMESTAMP WHERE id = ?`, [usuario.id]);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { 
   FiMail, FiLock, FiEye, FiEyeOff, FiAlertCircle, 
   FiArrowRight, FiSun, FiMoon, FiUser, FiZap, FiShield,
@@ -95,33 +95,6 @@ export default function Login() {
     }
   };
 
-  const handleAcessarDemo = async () => {
-    setEmail("demo@vetcare.com");
-    setSenha("demo123");
-    setLoading(true);
-    setErro("");
-    try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "demo@vetcare.com", senha: "demo123" }),
-      });
-      const data = await response.json();
-      if (response.ok && data.success) {
-        localStorage.setItem("token", data.token);
-        const userData = { ...data.usuario, clinica: data.clinica };
-        localStorage.setItem("usuario", JSON.stringify(userData));
-        window.location.href = "/";
-      } else {
-        setErro(data.error || "Falha ao entrar no modo demonstração");
-      }
-    } catch (error) {
-      setErro("Erro ao conectar com o servidor");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="v-auth-page">
       {/* Ambient Background */}
@@ -204,16 +177,6 @@ export default function Login() {
                 )}
               </button>
 
-              <button 
-                type="button" 
-                className="v-btn-pill-demo" 
-                onClick={handleAcessarDemo} 
-                disabled={loading}
-                title="Acesse o perfil pré-populado com dados simulados completos"
-              >
-                <FiZap /> Acessar Perfil Demonstração
-              </button>
-              
               <div className="v-auth-divider">
                 <span></span>
                 <small>ou continue com</small>
@@ -221,6 +184,7 @@ export default function Login() {
               </div>
 
               <div className="v-google-wrap">
+                <GoogleOAuthProvider clientId="1057629123787-gskt2kvcok51e44dqtin4jkd93ks311q.apps.googleusercontent.com">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() => setErro("Erro ao conectar com o Google")}
@@ -228,6 +192,7 @@ export default function Login() {
                   shape="pill"
                   width="400"
                 />
+                </GoogleOAuthProvider>
               </div>
               
               <button type="button" className="v-btn-pill-secondary" onClick={() => navigate("/cadastro")}>

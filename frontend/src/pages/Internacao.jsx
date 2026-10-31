@@ -15,6 +15,10 @@ const sinaisParaGrafico = [
   { campo: "peso", titulo: "Peso", unidade: "kg", cor: "#159579", Icone: MdOutlinePets }
 ];
 
+const formatarDataInternacao = (data) => data
+  ? new Date(`${String(data).slice(0, 10)}T12:00:00`).toLocaleDateString("pt-BR")
+  : "—";
+
 function VitalTrendChart({ records, campo, titulo, unidade, cor, Icone }) {
   const [pontoAtivo, setPontoAtivo] = useState(null);
   const mostrarPonto = (evento, ponto) => {
@@ -107,6 +111,7 @@ export default function Internacao() {
   const [selectedInternacao, setSelectedInternacao] = useState(null);
   const [details, setDetails] = useState(null);
   const [activeTab, setActiveTab] = useState("agenda");
+  const [viewTab, setViewTab] = useState("internados");
   const [busca, setBusca] = useState("");
   const [editingMedId, setEditingMedId] = useState(null);
   const [editingSinalId, setEditingSinalId] = useState(null);
@@ -140,7 +145,7 @@ export default function Internacao() {
     try {
       setLoading(true);
       const [intRes, animaisRes] = await Promise.all([
-        apiGet("/internacoes/ativas"),
+        apiGet("/internacoes/historico"),
         apiGet("/animais")
       ]);
       if (intRes.ok) setInternacoes(await intRes.json());
@@ -250,9 +255,11 @@ export default function Internacao() {
     }
   };
 
-  const internacoesFiltradas = internacoes.filter(i => 
-    i.animal_nome?.toLowerCase().includes(busca.toLowerCase()) ||
-    i.tutor_nome?.toLowerCase().includes(busca.toLowerCase())
+  const internacoesFiltradas = internacoes.filter(i =>
+    (viewTab === "alta" ? i.status === "alta" : i.status === "ativo") && (
+      i.animal_nome?.toLowerCase().includes(busca.toLowerCase()) ||
+      i.tutor_nome?.toLowerCase().includes(busca.toLowerCase())
+    )
   );
   const medicacoesPorDia = (details?.medicacoes || []).reduce((grupos, medicacao) => {
     const dia = medicacao.data_agendada;
@@ -276,12 +283,20 @@ export default function Internacao() {
       </div>
 
       <div className="internacao-card-main reveal-up" style={{animationDelay: '0.1s'}}>
+        <div className="internacao-list-tabs" role="tablist" aria-label="Filtrar pacientes por situação">
+          <button type="button" role="tab" aria-selected={viewTab === "internados"} className={`internacao-list-tab ${viewTab === "internados" ? "active" : ""}`} onClick={() => setViewTab("internados")}>
+            Internados <span>{internacoes.filter(i => i.status === "ativo").length}</span>
+          </button>
+          <button type="button" role="tab" aria-selected={viewTab === "alta"} className={`internacao-list-tab ${viewTab === "alta" ? "active" : ""}`} onClick={() => setViewTab("alta")}>
+            Pacientes com alta <span>{internacoes.filter(i => i.status === "alta").length}</span>
+          </button>
+        </div>
         <div className="search-section v-glass-panel reveal-up" style={{animationDelay: "0.1s"}}>
           <div className="search-wrapper">
             <FiSearch className="search-icon" />
             <input
               className="search-input"
-              placeholder="Buscar por pet ou tutor internado..."
+              placeholder={viewTab === "alta" ? "Buscar por pet ou tutor com alta..." : "Buscar por pet ou tutor internado..."}
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
             />
@@ -298,14 +313,14 @@ export default function Internacao() {
         ) : internacoesFiltradas.length === 0 ? (
           <div className="empty-state">
             <FiActivity size={48} />
-            <p>Nenhum paciente internado no momento</p>
-            <button className="btn-outline" onClick={() => setShowModal(true)}>Internar Animal</button>
+            <p>{viewTab === "alta" ? "Nenhum paciente com alta encontrado" : "Nenhum paciente internado no momento"}</p>
+            {viewTab === "internados" && <button className="btn-outline" onClick={() => setShowModal(true)}>Internar Animal</button>}
           </div>
         ) : (
           <div className="pacientes-grid">
             {internacoesFiltradas.map(i => (
               <div key={i.id} className="paciente-card-item v-glass-panel" onClick={() => handleOpenDetails(i)} style={{animationDelay: `${0.1 + (0.05 * (i.id % 10))}s`}}>
-                <div className="paciente-card-badge">Internado</div>
+                <div className={`paciente-card-badge ${i.status === "alta" ? "alta" : ""}`}>{i.status === "alta" ? "Alta médica" : "Internado"}</div>
                 
                 <div className="paciente-card-header">
                   <div className="pet-avatar-hospital">
@@ -328,14 +343,13 @@ export default function Internacao() {
                     </div>
                     <div className="info-item">
                       <FiClock className="info-icon" />
-                      <span className="info-label">ENTRADA</span>
-                      <span className="info-value">{new Date(i.data_entrada).toLocaleDateString()}</span>
+                      <span className="info-label">{i.status === "alta" ? "SAÍDA" : "ENTRADA"}</span>
+                      <span className="info-value">{formatarDataInternacao(i.status === "alta" ? (i.data_saida || i.data_entrada) : i.data_entrada)}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="paciente-card-footer">
-                  <span className="id-tag">PAT-#{String(i.id).padStart(4, '0')}</span>
                   <div className="card-actions-hint">
                     Ver Prontuário <FiChevronRight />
                   </div>
@@ -361,9 +375,7 @@ export default function Internacao() {
                 </div>
               </div>
               <div className="hospital-actions">
-                <button className="btn-alta-action" onClick={() => handleAlta(details.id)}>
-                  <FiCheck /> Confirmar Alta
-                </button>
+                {details.status === "ativo" && <button className="btn-alta-action" onClick={() => handleAlta(details.id)}><FiCheck /> Confirmar Alta</button>}
                 <button className="btn-close-circle" onClick={() => setShowDetailModal(false)}>
                   <FiX size={20} />
                 </button>

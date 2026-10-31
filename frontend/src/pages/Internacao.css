@@ -28,6 +28,44 @@
   background: transparent;
 }
 
+.internacao-container .internacao-list-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 18px 24px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.internacao-container .internacao-list-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 4px;
+  margin-bottom: -1px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.internacao-container .internacao-list-tab.active {
+  color: #0f766e;
+  border-bottom-color: #14b8a6;
+}
+
+.internacao-container .internacao-list-tab span {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(20, 184, 166, 0.1);
+  color: inherit;
+  font-size: 11px;
+  text-align: center;
+}
+
 /* Grid de Pacientes */
 .internacao-container .pacientes-grid {
   display: grid;
@@ -58,6 +96,12 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border: 1px solid #fee2e2;
+}
+
+.internacao-container .paciente-card-badge.alta {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
 }
 
 .internacao-container .paciente-card-header {
@@ -132,7 +176,7 @@
 .internacao-container .paciente-card-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 14px 20px;
   background: rgba(0, 0, 0, 0.02);
   border-top: 1px solid var(--border-color);

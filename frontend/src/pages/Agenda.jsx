@@ -10,6 +10,7 @@ import {
 import { MdOutlinePets, MdOutlineMedicalServices, MdOutlineVaccines } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import { apiGet, apiPost, apiPut, apiPatch, apiDelete } from "../services/api";
+import { abrirWhatsAppWeb } from "../utils/whatsapp";
 import "./Agenda.css";
 
 export default function Agenda() {
@@ -124,14 +125,14 @@ export default function Agenda() {
     const animal = animais.find(a => a.id === ag.animal_id);
     const tutor = tutores.find(t => t.id === animal?.responsavel_id);
     
-    if (!tutor?.telefone) {
+    const telefone = tutor?.celular || tutor?.telefone;
+    if (!telefone) {
       alert("Tutor não possui telefone cadastrado.");
       return;
     }
 
     const mensagem = `Olá ${tutor.nome}! 🐾 Lembrete da consulta do(a) ${animal.nome} amanhã (${ag.data}) às ${ag.horario}. Confirmamos sua presença?`;
-    const fone = tutor.telefone.replace(/\D/g, "");
-    window.open(`https://wa.me/55${fone}?text=${encodeURIComponent(mensagem)}`, "_blank");
+    abrirWhatsAppWeb(telefone, mensagem);
   };
 
   const resetForm = () => {

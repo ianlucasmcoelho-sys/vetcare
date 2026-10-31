@@ -35,7 +35,7 @@ Validação desta entrega: 44 testes automatizados aprovados, 82 verificações 
 
 Contém o código-fonte e o build do frontend. Não inclui dependências instaladas, credenciais, banco SQLite local, uploads de usuários, logs ou backups. As variáveis devem ser configuradas separadamente no servidor; `backend/.env.example` contém somente exemplos.
 
-Inclui o Início com avisos, Dashboard clínico, cadastro encadeado de tutor e animal, ações rápidas do paciente e agenda completa. O módulo de banho e tosa foi removido, preservando os dados históricos.
+A versao atual inclui Banho & Tosa, acompanhamento do pet e mensagens que abrem no WhatsApp Web com o texto pronto. O envio e confirmado pelo usuario no WhatsApp; o VetCare nao usa sessao QR nem envia mensagens automaticamente.
 
 O checkout Asaas oferece Pix e cartão, recuperação da mesma cobrança, confirmação segura por webhook, renovação e tratamento de recusa, estorno e chargeback. Não há liberação por links simulados. Contratações e recuperação de cobranças exigem administrador ativo. Cancelamento e troca da forma de pagamento de assinaturas existentes continuam pelo atendimento no Asaas.
 

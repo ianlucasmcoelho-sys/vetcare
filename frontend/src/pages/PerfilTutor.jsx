@@ -8,6 +8,7 @@ import {
   FiPrinter, FiDownload
 } from "react-icons/fi";
 import { MdOutlinePets, MdOutlineVaccines, MdOutlineMedicalServices } from "react-icons/md";
+import { abrirWhatsAppWeb } from "../utils/whatsapp";
 import { apiGet, apiPost, apiPut, apiDelete } from "../services/api";
 import "./PerfilTutor.css";
 
@@ -215,9 +216,10 @@ export default function PerfilTutor() {
   };
 
   const enviarWhatsApp = () => {
-    const numero = tutor?.celular?.replace(/\D/g, '');
-    if (numero && numero.length >= 10) {
-      window.open(`https://wa.me/55${numero}`, '_blank');
+    const numero = tutor?.celular || tutor?.telefone;
+    if (numero && numero.replace(/\D/g, '').length >= 10) {
+      const mensagem = `Olá, ${tutor.nome}! Estou entrando em contato sobre o atendimento do seu pet.`;
+      abrirWhatsAppWeb(numero, mensagem);
     } else {
       alert("Número de telefone não informado ou inválido");
     }

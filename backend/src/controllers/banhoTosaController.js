@@ -1,7 +1,5 @@
 import { randomBytes } from 'node:crypto';
 import { openDb, runTransaction } from '../db.js';
-import { enviarWhatsApp } from '../services/whatsappService.js';
-import { getStatus as getWhatsAppStatus } from '../services/whatsappManager.js';
 
 export const BANHO_TOSA_ETAPAS = ['Agendado', 'Chegou', 'Banho', 'Tosa', 'Secagem', 'Finalizado', 'Indo até você'];
 
@@ -11,25 +9,13 @@ const publicUrl = (req, token) => {
 };
 
 const mensagemAcompanhamento = (tutor, pet, link) => [
-  `Olá, ${tutor || 'tutor(a)'}! 🐾`,
+  `Ol\u00e1, ${tutor || 'tutor(a)'}! \uD83D\uDC3E`,
   '',
-  `${pet} chegou ao nosso espaço de banho e tosa. Já começamos o atendimento com todo o carinho!`,
+  `${pet} chegou ao nosso espa\u00e7o de banho e tosa. J\u00e1 come\u00e7amos o atendimento com todo o carinho!`,
   '',
   'Acompanhe cada etapa por este link:',
   link
 ].join('\n');
-
-const notifyTutor = async (registro, req, token) => {
-  const telefone = registro.tutor_celular || registro.tutor_telefone;
-  if (!telefone) return;
-  const trackingUrl = publicUrl(req, token);
-  const mensagem = [`Olá, ${registro.tutor_nome || 'tutor(a)'}! 🐾`, '', `${registro.animal_nome} chegou ao banho e tosa e o atendimento já começou com todo o carinho.`, '', 'Acompanhe as próximas etapas por este link:', trackingUrl].join('\n');
-  try {
-    await enviarWhatsApp(telefone, mensagem, registro.clinica_id);
-  } catch (error) {
-    console.warn('Não foi possível enviar atualização do banho e tosa pelo WhatsApp:', error.message);
-  }
-};
 
 const getRegistro = async (db, id, clinicaId) => db.get(`
   SELECT b.*, an.nome AS animal_nome, r.nome AS tutor_nome, r.telefone AS tutor_telefone, r.celular AS tutor_celular
@@ -97,12 +83,11 @@ export const createBanhoTosa = async (req, res) => {
         (clinica_id, animal_id, data, horario, pacote_mensal, status, observacoes, token_acompanhamento, servicos, chegada_notificada)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [clinicaId, animal_id, data, horario, pacote_mensal ? 1 : 0, initialStatus, observacoes || null, token,
-        Array.isArray(servicos) ? servicos.join(', ') : (servicos || null), initialStatus === 'Chegou' ? 1 : 0]);
+        Array.isArray(servicos) ? servicos.join(', ') : (servicos || null), 0]);
       return inserted.lastID;
     });
     const db = await openDb();
     const registro = await getRegistro(db, result, clinicaId);
-    if (initialStatus === 'Chegou') await notifyTutor(registro, req, token);
     res.status(201).json({ success: true, ...registro, link_acompanhamento: publicUrl(req, token) });
   } catch (error) {
     res.status(error.message === 'Animal não encontrado' ? 404 : 500).json({ error: error.message });
@@ -142,15 +127,6 @@ export const updateBanhoTosaStatus = async (req, res) => {
     if (!existing) return res.status(404).json({ error: 'Registro não encontrado' });
     await db.run('UPDATE banho_tosa SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND clinica_id = ?', [status, id, clinicaId]);
     const updated = await getRegistro(db, id, clinicaId);
-    if (existing.status !== status && status === 'Chegou') {
-      const notificacaoReivindicada = await db.run(
-        'UPDATE banho_tosa SET chegada_notificada = 1 WHERE id = ? AND clinica_id = ? AND chegada_notificada = 0',
-        [id, clinicaId]
-      );
-      if (notificacaoReivindicada.changes > 0) {
-        await notifyTutor(updated, req, updated.token_acompanhamento);
-      }
-    }
     res.json({ success: true, id, status });
   } catch (error) {
     console.error('Erro ao atualizar etapa:', error);
@@ -161,21 +137,12 @@ export const updateBanhoTosaStatus = async (req, res) => {
 export const enviarLinkBanhoTosa = async (req, res) => {
   try {
     const clinicaId = req.usuario.clinica_id;
-    const whatsapp = getWhatsAppStatus(clinicaId);
-    if (whatsapp.status !== 'CONECTADO') {
-      const sincronizando = ['AUTENTICADO', 'SINCRONIZANDO'].includes(whatsapp.status);
-      return res.status(409).json({
-        error: sincronizando
-          ? 'O WhatsApp reconheceu a sessão e está sincronizando. Aguarde o status “Conectado” antes de enviar.'
-          : 'O WhatsApp ainda não está conectado. Conecte-o nas configurações e tente novamente.'
-      });
-    }
     const db = await openDb();
     const registro = await getRegistro(db, req.params.id, clinicaId);
-    if (!registro) return res.status(404).json({ error: 'Agendamento não encontrado.' });
+    if (!registro) return res.status(404).json({ error: 'Agendamento nao encontrado.' });
 
     const telefone = registro.tutor_celular || registro.tutor_telefone;
-    if (!telefone) return res.status(400).json({ error: 'O tutor deste pet não tem telefone cadastrado.' });
+    if (!telefone) return res.status(400).json({ error: 'O tutor deste pet nao tem telefone cadastrado.' });
 
     const token = registro.token_acompanhamento || randomBytes(24).toString('hex');
     if (!registro.token_acompanhamento) {
@@ -183,14 +150,10 @@ export const enviarLinkBanhoTosa = async (req, res) => {
     }
     const link = publicUrl(req, token);
     const mensagem = mensagemAcompanhamento(registro.tutor_nome, registro.animal_nome, link);
-    const enviado = await enviarWhatsApp(telefone, mensagem, registro.clinica_id, { manual: true });
-    if (!enviado) {
-      return res.status(503).json({ error: 'Não foi possível enviar. Confira se o WhatsApp da clínica está conectado nas configurações.' });
-    }
-    res.json({ success: true, message: `Mensagem enviada para ${registro.tutor_nome || 'o tutor'} pelo WhatsApp.`, link });
+    res.json({ success: true, telefone, mensagem, link, message: 'Mensagem pronta para abrir no WhatsApp Web.' });
   } catch (error) {
-    console.error('Erro ao enviar link de acompanhamento pelo WhatsApp:', error);
-    res.status(500).json({ error: 'Não foi possível enviar a mensagem pelo WhatsApp.' });
+    console.error('Erro ao preparar link de acompanhamento para WhatsApp:', error);
+    res.status(500).json({ error: 'Nao foi possivel preparar a mensagem.' });
   }
 };
 

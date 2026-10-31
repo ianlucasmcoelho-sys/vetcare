@@ -199,15 +199,15 @@ export default function Configuracoes() {
           </div>
 
           <div className="config-card">
-            <h3 className="config-title"><FiMessageCircle /> WhatsApp da Clínica</h3>
-            <p className="config-whatsapp-description">Conecte o WhatsApp que será usado como remetente das mensagens. O tutor recebe no telefone cadastrado no perfil do pet.</p>
+            <h3 className="config-title"><FiMessageCircle /> Mensagens WhatsApp</h3>
+            <p className="config-whatsapp-description">Abra o WhatsApp Web com o telefone e a mensagem prontos para revisar e enviar.</p>
             <button
               type="button"
               className="btn-primary"
               onClick={() => navigate('/automacoes')}
               style={{ width: '100%', justifyContent: 'center', marginTop: '12px' }}
             >
-              <FiMessageCircle /> Conectar ou gerenciar WhatsApp
+              <FiMessageCircle /> Ver como funciona
             </button>
           </div>
 

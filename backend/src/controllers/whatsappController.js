@@ -82,6 +82,11 @@ export const gerarNovoQrWhatsApp = async (req, res) => {
     res.status(202).json({ success: true, status: 'INICIANDO', message: 'Solicitamos um novo QR Code.' });
   } catch (error) {
     console.error('Erro ao gerar novo QR Code do WhatsApp:', error);
-    res.status(500).json({ error: 'Não foi possível gerar outro QR Code.' });
+    const busySession = error?.code === 'EBUSY' || error?.code === 'EPERM';
+    res.status(busySession ? 503 : 500).json({
+      error: busySession
+        ? 'A sessão anterior ainda está encerrando. Aguarde alguns segundos e tente novamente.'
+        : 'Não foi possível gerar outro QR Code.'
+    });
   }
 };
